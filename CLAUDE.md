@@ -11,6 +11,7 @@ Read this file fully, then read the docs in this order before writing code:
 5. `docs/ALGORITHMS.md` — fusion, feasibility, optimisation, retasking, prediction
 6. `docs/API_SPEC.md` — REST + WebSocket contract
 7. `docs/BUILD_PLAN.md` and `docs/TASKS.md` — the order of work and the checklist
+8. `docs/INDIA_CONTEXT.md` — India-specific realism (regions, seasons, elevation, HADR, airspace). Its rules override generic defaults in DATA_MODEL §5 and ALGORITHMS §7.2. Real geography/climate, fictional bases and units.
 
 ## Problem in one paragraph
 

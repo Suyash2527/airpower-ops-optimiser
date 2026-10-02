@@ -36,6 +36,10 @@ This project must be defensible to evaluators. Everything below is mandatory.
 - If using map tiles, use a free/open style and keep the attribution visible.
 - Verify any external API's terms before using it in the demo; record the check in `docs/DECISIONS.md`.
 
+## 6a. India context
+
+The project is India-specific in geography, seasons, civil airspace and mission types (see `INDIA_CONTEXT.md`). Bases, units, squadrons, tail numbers and order of battle stay fictional. Show India's boundaries per official Government of India depiction. Never imply MoD/IAF endorsement.
+
 ## 6. For Claude Code
 
 If you are about to write a number, name, or claim that is not derived from our code or a cited open source, stop and either compute it, label it as a placeholder, or leave it out.
