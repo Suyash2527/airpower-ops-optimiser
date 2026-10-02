@@ -3,7 +3,7 @@ FROM python:3.11-slim
 WORKDIR /app
 COPY backend/pyproject.toml ./pyproject.toml
 COPY backend/app ./app
-RUN pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir -e ".[postgres]"
 
 # Scenarios are mounted/copied at /scenarios (AIRPOWER_SCENARIO_DIR).
 COPY scenarios /scenarios

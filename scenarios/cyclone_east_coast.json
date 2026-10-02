@@ -20,7 +20,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": "L-AA",
       "fuel_state_pct": 100.0,
       "hours_since_maintenance": 56.72,
@@ -38,7 +38,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": "L-AG",
       "fuel_state_pct": 70.4,
       "hours_since_maintenance": 36.12,
@@ -110,7 +110,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": null,
       "fuel_state_pct": 79.9,
       "hours_since_maintenance": 62.73,
@@ -164,7 +164,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": null,
       "fuel_state_pct": 77.9,
       "hours_since_maintenance": 69.75,
@@ -254,7 +254,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": null,
       "fuel_state_pct": 62.6,
       "hours_since_maintenance": 127.15,
@@ -308,7 +308,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": null,
       "fuel_state_pct": 89.8,
       "hours_since_maintenance": 44.81,
@@ -380,7 +380,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": "L-RECCE",
       "fuel_state_pct": 88.2,
       "hours_since_maintenance": 32.12,
@@ -398,7 +398,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": "L-RECCE",
       "fuel_state_pct": 73.5,
       "hours_since_maintenance": 51.9,
@@ -416,7 +416,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": null,
       "fuel_state_pct": 96.3,
       "hours_since_maintenance": 50.21,
@@ -434,7 +434,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": "L-CARGO-L",
       "fuel_state_pct": 73.1,
       "hours_since_maintenance": 51.35,
@@ -470,7 +470,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": "L-AG",
       "fuel_state_pct": 61.6,
       "hours_since_maintenance": 41.35,
@@ -524,7 +524,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": "L-CARGO-L",
       "fuel_state_pct": 63.8,
       "hours_since_maintenance": 52.77,
@@ -596,7 +596,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": null,
       "fuel_state_pct": 62.0,
       "hours_since_maintenance": 21.41,
@@ -632,7 +632,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": null,
       "fuel_state_pct": 70.1,
       "hours_since_maintenance": 12.5,
@@ -650,7 +650,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": "L-CARGO-L",
       "fuel_state_pct": 62.1,
       "hours_since_maintenance": 65.23,
@@ -686,7 +686,7 @@
     },
     {
       "available_from_min": 0,
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "current_loadout_id": "L-RECCE",
       "fuel_state_pct": 61.9,
       "hours_since_maintenance": 5.97,
@@ -907,32 +907,32 @@
         "coordinates": [
           [
             [
-              93.321,
-              28.0578
+              86.4865,
+              21.5578
             ],
             [
-              94.1546,
-              27.4979
+              87.279,
+              20.9979
             ],
             [
-              93.9989,
-              26.9231
+              87.131,
+              20.4231
             ],
             [
-              92.8495,
-              26.361
+              86.0382,
+              19.861
             ],
             [
-              92.2554,
-              26.7647
+              85.4734,
+              20.2647
             ],
             [
-              92.3737,
-              27.6149
+              85.5859,
+              21.1149
             ],
             [
-              93.321,
-              28.0578
+              86.4865,
+              21.5578
             ]
           ]
         ],
@@ -1065,24 +1065,24 @@
         "coordinates": [
           [
             [
-              75.8367,
-              11.265
+              75.8386,
+              11.2668
             ],
             [
-              92.5307,
-              26.365
+              85.736,
+              19.8668
             ],
             [
-              92.6693,
-              26.235
+              85.864,
+              19.7332
             ],
             [
-              75.9633,
-              11.135
+              75.9614,
+              11.1332
             ],
             [
-              75.8367,
-              11.265
+              75.8386,
+              11.2668
             ]
           ]
         ],
@@ -1107,24 +1107,24 @@
         "coordinates": [
           [
             [
-              92.6463,
-              26.2202
+              85.8015,
+              19.7101
             ],
             [
-              78.844,
-              19.6202
+              78.8014,
+              19.6101
             ],
             [
-              78.756,
-              19.7798
+              78.7986,
+              19.7899
             ],
             [
-              92.5537,
-              26.3798
+              85.7985,
+              19.8899
             ],
             [
-              92.6463,
-              26.2202
+              85.8015,
+              19.7101
             ]
           ]
         ],
@@ -1149,34 +1149,34 @@
         "coordinates": [
           [
             [
-              91.5993,
-              26.2184
+              83.3018,
+              20.1136
             ],
             [
-              93.7852,
-              25.9956
+              83.6206,
+              17.9873
             ],
             [
-              93.757,
-              25.7722
+              83.3866,
+              17.9557
             ],
             [
-              91.5711,
-              25.995
+              83.0648,
+              20.082
             ],
             [
-              91.5993,
-              26.2184
+              83.3018,
+              20.1136
             ]
           ]
         ],
         "type": "Polygon"
       },
       "provenance": {
-        "confidence": 0.94,
+        "confidence": 0.93,
         "data_label": "synthetic",
         "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T02:12:00Z",
+        "observed_at": "2026-10-28T02:28:00Z",
         "source": "SYNTHETIC"
       }
     },
@@ -1191,34 +1191,34 @@
         "coordinates": [
           [
             [
-              80.3681,
-              21.4407
+              77.2694,
+              19.2865
             ],
             [
-              77.3933,
-              19.0972
+              84.0023,
+              22.0167
             ],
             [
-              77.2401,
-              19.2694
+              84.0985,
+              21.8103
             ],
             [
-              80.2125,
-              21.6129
+              77.364,
+              19.0801
             ],
             [
-              80.3681,
-              21.4407
+              77.2694,
+              19.2865
             ]
           ]
         ],
         "type": "Polygon"
       },
       "provenance": {
-        "confidence": 0.93,
+        "confidence": 0.97,
         "data_label": "synthetic",
         "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T02:13:00Z",
+        "observed_at": "2026-10-28T02:23:00Z",
         "source": "SYNTHETIC"
       }
     },
@@ -1233,24 +1233,24 @@
         "coordinates": [
           [
             [
-              77.6836,
-              20.9224
+              76.2977,
+              10.1027
             ],
             [
-              80.2559,
-              21.6346
+              75.4413,
+              11.868
             ],
             [
-              80.3247,
-              21.419
+              75.6487,
+              11.9646
             ],
             [
-              77.752,
-              20.7068
+              76.5039,
+              10.1993
             ],
             [
-              77.6836,
-              20.9224
+              76.2977,
+              10.1027
             ]
           ]
         ],
@@ -1331,28 +1331,12 @@
       "type": "large_airport"
     },
     {
-      "elevation_m": 887.0,
-      "iata": "SHL",
-      "id": "VEBI",
-      "lat": 25.7036,
-      "lon": 91.9787,
-      "name": "Shillong Airport",
-      "provenance": {
-        "confidence": 1.0,
-        "data_label": "open",
-        "ingested_at": "2026-10-02T00:00:00Z",
-        "observed_at": "2026-10-02T00:00:00Z",
-        "source": "OURAIRPORTS"
-      },
-      "type": "medium_airport"
-    },
-    {
-      "elevation_m": 49.4,
-      "iata": "GAU",
-      "id": "VEGT",
-      "lat": 26.1067,
-      "lon": 91.5852,
-      "name": "Lokpriya Gopinath Bordoloi International Airport",
+      "elevation_m": 42.1,
+      "iata": "BBI",
+      "id": "VEBS",
+      "lat": 20.251,
+      "lon": 85.8147,
+      "name": "Biju Patnaik International Airport",
       "provenance": {
         "confidence": 1.0,
         "data_label": "open",
@@ -1363,12 +1347,12 @@
       "type": "large_airport"
     },
     {
-      "elevation_m": 148.4,
-      "iata": "DMU",
-      "id": "VEMR",
-      "lat": 25.8839,
-      "lon": 93.7711,
-      "name": "Dimapur Airport",
+      "elevation_m": 228.9,
+      "iata": "JRG",
+      "id": "VEJH",
+      "lat": 21.9135,
+      "lon": 84.0504,
+      "name": "Jharsuguda Airport",
       "provenance": {
         "confidence": 1.0,
         "data_label": "open",
@@ -1376,15 +1360,15 @@
         "observed_at": "2026-10-02T00:00:00Z",
         "source": "OURAIRPORTS"
       },
-      "type": "medium_airport"
+      "type": "small_airport"
     },
     {
-      "elevation_m": 73.2,
-      "iata": "TEZ",
-      "id": "VETZ",
-      "lat": 26.7091,
-      "lon": 92.7847,
-      "name": "Tezpur Airport",
+      "elevation_m": 208.8,
+      "iata": "UKE",
+      "id": "VEUK",
+      "lat": 20.0978,
+      "lon": 83.1833,
+      "name": "Utkela Airport",
       "provenance": {
         "confidence": 1.0,
         "data_label": "open",
@@ -1457,6 +1441,22 @@
         "source": "OURAIRPORTS"
       },
       "type": "large_airport"
+    },
+    {
+      "elevation_m": 57.3,
+      "iata": "VTZ",
+      "id": "VOVI",
+      "lat": 17.9715,
+      "lon": 83.5036,
+      "name": "Alluri Sitarama Raju International Airport (Vizag)",
+      "provenance": {
+        "confidence": 1.0,
+        "data_label": "open",
+        "ingested_at": "2026-10-02T00:00:00Z",
+        "observed_at": "2026-10-02T00:00:00Z",
+        "source": "OURAIRPORTS"
+      },
+      "type": "large_airport"
     }
   ],
   "bases": [
@@ -1488,13 +1488,13 @@
       "weather_station_id": "WX-BASE-S5"
     },
     {
-      "climate_zone": "humid_hill_ne",
-      "elevation_m": 65.0,
+      "climate_zone": "tropical_coastal",
+      "elevation_m": 8.0,
       "fuel_stock_kg": 283000,
-      "id": "BASE-NE1",
-      "lat": 26.3,
-      "lon": 92.6,
-      "name": "BASE-NE1",
+      "id": "BASE-EC1",
+      "lat": 19.8,
+      "lon": 85.8,
+      "name": "BASE-EC1",
       "provenance": {
         "confidence": 0.97,
         "data_label": "synthetic",
@@ -1502,8 +1502,8 @@
         "observed_at": "2026-10-28T02:10:00Z",
         "source": "SYNTHETIC"
       },
-      "ref_temperature_c": 28.1,
-      "region": "east_ne",
+      "ref_temperature_c": 29.5,
+      "region": "east_coast",
       "runways": 3,
       "turnaround_min_by_type": {
         "FTR-A": 69,
@@ -1512,7 +1512,7 @@
         "TKR-E": 85,
         "TPT-B": 94
       },
-      "weather_station_id": "WX-BASE-NE1"
+      "weather_station_id": "WX-BASE-EC1"
     },
     {
       "climate_zone": "tropical_plateau",
@@ -1659,7 +1659,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 240,
       "id": "C-007",
       "last_duty_end_min": 69,
@@ -1697,7 +1697,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 279,
       "id": "C-009",
       "last_duty_end_min": -1595,
@@ -1736,7 +1736,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 275,
       "id": "C-011",
       "last_duty_end_min": -1778,
@@ -1756,7 +1756,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 0,
       "id": "C-012",
       "last_duty_end_min": -1511,
@@ -1775,7 +1775,7 @@
       "status": "SICK"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 64,
       "id": "C-013",
       "last_duty_end_min": -1509,
@@ -1891,7 +1891,7 @@
       "status": "ON_DUTY"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 351,
       "id": "C-019",
       "last_duty_end_min": -1428,
@@ -1910,7 +1910,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 20,
       "id": "C-020",
       "last_duty_end_min": -1134,
@@ -1948,7 +1948,7 @@
       "status": "ON_REST"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 467,
       "id": "C-022",
       "last_duty_end_min": 110,
@@ -1967,7 +1967,7 @@
       "status": "ON_DUTY"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 0,
       "id": "C-023",
       "last_duty_end_min": -1219,
@@ -2024,7 +2024,7 @@
       "status": "ON_DUTY"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 550,
       "id": "C-026",
       "last_duty_end_min": -497,
@@ -2083,7 +2083,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 497,
       "id": "C-029",
       "last_duty_end_min": -1228,
@@ -2122,7 +2122,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 466,
       "id": "C-031",
       "last_duty_end_min": -1052,
@@ -2275,7 +2275,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 0,
       "id": "C-039",
       "last_duty_end_min": -1322,
@@ -2294,7 +2294,7 @@
       "status": "SICK"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 280,
       "id": "C-040",
       "last_duty_end_min": -1251,
@@ -2372,7 +2372,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 50,
       "id": "C-044",
       "last_duty_end_min": -1349,
@@ -2391,7 +2391,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 558,
       "id": "C-045",
       "last_duty_end_min": -304,
@@ -2430,7 +2430,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 409,
       "id": "C-047",
       "last_duty_end_min": -1385,
@@ -2449,7 +2449,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 5,
       "id": "C-048",
       "last_duty_end_min": -1308,
@@ -2468,7 +2468,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 412,
       "id": "C-049",
       "last_duty_end_min": -1101,
@@ -2487,7 +2487,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 429,
       "id": "C-050",
       "last_duty_end_min": -1246,
@@ -2506,7 +2506,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 284,
       "id": "C-051",
       "last_duty_end_min": -742,
@@ -2525,7 +2525,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 434,
       "id": "C-052",
       "last_duty_end_min": 229,
@@ -2622,7 +2622,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 369,
       "id": "C-057",
       "last_duty_end_min": -898,
@@ -2641,7 +2641,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 419,
       "id": "C-058",
       "last_duty_end_min": -1464,
@@ -2660,7 +2660,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 52,
       "id": "C-059",
       "last_duty_end_min": -1735,
@@ -2679,7 +2679,7 @@
       "status": "AVAILABLE"
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "duty_minutes_last_24h": 238,
       "id": "C-060",
       "last_duty_end_min": -1734,
@@ -2767,7 +2767,7 @@
             "radius_km": 59.4
           },
           "capability_required": "HADR",
-          "disaster_event": "DE-FLOOD-10",
+          "disaster_event": "DE-CYCLONE-10",
           "duration_min": 33,
           "id": "M-051",
           "loadout_category_required": "CARGO",
@@ -24593,8 +24593,8 @@
       "aircraft_required": 1,
       "aoi": {
         "center": {
-          "lat": 25.9134,
-          "lon": 92.3485
+          "lat": 19.4127,
+          "lon": 85.5596
         },
         "radius_km": 41.2
       },
@@ -24619,8 +24619,8 @@
       },
       "status": "PENDING",
       "weight": 100.0,
-      "window_end_min": 1268,
-      "window_start_min": 930
+      "window_end_min": 1269,
+      "window_start_min": 931
     },
     {
       "aircraft_required": 1,
@@ -25083,8 +25083,8 @@
       "aircraft_required": 1,
       "aoi": {
         "center": {
-          "lat": 26.0968,
-          "lon": 93.7209
+          "lat": 19.5977,
+          "lon": 86.87
         },
         "radius_km": 26.4
       },
@@ -25215,8 +25215,8 @@
       "aircraft_required": 1,
       "aoi": {
         "center": {
-          "lat": 26.3303,
-          "lon": 91.2169
+          "lat": 19.8321,
+          "lon": 84.4797
         },
         "radius_km": 26.1
       },
@@ -25241,15 +25241,15 @@
       },
       "status": "PENDING",
       "weight": 60.0,
-      "window_end_min": 411,
-      "window_start_min": 260
+      "window_end_min": 412,
+      "window_start_min": 261
     },
     {
       "aircraft_required": 1,
       "aoi": {
         "center": {
-          "lat": 28.0307,
-          "lon": 92.8187
+          "lat": 21.5308,
+          "lon": 86.0076
         },
         "radius_km": 41.1
       },
@@ -25314,8 +25314,8 @@
       "aircraft_required": 1,
       "aoi": {
         "center": {
-          "lat": 23.8292,
-          "lon": 89.6863
+          "lat": 17.3373,
+          "lon": 83.0079
         },
         "radius_km": 33.1
       },
@@ -25445,8 +25445,8 @@
       "aircraft_required": 1,
       "aoi": {
         "center": {
-          "lat": 25.8915,
-          "lon": 92.5516
+          "lat": 19.3907,
+          "lon": 85.7537
         },
         "radius_km": 13.4
       },
@@ -25478,8 +25478,8 @@
       "aircraft_required": 2,
       "aoi": {
         "center": {
-          "lat": 23.4653,
-          "lon": 90.6883
+          "lat": 16.9687,
+          "lon": 83.9666
         },
         "radius_km": 54.0
       },
@@ -25641,8 +25641,8 @@
       "aircraft_required": 1,
       "aoi": {
         "center": {
-          "lat": 7.2017,
-          "lon": 95.2035
+          "lat": 24.1641,
+          "lon": 57.4628
         },
         "radius_km": 32.8
       },
@@ -25674,46 +25674,46 @@
       "aircraft_required": 1,
       "aoi": {
         "center": {
-          "lat": 20.3397,
-          "lon": 78.993
+          "lat": 17.1522,
+          "lon": 76.3537
         },
-        "radius_km": 20.7
+        "radius_km": 51.3
       },
-      "capability_required": "HADR",
-      "disaster_event": "DE-CYCLONE-07",
-      "duration_min": 37,
+      "capability_required": "AERIAL_REFUELLING",
+      "disaster_event": null,
+      "duration_min": 41,
       "id": "M-036",
-      "loadout_category_required": "CARGO",
-      "max_acceptable_risk": 0.41,
+      "loadout_category_required": "FUEL_TANKS",
+      "max_acceptable_risk": 0.49,
       "min_crew_roles": [
         "PILOT",
         "LOADMASTER"
       ],
-      "name": "HADR relief tasking 036",
-      "priority": 1,
+      "name": "Refuelling tasking 036",
+      "priority": 3,
       "provenance": {
-        "confidence": 0.92,
+        "confidence": 0.99,
         "data_label": "synthetic",
         "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T02:10:00Z",
+        "observed_at": "2026-10-28T02:21:00Z",
         "source": "SYNTHETIC"
       },
       "status": "PENDING",
-      "weight": 100.0,
-      "window_end_min": 831,
-      "window_start_min": 702
+      "weight": 35.0,
+      "window_end_min": 464,
+      "window_start_min": 295
     },
     {
       "aircraft_required": 2,
       "aoi": {
         "center": {
-          "lat": 28.7149,
-          "lon": 93.8504
+          "lat": 22.2164,
+          "lon": 86.9846
         },
         "radius_km": 39.7
       },
       "capability_required": "HADR",
-      "disaster_event": "DE-FLOOD-07",
+      "disaster_event": "DE-CYCLONE-07",
       "duration_min": 47,
       "id": "M-037",
       "loadout_category_required": "CARGO",
@@ -25812,7 +25812,7 @@
         "radius_km": 45.4
       },
       "capability_required": "HADR",
-      "disaster_event": "DE-CYCLONE-08",
+      "disaster_event": "DE-FLOOD-07",
       "duration_min": 50,
       "id": "M-040",
       "loadout_category_required": "CARGO",
@@ -25845,7 +25845,7 @@
         "radius_km": 39.2
       },
       "capability_required": "HADR",
-      "disaster_event": "DE-FLOOD-08",
+      "disaster_event": "DE-CYCLONE-08",
       "duration_min": 35,
       "id": "M-041",
       "loadout_category_required": "CARGO",
@@ -25872,8 +25872,8 @@
       "aircraft_required": 1,
       "aoi": {
         "center": {
-          "lat": 23.6893,
-          "lon": 86.9685
+          "lat": 17.2194,
+          "lon": 80.4017
         },
         "radius_km": 23.1
       },
@@ -25905,8 +25905,8 @@
       "aircraft_required": 1,
       "aoi": {
         "center": {
-          "lat": 25.5361,
-          "lon": 93.0779
+          "lat": 19.0339,
+          "lon": 86.2576
         },
         "radius_km": 41.2
       },
@@ -25938,8 +25938,8 @@
       "aircraft_required": 1,
       "aoi": {
         "center": {
-          "lat": 25.8709,
-          "lon": 94.8391
+          "lat": 19.3756,
+          "lon": 87.9356
         },
         "radius_km": 22.9
       },
@@ -25971,13 +25971,13 @@
       "aircraft_required": 1,
       "aoi": {
         "center": {
-          "lat": 23.1033,
-          "lon": 90.0461
+          "lat": 16.6095,
+          "lon": 83.3487
         },
         "radius_km": 41.7
       },
       "capability_required": "HADR",
-      "disaster_event": "DE-CYCLONE-09",
+      "disaster_event": "DE-FLOOD-08",
       "duration_min": 32,
       "id": "M-045",
       "loadout_category_required": "CARGO",
@@ -26004,8 +26004,8 @@
       "aircraft_required": 1,
       "aoi": {
         "center": {
-          "lat": 28.7326,
-          "lon": 96.3675
+          "lat": 22.2459,
+          "lon": 89.369
         },
         "radius_km": 25.8
       },
@@ -26043,7 +26043,7 @@
         "radius_km": 10.0
       },
       "capability_required": "HADR",
-      "disaster_event": "DE-FLOOD-09",
+      "disaster_event": "DE-CYCLONE-09",
       "duration_min": 50,
       "id": "M-047",
       "loadout_category_required": "CARGO",
@@ -26076,7 +26076,7 @@
         "radius_km": 16.4
       },
       "capability_required": "HADR",
-      "disaster_event": "DE-CYCLONE-10",
+      "disaster_event": "DE-FLOOD-09",
       "duration_min": 56,
       "id": "M-048",
       "loadout_category_required": "CARGO",
@@ -26213,7 +26213,7 @@
       "n_missions": 50,
       "regions": [
         "south",
-        "east_ne",
+        "east_coast",
         "central"
       ],
       "season_preset": "post_monsoon_cyclone",
@@ -26224,7 +26224,7 @@
     },
     "region_mix": {
       "central": 1,
-      "east_ne": 1,
+      "east_coast": 1,
       "south": 1
     },
     "season_preset": "post_monsoon_cyclone",
@@ -26297,8 +26297,8 @@
       "active_from_min": 303,
       "active_to_min": 1192,
       "center": {
-        "lat": 26.949,
-        "lon": 95.4196
+        "lat": 20.1607,
+        "lon": 87.4196
       },
       "confidence": 0.5,
       "id": "T-04",
@@ -26317,8 +26317,8 @@
       "active_from_min": 80,
       "active_to_min": 450,
       "center": {
-        "lat": 26.5935,
-        "lon": 95.2853
+        "lat": 19.5387,
+        "lon": 87.2853
       },
       "confidence": 0.63,
       "id": "T-05",
@@ -26337,8 +26337,8 @@
       "active_from_min": 634,
       "active_to_min": 875,
       "center": {
-        "lat": 27.5713,
-        "lon": 88.1241
+        "lat": 21.2498,
+        "lon": 80.1241
       },
       "confidence": 0.57,
       "id": "T-06",
@@ -26436,7 +26436,7 @@
       "qty_available": 6
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "item_type": "AA_STORE_T1",
       "provenance": {
         "confidence": 0.93,
@@ -26448,7 +26448,7 @@
       "qty_available": 34
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "item_type": "AG_STORE_T1",
       "provenance": {
         "confidence": 0.99,
@@ -26460,7 +26460,7 @@
       "qty_available": 61
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "item_type": "CARGO_PALLET",
       "provenance": {
         "confidence": 0.91,
@@ -26472,7 +26472,7 @@
       "qty_available": 112
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "item_type": "FUEL_TANK_T1",
       "provenance": {
         "confidence": 0.88,
@@ -26484,7 +26484,7 @@
       "qty_available": 25
     },
     {
-      "base_id": "BASE-NE1",
+      "base_id": "BASE-EC1",
       "item_type": "RECCE_POD_T1",
       "provenance": {
         "confidence": 0.89,
@@ -27058,12 +27058,12 @@
       "wind_kmh": 117.1
     },
     {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 4280.0,
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 1590.0,
       "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 5.5,
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 15.7,
       "provenance": {
         "confidence": 0.7,
         "data_label": "synthetic",
@@ -27071,19 +27071,19 @@
         "observed_at": "2026-10-28T01:30:00Z",
         "source": "SYNTHETIC"
       },
-      "thunderstorm_prob": 0.28,
+      "thunderstorm_prob": 0.6,
       "time_min": 0,
-      "visibility_km": 6.0,
-      "wind_dir_deg": 134.0,
-      "wind_kmh": 76.7
+      "visibility_km": 4.1,
+      "wind_dir_deg": 8.0,
+      "wind_kmh": 109.4
     },
     {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 4280.0,
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 1590.0,
       "kind": "OBSERVATION",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 5.5,
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 15.7,
       "provenance": {
         "confidence": 0.9,
         "data_label": "synthetic",
@@ -27091,19 +27091,19 @@
         "observed_at": "2026-10-28T02:20:00Z",
         "source": "SYNTHETIC"
       },
-      "thunderstorm_prob": 0.28,
+      "thunderstorm_prob": 0.6,
       "time_min": 0,
-      "visibility_km": 6.0,
-      "wind_dir_deg": 134.0,
-      "wind_kmh": 76.7
+      "visibility_km": 4.1,
+      "wind_dir_deg": 8.0,
+      "wind_kmh": 109.4
     },
     {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 2770.0,
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 3370.0,
       "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 11.2,
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 8.9,
       "provenance": {
         "confidence": 0.7,
         "data_label": "synthetic",
@@ -27111,19 +27111,19 @@
         "observed_at": "2026-10-28T01:30:00Z",
         "source": "SYNTHETIC"
       },
-      "thunderstorm_prob": 0.46,
+      "thunderstorm_prob": 0.39,
       "time_min": 60,
-      "visibility_km": 4.9,
-      "wind_dir_deg": 155.0,
-      "wind_kmh": 96.0
+      "visibility_km": 5.4,
+      "wind_dir_deg": 8.0,
+      "wind_kmh": 91.3
     },
     {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 1250.0,
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 3330.0,
       "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 16.9,
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 9.1,
       "provenance": {
         "confidence": 0.7,
         "data_label": "synthetic",
@@ -27131,19 +27131,19 @@
         "observed_at": "2026-10-28T01:30:00Z",
         "source": "SYNTHETIC"
       },
-      "thunderstorm_prob": 0.64,
+      "thunderstorm_prob": 0.39,
       "time_min": 120,
-      "visibility_km": 3.9,
-      "wind_dir_deg": 145.0,
-      "wind_kmh": 110.3
+      "visibility_km": 5.3,
+      "wind_dir_deg": 342.0,
+      "wind_kmh": 87.8
     },
     {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 1440.0,
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 3800.0,
       "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 16.2,
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 7.3,
       "provenance": {
         "confidence": 0.7,
         "data_label": "synthetic",
@@ -27151,18 +27151,158 @@
         "observed_at": "2026-10-28T01:30:00Z",
         "source": "SYNTHETIC"
       },
-      "thunderstorm_prob": 0.62,
+      "thunderstorm_prob": 0.34,
       "time_min": 180,
-      "visibility_km": 4.0,
-      "wind_dir_deg": 148.0,
-      "wind_kmh": 110.7
+      "visibility_km": 5.7,
+      "wind_dir_deg": 346.0,
+      "wind_kmh": 80.8
     },
     {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 3060.0,
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 5360.0,
       "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 1.4,
+      "provenance": {
+        "confidence": 0.7,
+        "data_label": "synthetic",
+        "ingested_at": "2026-10-28T02:30:00Z",
+        "observed_at": "2026-10-28T01:30:00Z",
+        "source": "SYNTHETIC"
+      },
+      "thunderstorm_prob": 0.15,
+      "time_min": 240,
+      "visibility_km": 6.8,
+      "wind_dir_deg": 331.0,
+      "wind_kmh": 66.6
+    },
+    {
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 5000.0,
+      "kind": "FORECAST",
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 2.7,
+      "provenance": {
+        "confidence": 0.7,
+        "data_label": "synthetic",
+        "ingested_at": "2026-10-28T02:30:00Z",
+        "observed_at": "2026-10-28T01:30:00Z",
+        "source": "SYNTHETIC"
+      },
+      "thunderstorm_prob": 0.2,
+      "time_min": 300,
+      "visibility_km": 6.5,
+      "wind_dir_deg": 340.0,
+      "wind_kmh": 68.8
+    },
+    {
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 3460.0,
+      "kind": "FORECAST",
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 8.6,
+      "provenance": {
+        "confidence": 0.7,
+        "data_label": "synthetic",
+        "ingested_at": "2026-10-28T02:30:00Z",
+        "observed_at": "2026-10-28T01:30:00Z",
+        "source": "SYNTHETIC"
+      },
+      "thunderstorm_prob": 0.38,
+      "time_min": 360,
+      "visibility_km": 5.4,
+      "wind_dir_deg": 338.0,
+      "wind_kmh": 86.1
+    },
+    {
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 5100.0,
+      "kind": "FORECAST",
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 2.4,
+      "provenance": {
+        "confidence": 0.7,
+        "data_label": "synthetic",
+        "ingested_at": "2026-10-28T02:30:00Z",
+        "observed_at": "2026-10-28T01:30:00Z",
+        "source": "SYNTHETIC"
+      },
+      "thunderstorm_prob": 0.19,
+      "time_min": 420,
+      "visibility_km": 6.6,
+      "wind_dir_deg": 324.0,
+      "wind_kmh": 71.8
+    },
+    {
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 4410.0,
+      "kind": "FORECAST",
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 5.0,
+      "provenance": {
+        "confidence": 0.7,
+        "data_label": "synthetic",
+        "ingested_at": "2026-10-28T02:30:00Z",
+        "observed_at": "2026-10-28T01:30:00Z",
+        "source": "SYNTHETIC"
+      },
+      "thunderstorm_prob": 0.27,
+      "time_min": 480,
+      "visibility_km": 6.1,
+      "wind_dir_deg": 297.0,
+      "wind_kmh": 75.8
+    },
+    {
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 3950.0,
+      "kind": "FORECAST",
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 6.7,
+      "provenance": {
+        "confidence": 0.7,
+        "data_label": "synthetic",
+        "ingested_at": "2026-10-28T02:30:00Z",
+        "observed_at": "2026-10-28T01:30:00Z",
+        "source": "SYNTHETIC"
+      },
+      "thunderstorm_prob": 0.32,
+      "time_min": 540,
+      "visibility_km": 5.8,
+      "wind_dir_deg": 290.0,
+      "wind_kmh": 78.1
+    },
+    {
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 3670.0,
+      "kind": "FORECAST",
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 7.8,
+      "provenance": {
+        "confidence": 0.7,
+        "data_label": "synthetic",
+        "ingested_at": "2026-10-28T02:30:00Z",
+        "observed_at": "2026-10-28T01:30:00Z",
+        "source": "SYNTHETIC"
+      },
+      "thunderstorm_prob": 0.35,
+      "time_min": 600,
+      "visibility_km": 5.6,
+      "wind_dir_deg": 304.0,
+      "wind_kmh": 86.8
+    },
+    {
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 3070.0,
+      "kind": "FORECAST",
+      "lat": 19.8,
+      "lon": 85.8,
       "precip_mm_h": 10.1,
       "provenance": {
         "confidence": 0.7,
@@ -27171,159 +27311,19 @@
         "observed_at": "2026-10-28T01:30:00Z",
         "source": "SYNTHETIC"
       },
-      "thunderstorm_prob": 0.43,
-      "time_min": 240,
-      "visibility_km": 5.1,
-      "wind_dir_deg": 143.0,
-      "wind_kmh": 89.8
-    },
-    {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 2840.0,
-      "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 10.9,
-      "provenance": {
-        "confidence": 0.7,
-        "data_label": "synthetic",
-        "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T01:30:00Z",
-        "source": "SYNTHETIC"
-      },
-      "thunderstorm_prob": 0.45,
-      "time_min": 300,
-      "visibility_km": 5.0,
-      "wind_dir_deg": 117.0,
-      "wind_kmh": 90.9
-    },
-    {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 5690.0,
-      "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 0.1,
-      "provenance": {
-        "confidence": 0.7,
-        "data_label": "synthetic",
-        "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T01:30:00Z",
-        "source": "SYNTHETIC"
-      },
-      "thunderstorm_prob": 0.12,
-      "time_min": 360,
-      "visibility_km": 7.0,
-      "wind_dir_deg": 98.0,
-      "wind_kmh": 60.2
-    },
-    {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 5600.0,
-      "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 0.5,
-      "provenance": {
-        "confidence": 0.7,
-        "data_label": "synthetic",
-        "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T01:30:00Z",
-        "source": "SYNTHETIC"
-      },
-      "thunderstorm_prob": 0.13,
-      "time_min": 420,
-      "visibility_km": 6.9,
-      "wind_dir_deg": 119.0,
-      "wind_kmh": 62.4
-    },
-    {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 6060.0,
-      "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 0.0,
-      "provenance": {
-        "confidence": 0.7,
-        "data_label": "synthetic",
-        "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T01:30:00Z",
-        "source": "SYNTHETIC"
-      },
-      "thunderstorm_prob": 0.07,
-      "time_min": 480,
-      "visibility_km": 7.2,
-      "wind_dir_deg": 129.0,
-      "wind_kmh": 58.7
-    },
-    {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 7220.0,
-      "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 0.0,
-      "provenance": {
-        "confidence": 0.7,
-        "data_label": "synthetic",
-        "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T01:30:00Z",
-        "source": "SYNTHETIC"
-      },
-      "thunderstorm_prob": 0.0,
-      "time_min": 540,
-      "visibility_km": 8.1,
-      "wind_dir_deg": 142.0,
-      "wind_kmh": 45.7
-    },
-    {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 7420.0,
-      "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 0.0,
-      "provenance": {
-        "confidence": 0.7,
-        "data_label": "synthetic",
-        "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T01:30:00Z",
-        "source": "SYNTHETIC"
-      },
-      "thunderstorm_prob": 0.0,
-      "time_min": 600,
-      "visibility_km": 8.2,
-      "wind_dir_deg": 133.0,
-      "wind_kmh": 42.4
-    },
-    {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 6630.0,
-      "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 0.0,
-      "provenance": {
-        "confidence": 0.7,
-        "data_label": "synthetic",
-        "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T01:30:00Z",
-        "source": "SYNTHETIC"
-      },
-      "thunderstorm_prob": 0.01,
+      "thunderstorm_prob": 0.42,
       "time_min": 660,
-      "visibility_km": 7.6,
-      "wind_dir_deg": 121.0,
-      "wind_kmh": 49.1
+      "visibility_km": 5.1,
+      "wind_dir_deg": 336.0,
+      "wind_kmh": 93.2
     },
     {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 7100.0,
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 2800.0,
       "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 0.0,
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 11.1,
       "provenance": {
         "confidence": 0.7,
         "data_label": "synthetic",
@@ -27331,19 +27331,19 @@
         "observed_at": "2026-10-28T01:30:00Z",
         "source": "SYNTHETIC"
       },
-      "thunderstorm_prob": 0.0,
+      "thunderstorm_prob": 0.46,
       "time_min": 720,
-      "visibility_km": 8.0,
-      "wind_dir_deg": 133.0,
-      "wind_kmh": 47.7
+      "visibility_km": 5.0,
+      "wind_dir_deg": 336.0,
+      "wind_kmh": 93.2
     },
     {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 8760.0,
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 3850.0,
       "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 0.0,
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 7.1,
       "provenance": {
         "confidence": 0.7,
         "data_label": "synthetic",
@@ -27351,78 +27351,18 @@
         "observed_at": "2026-10-28T01:30:00Z",
         "source": "SYNTHETIC"
       },
-      "thunderstorm_prob": 0.0,
+      "thunderstorm_prob": 0.33,
       "time_min": 780,
-      "visibility_km": 9.1,
-      "wind_dir_deg": 151.0,
-      "wind_kmh": 27.3
+      "visibility_km": 5.7,
+      "wind_dir_deg": 315.0,
+      "wind_kmh": 82.2
     },
     {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 6060.0,
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 4040.0,
       "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 0.0,
-      "provenance": {
-        "confidence": 0.7,
-        "data_label": "synthetic",
-        "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T01:30:00Z",
-        "source": "SYNTHETIC"
-      },
-      "thunderstorm_prob": 0.07,
-      "time_min": 840,
-      "visibility_km": 7.2,
-      "wind_dir_deg": 165.0,
-      "wind_kmh": 56.0
-    },
-    {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 6640.0,
-      "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 0.0,
-      "provenance": {
-        "confidence": 0.7,
-        "data_label": "synthetic",
-        "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T01:30:00Z",
-        "source": "SYNTHETIC"
-      },
-      "thunderstorm_prob": 0.0,
-      "time_min": 900,
-      "visibility_km": 7.6,
-      "wind_dir_deg": 165.0,
-      "wind_kmh": 54.6
-    },
-    {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 7250.0,
-      "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 0.0,
-      "provenance": {
-        "confidence": 0.7,
-        "data_label": "synthetic",
-        "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T01:30:00Z",
-        "source": "SYNTHETIC"
-      },
-      "thunderstorm_prob": 0.0,
-      "time_min": 960,
-      "visibility_km": 8.1,
-      "wind_dir_deg": 165.0,
-      "wind_kmh": 45.4
-    },
-    {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 4020.0,
-      "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
+      "lat": 19.8,
+      "lon": 85.8,
       "precip_mm_h": 6.4,
       "provenance": {
         "confidence": 0.7,
@@ -27432,18 +27372,18 @@
         "source": "SYNTHETIC"
       },
       "thunderstorm_prob": 0.31,
-      "time_min": 1020,
+      "time_min": 840,
       "visibility_km": 5.8,
-      "wind_dir_deg": 124.0,
-      "wind_kmh": 78.6
+      "wind_dir_deg": 311.0,
+      "wind_kmh": 80.6
     },
     {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 4290.0,
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 1900.0,
       "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 5.4,
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 14.5,
       "provenance": {
         "confidence": 0.7,
         "data_label": "synthetic",
@@ -27451,59 +27391,19 @@
         "observed_at": "2026-10-28T01:30:00Z",
         "source": "SYNTHETIC"
       },
-      "thunderstorm_prob": 0.28,
-      "time_min": 1080,
-      "visibility_km": 6.0,
-      "wind_dir_deg": 138.0,
-      "wind_kmh": 75.9
+      "thunderstorm_prob": 0.56,
+      "time_min": 900,
+      "visibility_km": 4.3,
+      "wind_dir_deg": 330.0,
+      "wind_kmh": 104.0
     },
     {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 3300.0,
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 2310.0,
       "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 9.2,
-      "provenance": {
-        "confidence": 0.7,
-        "data_label": "synthetic",
-        "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T01:30:00Z",
-        "source": "SYNTHETIC"
-      },
-      "thunderstorm_prob": 0.4,
-      "time_min": 1140,
-      "visibility_km": 5.3,
-      "wind_dir_deg": 122.0,
-      "wind_kmh": 87.9
-    },
-    {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 4000.0,
-      "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 6.5,
-      "provenance": {
-        "confidence": 0.7,
-        "data_label": "synthetic",
-        "ingested_at": "2026-10-28T02:30:00Z",
-        "observed_at": "2026-10-28T01:30:00Z",
-        "source": "SYNTHETIC"
-      },
-      "thunderstorm_prob": 0.32,
-      "time_min": 1200,
-      "visibility_km": 5.8,
-      "wind_dir_deg": 127.0,
-      "wind_kmh": 78.9
-    },
-    {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 2380.0,
-      "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 12.7,
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 12.9,
       "provenance": {
         "confidence": 0.7,
         "data_label": "synthetic",
@@ -27512,18 +27412,118 @@
         "source": "SYNTHETIC"
       },
       "thunderstorm_prob": 0.51,
+      "time_min": 960,
+      "visibility_km": 4.6,
+      "wind_dir_deg": 337.0,
+      "wind_kmh": 95.1
+    },
+    {
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 3450.0,
+      "kind": "FORECAST",
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 8.6,
+      "provenance": {
+        "confidence": 0.7,
+        "data_label": "synthetic",
+        "ingested_at": "2026-10-28T02:30:00Z",
+        "observed_at": "2026-10-28T01:30:00Z",
+        "source": "SYNTHETIC"
+      },
+      "thunderstorm_prob": 0.38,
+      "time_min": 1020,
+      "visibility_km": 5.4,
+      "wind_dir_deg": 355.0,
+      "wind_kmh": 86.2
+    },
+    {
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 3380.0,
+      "kind": "FORECAST",
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 8.9,
+      "provenance": {
+        "confidence": 0.7,
+        "data_label": "synthetic",
+        "ingested_at": "2026-10-28T02:30:00Z",
+        "observed_at": "2026-10-28T01:30:00Z",
+        "source": "SYNTHETIC"
+      },
+      "thunderstorm_prob": 0.39,
+      "time_min": 1080,
+      "visibility_km": 5.4,
+      "wind_dir_deg": 4.0,
+      "wind_kmh": 87.8
+    },
+    {
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 3200.0,
+      "kind": "FORECAST",
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 9.6,
+      "provenance": {
+        "confidence": 0.7,
+        "data_label": "synthetic",
+        "ingested_at": "2026-10-28T02:30:00Z",
+        "observed_at": "2026-10-28T01:30:00Z",
+        "source": "SYNTHETIC"
+      },
+      "thunderstorm_prob": 0.41,
+      "time_min": 1140,
+      "visibility_km": 5.2,
+      "wind_dir_deg": 6.0,
+      "wind_kmh": 89.3
+    },
+    {
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 4110.0,
+      "kind": "FORECAST",
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 6.1,
+      "provenance": {
+        "confidence": 0.7,
+        "data_label": "synthetic",
+        "ingested_at": "2026-10-28T02:30:00Z",
+        "observed_at": "2026-10-28T01:30:00Z",
+        "source": "SYNTHETIC"
+      },
+      "thunderstorm_prob": 0.3,
+      "time_min": 1200,
+      "visibility_km": 5.9,
+      "wind_dir_deg": 11.0,
+      "wind_kmh": 79.0
+    },
+    {
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 1220.0,
+      "kind": "FORECAST",
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 17.1,
+      "provenance": {
+        "confidence": 0.7,
+        "data_label": "synthetic",
+        "ingested_at": "2026-10-28T02:30:00Z",
+        "observed_at": "2026-10-28T01:30:00Z",
+        "source": "SYNTHETIC"
+      },
+      "thunderstorm_prob": 0.64,
       "time_min": 1260,
-      "visibility_km": 4.7,
-      "wind_dir_deg": 134.0,
-      "wind_kmh": 94.2
+      "visibility_km": 3.9,
+      "wind_dir_deg": 47.0,
+      "wind_kmh": 112.6
     },
     {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 4390.0,
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 2490.0,
       "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 5.1,
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 12.3,
       "provenance": {
         "confidence": 0.7,
         "data_label": "synthetic",
@@ -27531,19 +27531,19 @@
         "observed_at": "2026-10-28T01:30:00Z",
         "source": "SYNTHETIC"
       },
-      "thunderstorm_prob": 0.27,
+      "thunderstorm_prob": 0.49,
       "time_min": 1320,
-      "visibility_km": 6.1,
-      "wind_dir_deg": 143.0,
-      "wind_kmh": 78.3
+      "visibility_km": 4.7,
+      "wind_dir_deg": 53.0,
+      "wind_kmh": 95.3
     },
     {
-      "base_id": "BASE-NE1",
-      "ceiling_ft": 5540.0,
+      "base_id": "BASE-EC1",
+      "ceiling_ft": 1070.0,
       "kind": "FORECAST",
-      "lat": 26.3,
-      "lon": 92.6,
-      "precip_mm_h": 0.7,
+      "lat": 19.8,
+      "lon": 85.8,
+      "precip_mm_h": 17.7,
       "provenance": {
         "confidence": 0.7,
         "data_label": "synthetic",
@@ -27551,11 +27551,11 @@
         "observed_at": "2026-10-28T01:30:00Z",
         "source": "SYNTHETIC"
       },
-      "thunderstorm_prob": 0.13,
+      "thunderstorm_prob": 0.66,
       "time_min": 1380,
-      "visibility_km": 6.9,
-      "wind_dir_deg": 146.0,
-      "wind_kmh": 65.4
+      "visibility_km": 3.7,
+      "wind_dir_deg": 63.0,
+      "wind_kmh": 110.0
     },
     {
       "base_id": "BASE-C3",

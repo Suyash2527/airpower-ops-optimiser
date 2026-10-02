@@ -142,8 +142,10 @@ REGION_BOXES: dict[Region, tuple[float, float, float, float]] = {
     Region.CENTRAL: (18.0, 24.0, 75.0, 82.0),
     Region.EAST_NE: (24.0, 28.0, 88.0, 96.0),
     Region.SOUTH: (8.0, 15.0, 72.0, 80.0),
+    Region.EAST_COAST: (15.0, 22.0, 80.0, 88.0),  # D-33
 }
-REGION_ORDER = [Region.NORTH, Region.WEST, Region.CENTRAL, Region.EAST_NE, Region.SOUTH]
+REGION_ORDER = [Region.NORTH, Region.WEST, Region.CENTRAL, Region.EAST_NE, Region.SOUTH,
+                Region.EAST_COAST]
 
 
 @dataclass(frozen=True)
@@ -180,7 +182,8 @@ SEASONS: dict[SeasonPreset, SeasonProfile] = {
         w_vis=1.0, w_ceil=0.3, w_wind=1.2, w_precip=0.3, w_tstorm=0.8, base_wind_kmh=15,
         fog_diurnal=0.0,
         sea_level_temp_c={Region.NORTH: 30, Region.WEST: 40, Region.CENTRAL: 38,
-                          Region.EAST_NE: 32, Region.SOUTH: 33},
+                          Region.EAST_NE: 32, Region.SOUTH: 33,
+                          Region.EAST_COAST: 33},
         mission_weights={C.AIR_DEFENCE_PATROL: .18, C.STRIKE_SUPPORT_SORTIE: .06,
                          C.RECONNAISSANCE: .18, C.AIRLIFT: .20, C.SEARCH_AND_RESCUE: .08,
                          C.AERIAL_REFUELLING: .10, C.ESCORT: .08, C.HADR: .12},
@@ -195,7 +198,8 @@ SEASONS: dict[SeasonPreset, SeasonProfile] = {
         w_vis=0.6, w_ceil=1.1, w_wind=0.6, w_precip=1.2, w_tstorm=1.0, base_wind_kmh=12,
         fog_diurnal=0.0,
         sea_level_temp_c={Region.NORTH: 28, Region.WEST: 32, Region.CENTRAL: 29,
-                          Region.EAST_NE: 29, Region.SOUTH: 29},
+                          Region.EAST_NE: 29, Region.SOUTH: 29,
+                          Region.EAST_COAST: 29},
         mission_weights={C.AIR_DEFENCE_PATROL: .12, C.STRIKE_SUPPORT_SORTIE: .04,
                          C.RECONNAISSANCE: .10, C.AIRLIFT: .20, C.SEARCH_AND_RESCUE: .14,
                          C.AERIAL_REFUELLING: .06, C.ESCORT: .04, C.HADR: .30},
@@ -203,14 +207,15 @@ SEASONS: dict[SeasonPreset, SeasonProfile] = {
     ),
     SeasonPreset.POST_MONSOON_CYCLONE: SeasonProfile(
         t0=_t0(2026, 10, 28),
-        default_regions=(Region.SOUTH, Region.EAST_NE, Region.CENTRAL),
+        default_regions=(Region.SOUTH, Region.EAST_COAST, Region.CENTRAL),
         mean_badness={Z.HIMALAYAN_HIGH_ALTITUDE: 0.15, Z.INDO_GANGETIC_PLAIN: 0.15,
                       Z.ARID_DESERT: 0.10, Z.TROPICAL_PLATEAU: 0.25, Z.HUMID_HILL_NE: 0.40,
                       Z.TROPICAL_COASTAL: 0.55},
         w_vis=0.7, w_ceil=1.0, w_wind=1.5, w_precip=1.2, w_tstorm=0.7, base_wind_kmh=14,
         fog_diurnal=0.0,
         sea_level_temp_c={Region.NORTH: 24, Region.WEST: 31, Region.CENTRAL: 29,
-                          Region.EAST_NE: 27, Region.SOUTH: 28},
+                          Region.EAST_NE: 27, Region.SOUTH: 28,
+                          Region.EAST_COAST: 28},
         mission_weights={C.AIR_DEFENCE_PATROL: .12, C.STRIKE_SUPPORT_SORTIE: .04,
                          C.RECONNAISSANCE: .10, C.AIRLIFT: .18, C.SEARCH_AND_RESCUE: .16,
                          C.AERIAL_REFUELLING: .06, C.ESCORT: .04, C.HADR: .30},
@@ -225,7 +230,8 @@ SEASONS: dict[SeasonPreset, SeasonProfile] = {
         w_vis=1.2, w_ceil=0.8, w_wind=0.2, w_precip=0.1, w_tstorm=0.0, base_wind_kmh=6,
         fog_diurnal=0.35,
         sea_level_temp_c={Region.NORTH: 14, Region.WEST: 22, Region.CENTRAL: 22,
-                          Region.EAST_NE: 20, Region.SOUTH: 27},
+                          Region.EAST_NE: 20, Region.SOUTH: 27,
+                          Region.EAST_COAST: 26},
         mission_weights={C.AIR_DEFENCE_PATROL: .18, C.STRIKE_SUPPORT_SORTIE: .06,
                          C.RECONNAISSANCE: .16, C.AIRLIFT: .30, C.SEARCH_AND_RESCUE: .08,
                          C.AERIAL_REFUELLING: .08, C.ESCORT: .06, C.HADR: .08},

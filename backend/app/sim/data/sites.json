@@ -321,6 +321,70 @@
    "lon": 72.6,
    "elevation_m": 0.0,
    "climate_zone": "tropical_coastal"
+  },
+  {
+   "code": "BASE-EC1",
+   "region": "east_coast",
+   "lat": 19.8,
+   "lon": 85.8,
+   "elevation_m": 8.0,
+   "climate_zone": "tropical_coastal"
+  },
+  {
+   "code": "BASE-EC2",
+   "region": "east_coast",
+   "lat": 20.3,
+   "lon": 85.1,
+   "elevation_m": 95.0,
+   "climate_zone": "tropical_coastal"
+  },
+  {
+   "code": "BASE-EC3",
+   "region": "east_coast",
+   "lat": 17.7,
+   "lon": 83.3,
+   "elevation_m": 16.0,
+   "climate_zone": "tropical_coastal"
+  },
+  {
+   "code": "BASE-EC4",
+   "region": "east_coast",
+   "lat": 16.5,
+   "lon": 81.2,
+   "elevation_m": 4.0,
+   "climate_zone": "tropical_coastal"
+  },
+  {
+   "code": "BASE-EC5",
+   "region": "east_coast",
+   "lat": 21.5,
+   "lon": 86.9,
+   "elevation_m": 14.0,
+   "climate_zone": "tropical_coastal"
+  },
+  {
+   "code": "BASE-EC6",
+   "region": "east_coast",
+   "lat": 18.3,
+   "lon": 84.0,
+   "elevation_m": 17.0,
+   "climate_zone": "tropical_coastal"
+  },
+  {
+   "code": "BASE-EC7",
+   "region": "east_coast",
+   "lat": 15.9,
+   "lon": 80.4,
+   "elevation_m": 3.0,
+   "climate_zone": "tropical_coastal"
+  },
+  {
+   "code": "BASE-EC8",
+   "region": "east_coast",
+   "lat": 20.9,
+   "lon": 85.6,
+   "elevation_m": 43.0,
+   "climate_zone": "tropical_coastal"
   }
  ]
 }

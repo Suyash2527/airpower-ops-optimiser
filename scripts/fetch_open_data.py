@@ -26,6 +26,7 @@ from urllib.request import urlopen
 
 OUT = Path(__file__).resolve().parents[1] / "backend" / "app" / "sim" / "data"
 FETCHED_ON = date.today().isoformat()
+NL = chr(10)
 
 # region -> (code prefix, [(lat, lon), ...]); boxes from docs/INDIA_CONTEXT.md §2
 SITES: dict[str, tuple[str, list[tuple[float, float]]]] = {
@@ -37,6 +38,9 @@ SITES: dict[str, tuple[str, list[tuple[float, float]]]] = {
                       (23.3, 80.4), (18.9, 80.7), (21.9, 81.5), (19.1, 76.7)]),
     "east_ne": ("NE", [(26.3, 92.6), (25.6, 93.6), (27.6, 88.7), (26.7, 89.9),
                        (24.9, 91.9), (27.9, 93.8), (26.0, 95.1), (27.2, 94.6)]),
+    # D-33: sixth region, Odisha / Andhra coast (approx 15-22 N, 80-88 E)
+    "east_coast": ("EC", [(19.8, 85.8), (20.3, 85.1), (17.7, 83.3), (16.5, 81.2),
+                          (21.5, 86.9), (18.3, 84.0), (15.9, 80.4), (20.9, 85.6)]),
     "south": ("S", [(12.1, 76.9), (13.6, 79.2), (10.6, 77.4), (9.4, 78.4),
                     (11.2, 75.9), (14.4, 77.3), (8.6, 76.9), (10.6, 72.6)]),
 }
@@ -51,6 +55,8 @@ def climate_zone(region: str, elevation_m: float) -> str:
         return "tropical_plateau"
     if region == "east_ne":
         return "humid_hill_ne"
+    if region == "east_coast":
+        return "tropical_coastal"
     return "tropical_coastal" if elevation_m < 100 else "tropical_plateau"
 
 
@@ -74,23 +80,31 @@ def fetch_elevations(points: list[tuple[float, float]]) -> list[float]:
         return json.load(r)["elevation"]
 
 
-def build_sites() -> None:
-    sites = []
+def build_sites(only_missing: bool = False) -> None:
+    """Fetch elevations. With `only_missing`, keep committed sites as they are and fetch just the
+    codes not yet in sites.json (used when a region is added, so existing values never change)."""
+    path = OUT / "sites.json"
+    existing = json.loads(path.read_text(encoding="utf-8")) if only_missing else None
+    have = {s["code"] for s in existing["sites"]} if existing else set()
+    sites = list(existing["sites"]) if existing else []
     for region, (prefix, points) in SITES.items():
-        elevations = fetch_elevations(points)
-        for i, ((lat, lon), elev) in enumerate(zip(points, elevations, strict=True), start=1):
+        todo = [(i, p) for i, p in enumerate(points, start=1) if f"BASE-{prefix}{i}" not in have]
+        if not todo:
+            continue
+        elevations = fetch_elevations([p for _, p in todo])
+        for (i, (lat, lon)), elev in zip(todo, elevations, strict=True):
             sites.append({
                 "code": f"BASE-{prefix}{i}", "region": region, "lat": lat, "lon": lon,
                 "elevation_m": round(float(elev), 1),
                 "climate_zone": climate_zone(region, float(elev)),
             })
-    doc = {
+    doc = existing or {
         "note": "Fictional base SITES (arbitrary points in the INDIA_CONTEXT region boxes). "
                 "Elevation: Open-Meteo elevation API (CC BY 4.0), https://open-meteo.com/",
         "fetched_on": FETCHED_ON,
-        "sites": sites,
     }
-    (OUT / "sites.json").write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8", newline="\n")
+    doc["sites"] = sites
+    path.write_text(json.dumps(doc, indent=1) + NL, encoding="utf-8", newline=NL)
     print("sites:", len(sites))
 
 
@@ -139,6 +153,9 @@ if __name__ == "__main__":
 
     if "--refilter" in sys.argv:
         refilter_existing()
+        raise SystemExit(0)
+    if "--sites-only-missing" in sys.argv:
+        build_sites(only_missing=True)
         raise SystemExit(0)
     OUT.mkdir(parents=True, exist_ok=True)
     build_sites()

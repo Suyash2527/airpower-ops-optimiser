@@ -32,5 +32,12 @@ Stop at the end of each phase and show me the Definition of Done evidence.
 3. After each phase, review, then say: `Proceed to Phase N+1.`
 4. Tips: keep sessions per phase; if context gets long, start a new session and say "Read CLAUDE.md and docs/TASKS.md, continue from the first unchecked task."
 
+## Running the backend on Windows (setup note)
+
+Some Windows machines apply an Application Control policy that blocks unsigned compiled wheels
+(`scikit-learn`, `pyproj`, `ruff` via `python -m`). Phases 0-6 avoid those two libraries. From
+Phase 7 (scikit-learn) and for exact geodesics, run the backend under **WSL2** or **Docker**
+(Linux), where they install normally. The policy is not bypassed (docs/DECISIONS.md D-11, D-35).
+
 ## Status
 Not built yet — see `docs/TASKS.md`.

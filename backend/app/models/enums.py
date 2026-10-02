@@ -137,6 +137,7 @@ class Region(StrEnum):
     CENTRAL = "central"
     EAST_NE = "east_ne"
     SOUTH = "south"
+    EAST_COAST = "east_coast"  # D-33: Odisha / Andhra coast, Bay of Bengal side
 
 
 class ClimateZone(StrEnum):

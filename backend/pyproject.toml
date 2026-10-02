@@ -20,6 +20,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+postgres = [
+    "psycopg[binary]>=3.1",  # compose / PostgreSQL path only (D-34); SQLite stays the dev default
+]
 dev = [
     "pytest>=8",
     "ruff>=0.4",

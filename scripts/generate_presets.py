@@ -30,7 +30,7 @@ PRESETS: dict[str, GeneratorParams] = {
     ),
     "cyclone_east_coast": GeneratorParams(
         seed=303, season_preset=SeasonPreset.POST_MONSOON_CYCLONE, weather_severity=0.6,
-        regions=[Region.SOUTH, Region.EAST_NE, Region.CENTRAL],
+        regions=[Region.SOUTH, Region.EAST_COAST, Region.CENTRAL],
     ),
     "pre_monsoon_heat_dust": GeneratorParams(
         seed=404, season_preset=SeasonPreset.PRE_MONSOON_HEAT_DUST, weather_severity=0.4,

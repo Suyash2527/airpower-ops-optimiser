@@ -334,3 +334,12 @@ def test_generator_works_for_other_seeds_and_sizes(seed: int) -> None:
 def test_infeasible_fraction_zero_creates_no_hard_cases() -> None:
     s = generate_scenario(GeneratorParams(seed=4, infeasible_fraction=0))
     assert s.scenario.hard_cases == []
+
+
+def test_east_coast_region_generates_bases_inside_its_box() -> None:
+    s = generate_scenario(GeneratorParams(
+        seed=5, regions=[Region.EAST_COAST], n_bases=4, n_missions=8))
+    lat0, lat1, lon0, lon1 = cat.REGION_BOXES[Region.EAST_COAST]
+    assert {b.region for b in s.bases} == {Region.EAST_COAST}
+    assert all(lat0 <= b.lat <= lat1 and lon0 <= b.lon <= lon1 for b in s.bases)
+    assert all(b.climate_zone.value == "tropical_coastal" for b in s.bases)

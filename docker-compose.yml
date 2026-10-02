@@ -4,12 +4,10 @@ services:
       context: .
       dockerfile: backend/Dockerfile
     environment:
-      # SQLite until a PostgreSQL driver is approved (see docs/DECISIONS.md D-15).
-      AIRPOWER_DATABASE_URL: sqlite:////data/airpower.db
+      # PostgreSQL via psycopg (docs/DECISIONS.md D-34). Not yet built end-to-end (Task 8.5).
+      AIRPOWER_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-airpower}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-airpower}
       AIRPOWER_SCENARIO_DIR: /scenarios
       AIRPOWER_SOLVER_TIME_LIMIT_S: ${AIRPOWER_SOLVER_TIME_LIMIT_S:-20}
-    volumes:
-      - api_data:/data
     ports:
       - "8000:8000"
     depends_on:
@@ -35,5 +33,4 @@ services:
       - db_data:/var/lib/postgresql/data
 
 volumes:
-  api_data:
   db_data:
