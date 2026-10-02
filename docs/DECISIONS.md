@@ -1,0 +1,17 @@
+# DECISIONS
+
+Log of defaults chosen where the specs were ambiguous, and of any deviation from the fixed stack.
+Format: `D-nn · date · decision — rationale`.
+
+## Session 1 (Phases 0–1)
+
+- **D-01 · 2026-10-02 · Nested git repo.** `git init -b main` inside `D:\AirPower`. The enclosing `D:\` repo is a drive-wide untracked tree; commits there would be unsafe. The README also says to `git init` in the project folder.
+- **D-02 · Repo root.** `CLAUDE.md` shows `airpower/` as the root; the repo root is `D:\AirPower` itself.
+- **D-03 · Python environment.** Python 3.13 is installed (spec: 3.11+). Dependencies go in `backend/.venv`. `requires-python = ">=3.11"`.
+- **D-04 · Storage in Phase 1.** SQLModel tables exist for every entity. Scenarios are persisted as canonical JSON files in `scenarios/` plus a lightweight registry row in SQLite, and the snapshot endpoint is served by rebuilding from the stored scenario. Full per-entity table writes and `state_version` come with the fusion layer (Phase 2).
+- **D-05 · Weather in the generator.** The generator emits a synthetic hourly forecast per base (`source="SYNTHETIC"`). The real Open-Meteo adapter is Phase 7.
+- **D-06 · Placeholder numbers.** All aircraft-type, loadout, crew-duty and weight numbers are illustrative placeholders. Each scenario file carries a `notes` field saying so.
+- **D-07 · Compose database.** `db` is PostgreSQL; the password in `.env.example` is a placeholder. Dev uses SQLite, no Docker.
+- **D-08 · Map tiles.** MapLibre with a free raster OpenStreetMap style, attribution visible. Terms check for the demo: to be re-verified before any public demo (OSM tile usage policy discourages heavy use of the public tile server); not a blocker for a local prototype.
+- **D-09 · Scripts instead of Makefile.** Windows host, so `scripts/*.ps1` / plain commands in the README rather than a Makefile.
+- **D-10 · Scenario JSON determinism.** Canonical form: `sort_keys=True`, 2-space indent, `ensure_ascii`, floats rounded to fixed decimals at generation time, trailing newline, LF line endings.
