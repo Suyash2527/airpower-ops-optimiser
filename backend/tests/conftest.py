@@ -23,7 +23,8 @@ def scenario_dir(tmp_path: Path) -> Path:
 @pytest.fixture
 def client(scenario_dir: Path) -> Iterator[TestClient]:
     settings = Settings(
-        database_url="sqlite://", scenario_dir=scenario_dir, solver_time_limit_s=1.0
+        database_url="sqlite://", scenario_dir=scenario_dir, solver_time_limit_s=1.0,
+        solver_workers=1,
     )
     with TestClient(create_app(settings)) as c:
         yield c

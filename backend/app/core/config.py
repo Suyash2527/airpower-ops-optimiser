@@ -14,6 +14,7 @@ class Settings:
     database_url: str
     scenario_dir: Path
     solver_time_limit_s: float
+    solver_workers: int = 4  # fix to 1 for bit-for-bit reproducible solves
 
 
 def get_settings() -> Settings:
@@ -21,4 +22,5 @@ def get_settings() -> Settings:
         database_url=os.environ.get("AIRPOWER_DATABASE_URL", "sqlite:///./airpower.db"),
         scenario_dir=Path(os.environ.get("AIRPOWER_SCENARIO_DIR", "../scenarios")),
         solver_time_limit_s=float(os.environ.get("AIRPOWER_SOLVER_TIME_LIMIT_S", "20")),
+        solver_workers=int(os.environ.get("AIRPOWER_SOLVER_WORKERS", "4")),
     )

@@ -1,0 +1,26 @@
+# Objective weight presets for the optimiser (ALGORITHMS §3.3). ALL VALUES ARE PLACEHOLDERS chosen
+# by us, not doctrine or measurements. Points per unit (before the x10 integer scaling):
+#   coverage  per unit of mission weight (priority 1 = 100 ... priority 5 = 10) of a covered mission
+#   risk      per 0.001 of a sortie's total risk
+#   cost      per flight minute
+#   stability per assignment that differs from the parent plan (used by retasking, Phase 5)
+#   early     per 15-minute slot of takeoff delay (a tie-break: earlier is slightly better)
+presets:
+  coverage_first:
+    coverage: 100
+    risk: 1.0
+    cost: 0.1
+    stability: 300
+    early: 0.1
+  risk_averse:
+    coverage: 100
+    risk: 4.0
+    cost: 0.1
+    stability: 300
+    early: 0.1
+  stability_first:
+    coverage: 100
+    risk: 1.0
+    cost: 0.1
+    stability: 3000
+    early: 0.1

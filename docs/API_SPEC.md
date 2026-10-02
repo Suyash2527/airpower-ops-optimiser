@@ -19,13 +19,13 @@ Base URL `/api/v1`. JSON. Every response includes `data_label` (`"synthetic" | "
 ## Planning
 | Method | Path | Purpose |
 |---|---|---|
-| POST | `/plans/generate` | body `{scenario_id, planner: "cpsat"|"greedy"|"fifo", time_limit_s, weight_preset}` → `Plan` (status draft) |
+| POST | `/plans/generate` | body `{scenario_id, planner: "cpsat"\|"greedy"\|"fifo", time_limit_s (0-300), weight_preset (coverage_first\|risk_averse\|stability_first), fused=true, secondary=true, now_min=0, seed=0}` → `Plan` (status draft) plus `inputs` (what the snapshot was built from) and `violations` (always 0: a plan the validator rejects is never stored; the call fails with 500 `plan_failed_validation`). `solver.status` is `OPTIMAL`, `FEASIBLE`, `HEURISTIC` (greedy/fifo) or `FALLBACK_GREEDY (<status>)` when CP-SAT found nothing in time and the greedy plan is returned instead |
 | GET | `/plans/{id}` | plan with assignments, unassigned, KPIs, solver info |
 | GET | `/plans` | list versions for a scenario |
 | POST | `/plans/{id}/approve` | makes it the active plan (audited) |
-| POST | `/plans/{id}/validate` | runs validator, returns violations |
+| POST | `/plans/{id}/validate` | re-runs the independent validator against the snapshot the plan was made from (rebuilt with the scenario's current pins); returns `{valid, violations[]}` |
 | GET | `/plans/{id}/explain/{assignment_id}` | explanation + rejected alternatives |
-| GET | `/plans/compare?a=&b=` | KPI + diff between two plans |
+| GET | `/plans/compare?a=&b=` | `{kpis_a, kpis_b, kpi_delta, diff}` between two plans of the same scenario (409 otherwise) |
 | GET | `/feasibility` | query `scenario_id`, `mission_id` (+ `fused=true`, `secondary=true`, `now_min=0`) → every feasible aircraft/loadout option (takeoff-slot range, best slot, risk breakdown), every blocked option with reason codes, and a tally `blocked_by[{code, phrase, count, example}]`. Counts are aircraft options (aircraft x loadout); an option can appear under several reasons |
 
 ## Events & retasking

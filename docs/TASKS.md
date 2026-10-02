@@ -42,16 +42,16 @@ Tick `[x]` as you complete. IDs map to `PRD.md` requirements. Do tasks in order 
 - [x] 3.14 `GET /feasibility`
 
 ## Phase 4 — Optimiser (P-2, P-3, P-6)
-- [ ] 4.1 CP-SAT model: options, z[m], intervals, aircraft NoOverlap
-- [ ] 4.2 Crew assignment variables + NoOverlap + duty/rest
-- [ ] 4.3 Weapon stock and runway capacity constraints
-- [ ] 4.4 Objective with weight presets from `config/weights.yaml`
-- [ ] 4.5 Hints from greedy; time limit; seed/workers config; status/gap reporting
-- [ ] 4.6 Plan extraction → `Plan`, KPIs, versioning
-- [ ] 4.7 `explain.py` for assignments and unassigned missions
-- [ ] 4.8 `POST /plans/generate`, `GET /plans/{id}`, `POST /plans/{id}/validate`, `GET /plans/compare`
-- [ ] 4.9 Hand-computed optimum tests (≥3), including a greedy-suboptimal case
-- [ ] 4.10 Property test: 20 seeds → zero validator violations
+- [x] 4.1 CP-SAT model: options, z[m], intervals, aircraft NoOverlap
+- [x] 4.2 Crew assignment variables + NoOverlap + duty/rest
+- [x] 4.3 Weapon stock and runway capacity constraints
+- [x] 4.4 Objective with weight presets from `config/weights.yaml`
+- [x] 4.5 Hints from greedy; time limit; seed/workers config; status/gap reporting
+- [x] 4.6 Plan extraction → `Plan`, KPIs, versioning
+- [x] 4.7 `explain.py` for assignments and unassigned missions
+- [x] 4.8 `POST /plans/generate`, `GET /plans/{id}`, `POST /plans/{id}/validate`, `GET /plans/compare`
+- [x] 4.9 Hand-computed optimum tests (≥3), including a greedy-suboptimal case
+- [x] 4.10 Property test: 20 seeds → zero validator violations
 
 ## Phase 5 — Retasking (R-1…R-5)
 - [ ] 5.1 Event types + payload schemas + `POST /events`
