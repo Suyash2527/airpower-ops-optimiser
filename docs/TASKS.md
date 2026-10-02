@@ -54,16 +54,16 @@ Tick `[x]` as you complete. IDs map to `PRD.md` requirements. Do tasks in order 
 - [x] 4.10 Property test: 20 seeds → zero validator violations
 
 ## Phase 5 — Retasking (R-1…R-5)
-- [ ] 5.1 Event types + payload schemas + `POST /events`
-- [ ] 5.2 Event applied to snapshot copy; affected-set detection via validator
-- [ ] 5.3 Frozen set (airborne/started)
-- [ ] 5.4 Stability penalty + parent hints
-- [ ] 5.5 K weight-preset variants, dedupe, diff, ranked proposals with score breakdown
-- [ ] 5.6 Greedy repair fallback with `fallback=true`
-- [ ] 5.7 Proposal approve/reject → new plan version + audit
-- [ ] 5.8 Event simulator (`/events/simulate`, seeded)
-- [ ] 5.9 WebSocket hub and message types
-- [ ] 5.10 Tests: frozen unchanged; stability; approval creates version/audit; proposals valid
+- [x] 5.1 Event types + payload schemas + `POST /events`
+- [x] 5.2 Event applied to snapshot copy; affected-set detection via validator
+- [x] 5.3 Frozen set (airborne/started)
+- [x] 5.4 Stability penalty + parent hints
+- [x] 5.5 K weight-preset variants, dedupe, diff, ranked proposals with score breakdown
+- [x] 5.6 Greedy repair fallback with `fallback=true`
+- [x] 5.7 Proposal approve/reject → new plan version + audit
+- [x] 5.8 Event simulator (`/events/simulate`, seeded)
+- [x] 5.9 WebSocket hub and message types
+- [x] 5.10 Tests: frozen unchanged; stability; approval creates version/audit; proposals valid
 
 ## Phase 6 — Frontend MVP (U-1…U-4, U-7, U-8)
 - [ ] 6.1 API client + WebSocket hook

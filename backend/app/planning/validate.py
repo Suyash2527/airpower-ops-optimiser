@@ -94,7 +94,8 @@ class _Validator:
                 self.bad("DUPLICATE_ASSIGNMENT_ID", f"assignment id {aid} used {n} times")
         usable = [a for a in self.plan.assignments if self._known(a)]
         for a in usable:
-            self._sortie(a)
+            if not a.frozen:  # frozen sorties are already under way: history, not a proposal
+                self._sortie(a)
         self._missions(usable)
         self._stock(usable)
         self._aircraft_overlap(usable)
@@ -302,7 +303,7 @@ class _Validator:
         unassigned = {u.mission_id for u in self.plan.unassigned}
         for mid, rows in per.items():
             need = self.mission[mid].aircraft_required
-            if len(rows) != need:
+            if len(rows) != need and not any(r.frozen for r in rows):
                 self.bad("PARTIAL_MISSION", f"{mid} has {len(rows)} sorties, needs {need}",
                          mission_id=mid)
             if len({r.aircraft_id for r in rows}) != len(rows):
@@ -347,12 +348,16 @@ class _Validator:
         for cid, rows in by_crew.items():
             c = self.crew[cid]
             rows.sort(key=lambda r: r.takeoff_min)
-            if rows[0].takeoff_min - c.last_duty_end_min < self.rules.min_rest_min:
+            if not rows[0].frozen and (
+                rows[0].takeoff_min - c.last_duty_end_min < self.rules.min_rest_min
+            ):
                 self.bad(ReasonCode.CREW_REST_VIOLATION,
                          f"{cid} has less than {self.rules.min_rest_min} min rest before "
                          f"{rows[0].id}", rows[0])
             for first, second in zip(rows, rows[1:], strict=False):
-                if second.takeoff_min - first.land_min < self.rules.min_rest_min:
+                if not second.frozen and (
+                    second.takeoff_min - first.land_min < self.rules.min_rest_min
+                ):
                     self.bad(ReasonCode.CREW_REST_VIOLATION,
                              f"{cid}: only {second.takeoff_min - first.land_min} min between "
                              f"{first.id} and {second.id}", second)
@@ -363,7 +368,7 @@ class _Validator:
                 )
                 if r.land_min - DAY < 0:
                     window += c.duty_minutes_last_24h
-                if window > self.rules.max_duty_min_24h:
+                if window > self.rules.max_duty_min_24h and not r.frozen:
                     self.bad(ReasonCode.CREW_DUTY_LIMIT,
                              f"{cid}: {window} duty min in the 24 h to T+{r.land_min}", r)
 

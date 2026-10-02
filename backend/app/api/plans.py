@@ -1,5 +1,4 @@
-"""Plan endpoints (API_SPEC "Planning"): generate, fetch, list, validate, compare.
-Approving a plan and retasking arrive in Phase 5."""
+"""Plan endpoints (API_SPEC "Planning"): generate, fetch, list, validate, compare, approve."""
 
 from __future__ import annotations
 
@@ -9,11 +8,21 @@ from fastapi import APIRouter, Depends, Query, Request
 from pydantic import BaseModel, Field
 from sqlmodel import Session, select
 
+from app.api.state import (
+    PlanInputs,
+    active_plan,
+    expire_open,
+    load_plan,
+    set_plan_status,
+    store_plan,
+)
+from app.audit import log as audit
 from app.core.db import get_session
 from app.core.errors import ApiError
 from app.ingest import service
-from app.models import store, tables
+from app.models import tables
 from app.models.entities import Model
+from app.models.enums import PlanStatus
 from app.models.plans import Plan, PlanDiff, PlanKPIs
 from app.models.scenario import ScenarioFile
 from app.planning.context import PlanningContext
@@ -36,18 +45,6 @@ class GenerateRequest(Model):
     secondary: bool = True
     now_min: int = Field(0, ge=0, le=100_000)
     seed: int = 0
-
-
-class PlanInputs(BaseModel):
-    """Everything needed to rebuild the snapshot the plan was made from."""
-
-    planner: str
-    time_limit_s: float | None
-    weight_preset: str
-    fused: bool
-    secondary: bool
-    now_min: int
-    seed: int
 
 
 class PlanResponse(Plan):
@@ -89,19 +86,13 @@ def _scenario_for(
         if snap is None:
             raise ApiError(404, "not_found", f"unknown scenario: {scenario_id}")
         return snap.scenario, snap.meta
-    scenario = store.load_scenario_rows(session, scenario_id)
+    scenario = service.current_scenario(session, scenario_id)
     if scenario is None:
         raise ApiError(404, "not_found", f"unknown scenario: {scenario_id}")
     return scenario, None
 
 
-def _load(session: Session, plan_id: str) -> tuple[tables.PlanRow, Plan, PlanInputs]:
-    row = session.exec(
-        select(tables.PlanRow).where(tables.PlanRow.entity_id == plan_id)
-    ).first()
-    if row is None:
-        raise ApiError(404, "not_found", f"unknown plan: {plan_id}")
-    return row, Plan.model_validate(row.data["plan"]), PlanInputs.model_validate(row.data["inputs"])
+_load = load_plan
 
 
 def _violations(vs: list[Violation]) -> list[ViolationOut]:
@@ -139,17 +130,17 @@ def generate(
         raise ApiError(500, "plan_failed_validation",
                        f"{len(found)} violation(s); first: {first.code}: {first.message}")
 
-    existing = session.exec(
-        select(tables.PlanRow).where(tables.PlanRow.scenario_id == body.scenario_id)
-    ).all()
-    n = len(existing) + 1
-    plan = plan.model_copy(update={"id": f"p_{body.scenario_id[3:]}_{n}", "version": n})
-    session.add(tables.PlanRow(
-        scenario_id=body.scenario_id, entity_id=plan.id,
-        data={"plan": plan.model_dump(mode="json", by_alias=True),
-              "inputs": inputs.model_dump(mode="json")},
-    ))
+    plan = store_plan(session, body.scenario_id, plan, inputs)
+    audit.append(
+        session, body.scenario_id, actor="system", action="plan.generate", object_type="plan",
+        object_id=plan.id,
+        details={"planner": body.planner, "weight_preset": body.weight_preset,
+                 "solver_status": plan.solver.status, "covered": plan.kpis.missions_covered},
+    )
     session.commit()
+    request.app.state.hub.publish(body.scenario_id, "plan.created", {
+        "plan_id": plan.id, "version": plan.version, "planner": body.planner,
+        "coverage": plan.kpis.priority_weighted_coverage})
     return PlanResponse(**plan.model_dump(), inputs=inputs, violations=0)
 
 
@@ -202,3 +193,37 @@ def validate(plan_id: str, session: Session = Depends(get_session)) -> ValidateR
         plan_id=plan_id, valid=not found, violations=_violations(found),
         note="checked against the snapshot rebuilt with the scenario's current pins",
     )
+
+
+class ApproveRequest(Model):
+    actor: str
+    reason: str | None = None
+
+
+@router.post("/{plan_id}/approve", response_model=PlanResponse)
+def approve(
+    plan_id: str, body: ApproveRequest, request: Request, session: Session = Depends(get_session)
+) -> PlanResponse:
+    """Make a draft plan the active plan; the previous active plan is superseded (audited). A
+    human decision only: nothing in the system calls this by itself."""
+    row, plan, inputs = _load(session, plan_id)
+    if plan.status is not PlanStatus.DRAFT:
+        raise ApiError(409, "not_approvable", f"{plan_id} is {plan.status.value}, not draft")
+    if not body.actor.strip():
+        raise ApiError(422, "validation_error", "actor must not be empty")
+    hub = request.app.state.hub
+    old = active_plan(session, row.scenario_id)
+    if old is not None:
+        set_plan_status(session, old[0], PlanStatus.SUPERSEDED)
+        audit.append(session, row.scenario_id, actor=body.actor, action="plan.supersede",
+                     object_type="plan", object_id=old[1].id, details={"replaced_by": plan_id})
+        expire_open(session, hub, row.scenario_id, old[1].id)
+    set_plan_status(session, row, PlanStatus.APPROVED)
+    audit.append(session, row.scenario_id, actor=body.actor.strip(), action="plan.approve",
+                 object_type="plan", object_id=plan_id,
+                 details={"reason": body.reason, "version": plan.version,
+                          "superseded": old[1].id if old else None})
+    session.commit()
+    hub.publish(row.scenario_id, "plan.approved", {"plan_id": plan_id, "version": plan.version})
+    return PlanResponse(**plan.model_copy(update={"status": PlanStatus.APPROVED}).model_dump(),
+                        inputs=inputs)

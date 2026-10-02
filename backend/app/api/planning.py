@@ -12,7 +12,6 @@ from sqlmodel import Session
 from app.core.db import get_session
 from app.core.errors import ApiError
 from app.ingest import service
-from app.models import store
 from app.models.enums import ReasonCode
 from app.models.plans import RiskBreakdown
 from app.planning.context import PlanningContext
@@ -92,7 +91,7 @@ def feasibility(
         snap = service.fused_snapshot(session, scenario_id, now_min=now_min, secondary=secondary)
         scenario, meta = (snap.scenario, snap.meta) if snap else (None, None)
     else:
-        scenario, meta = store.load_scenario_rows(session, scenario_id), None
+        scenario, meta = service.current_scenario(session, scenario_id), None
     if scenario is None:
         raise ApiError(404, "not_found", f"unknown scenario: {scenario_id}")
     ctx = PlanningContext(scenario, fusion_meta=meta, now_min=now_min)

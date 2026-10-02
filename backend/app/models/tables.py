@@ -102,3 +102,10 @@ class FusionPinRow(EntityRow, table=True):
     the newest row for a conflict id wins."""
 
     __tablename__ = "fusion_pin"
+
+
+class LiveEventRow(EntityRow, table=True):
+    """Events injected after the scenario was created (Phase 5), in injection order. Applied on top
+    of the stored scenario to get the current state; `entity_id` is the event id."""
+
+    __tablename__ = "live_event"

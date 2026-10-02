@@ -119,7 +119,7 @@ def snapshot(
     session: Session = Depends(get_session),
 ) -> Snapshot:
     if not fused:
-        scenario = store.load_scenario_rows(session, scenario_id)
+        scenario = service.current_scenario(session, scenario_id)
         if scenario is None:
             raise ApiError(404, "not_found", f"unknown scenario: {scenario_id}")
         return _snapshot(scenario, scenario_id, fused=False)

@@ -22,7 +22,7 @@ Base URL `/api/v1`. JSON. Every response includes `data_label` (`"synthetic" | "
 | POST | `/plans/generate` | body `{scenario_id, planner: "cpsat"\|"greedy"\|"fifo", time_limit_s (0-300), weight_preset (coverage_first\|risk_averse\|stability_first), fused=true, secondary=true, now_min=0, seed=0}` → `Plan` (status draft) plus `inputs` (what the snapshot was built from) and `violations` (always 0: a plan the validator rejects is never stored; the call fails with 500 `plan_failed_validation`). `solver.status` is `OPTIMAL`, `FEASIBLE`, `HEURISTIC` (greedy/fifo) or `FALLBACK_GREEDY (<status>)` when CP-SAT found nothing in time and the greedy plan is returned instead |
 | GET | `/plans/{id}` | plan with assignments, unassigned, KPIs, solver info |
 | GET | `/plans` | list versions for a scenario |
-| POST | `/plans/{id}/approve` | makes it the active plan (audited) |
+| POST | `/plans/{id}/approve` | body `{actor, reason?}` → makes a draft plan the active plan; the previous active plan is superseded (audited). 409 `not_approvable` unless draft |
 | POST | `/plans/{id}/validate` | re-runs the independent validator against the snapshot the plan was made from (rebuilt with the scenario's current pins); returns `{valid, violations[]}` |
 | GET | `/plans/{id}/explain/{assignment_id}` | explanation + rejected alternatives |
 | GET | `/plans/compare?a=&b=` | `{kpis_a, kpis_b, kpi_delta, diff}` between two plans of the same scenario (409 otherwise) |
@@ -31,13 +31,13 @@ Base URL `/api/v1`. JSON. Every response includes `data_label` (`"synthetic" | "
 ## Events & retasking
 | Method | Path | Purpose |
 |---|---|---|
-| POST | `/events` | inject event `{type, time_min, payload}` → stored, fused, triggers proposal generation |
-| POST | `/events/simulate` | body `{seed, rate}` → generate N disruptions into the queue |
-| GET | `/events` | history |
-| GET | `/proposals?status=open` | list retasking proposals |
-| GET | `/proposals/{id}` | proposal with plan diff + score breakdown |
-| POST | `/proposals/{id}/approve` | creates new plan version, supersedes parent (audited) |
-| POST | `/proposals/{id}/reject` | marks rejected (audited, optional reason) |
+| POST | `/events` | body `{scenario_id, type, time_min, payload, source?, propose=true, time_limit_s?}` → event stored (id `EV-nnn`), applied to the scenario state, and, if a plan is active, ranked proposals are generated (synchronously, within `time_limit_s`). Returns `{events, state_version, active_plan_id, affected_assignments, proposals[], note}`. Invalid payloads or unknown ids: 422 `invalid_event`, nothing stored. Nothing is ever applied to the active plan |
+| POST | `/events/simulate` | body `{scenario_id, seed, rate=0.5 per hour or count (1-50), from_min?, to_min?, propose=false, time_limit_s?}` → seeded disruptions built against the current state and injected in time order (same state + seed = same events). With `propose=true`, proposals are made once, for the last event |
+| GET | `/events?scenario_id=&limit=` | injected events, oldest first |
+| GET | `/proposals?scenario_id=&status=open` | list retasking proposals (`open`, `approved`, `rejected`, `expired`) |
+| GET | `/proposals/{id}` | proposal: `plan` (status `proposed`, `parent_plan_id`), `diff`, `score_breakdown {coverage, risk, stability, total}`, `explanation`, `preset`, `fallback`, `affected_assignment_ids`, `event_description` |
+| POST | `/proposals/{id}/approve` | body `{actor, reason?}` → new plan version (status approved, parent superseded), other open proposals of the same base plan expire; two audit rows. 409 `not_open` / `stale_proposal` |
+| POST | `/proposals/{id}/reject` | body `{actor, reason?}` → marks rejected (audited) |
 
 ## What-if
 | POST | `/whatif` | body `{base_plan_id, changes:[event-like ops]}` → returns a sandbox plan + KPI comparison; **never** modifies active plan or state |
@@ -50,12 +50,12 @@ Base URL `/api/v1`. JSON. Every response includes `data_label` (`"synthetic" | "
 ## KPIs, benchmarks, audit
 | GET | `/kpi/plan/{id}` | KPIs |
 | GET | `/benchmarks/latest` | parsed `benchmarks/RESULTS.md` data if it exists, else `{"status":"not measured"}` |
-| GET | `/audit?object_id=&limit=` | append-only log |
+| GET | `/audit?scenario_id=&object_id=&limit=` | append-only log, oldest first. Actions: `fusion.pin`, `plan.generate`, `plan.approve`, `plan.supersede`, `event.inject`, `retask.propose`, `proposal.approve`, `proposal.reject` |
 
 ## WebSocket `/ws`
 Server → client messages (JSON `{type, ts, data}`):
 `state.updated`, `event.created`, `plan.created`, `plan.approved`, `proposal.created`, `proposal.updated`, `alert.created`, `fusion.conflict`.
-Client → server: `{type:"subscribe", scenario_id}`.
+Client → server: `{type:"subscribe", scenario_id}`; the server answers `{type:"subscribed", data:{scenario_id}}` and then sends only that scenario's messages. Path: `/api/v1/ws`. Sent today: `event.created`, `state.updated`, `proposal.created`, `alert.created` (when assignments are affected), `proposal.updated`, `plan.created`, `plan.approved`, `fusion.conflict` (on a pin).
 
 ## Key response shapes (abbreviated)
 

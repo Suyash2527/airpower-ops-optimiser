@@ -55,9 +55,12 @@ def append(
 
 
 def list_entries(
-    session: Session, scenario_id: str, object_id: str | None = None, limit: int = 100
+    session: Session, scenario_id: str | None, object_id: str | None = None, limit: int = 100
 ) -> list[AuditEntry]:
-    query = select(tables.AuditEntryRow).where(tables.AuditEntryRow.scenario_id == scenario_id)
+    """Oldest first. `scenario_id=None` lists every scenario."""
+    query = select(tables.AuditEntryRow)
+    if scenario_id is not None:
+        query = query.where(tables.AuditEntryRow.scenario_id == scenario_id)
     if object_id is not None:
         query = query.where(tables.AuditEntryRow.entity_id == object_id)
     rows = session.exec(query.order_by(tables.AuditEntryRow.pk).limit(limit)).all()  # type: ignore[arg-type]

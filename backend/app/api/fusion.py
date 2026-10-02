@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from pydantic import BaseModel, ValidationError, model_validator
 from sqlmodel import Session
 
@@ -68,6 +68,7 @@ def pin_conflict(
     scenario_id: str,
     conflict_id: str,
     body: PinRequest,
+    request: Request,
     now_min: NowMin = 0,
     secondary: Secondary = True,
     session: Session = Depends(get_session),
@@ -114,6 +115,9 @@ def pin_conflict(
         },
     )
     session.commit()
+    request.app.state.hub.publish(scenario_id, "fusion.conflict", {
+        "conflict_id": conflict_id, "status": "pinned", "entity_id": pin.entity_id,
+        "field": pin.field, "actor": pin.actor})
     pinned = next((c for c in after.report.conflicts if c.id == conflict_id), None)
     if pinned is None:  # pinned to a value every source agrees with: still report the decision
         pinned = conflict.model_copy(

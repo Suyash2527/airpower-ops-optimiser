@@ -96,11 +96,15 @@ def plan(
 
 
 def _place_mission(
-    ledger: ResourceLedger, mission: Mission, feas: MissionFeasibility, planner: Planner
+    ledger: ResourceLedger, mission: Mission, feas: MissionFeasibility, planner: Planner,
+    need: int | None = None, already: set[str] | None = None,
 ) -> tuple[list[tuple], Counter[ReasonCode]]:
+    """Place `need` more sorties (default: all the mission needs), never reusing an aircraft in
+    `already` (those flying this mission in kept sorties)."""
+    need = mission.aircraft_required if need is None else need
     placed: list[tuple] = []
     lost: dict[tuple[str, str], Counter[ReasonCode]] = defaultdict(Counter)
-    used_aircraft: set[str] = set()
+    used_aircraft: set[str] = set(already or ())
     for opt, slot in _candidates(feas, planner):
         if opt.aircraft_id in used_aircraft:
             continue
@@ -110,7 +114,7 @@ def _place_mission(
             continue
         placed.append((p, opt, slot))
         used_aircraft.add(opt.aircraft_id)
-        if len(placed) == mission.aircraft_required:
+        if len(placed) == need:
             break
     contention: Counter[ReasonCode] = Counter()
     for combo, counts in lost.items():

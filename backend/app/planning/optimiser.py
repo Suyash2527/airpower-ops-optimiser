@@ -112,18 +112,40 @@ def solve(
     scenario_id: str,
     params: SolveParams | None = None,
     matrix: FeasibilityMatrix | None = None,
+    *,
+    seed_plan: Plan | None = None,
+    frozen: list[Assignment] | None = None,
+    parent: Plan | None = None,
 ) -> Plan:
+    """Solve for a plan.
+
+    seed_plan  warm start and fallback (default: the greedy plan). Its non-frozen sorties are
+               always modelled and given as the hint.
+    frozen     sorties already under way: fixed, they use up aircraft, crew, stock and runway
+               capacity and count towards their mission, but are not decisions (Phase 5).
+    parent     plan being replaced: any sortie not identical to one of the parent's pays the
+               preset's stability penalty (a different crew for a kept sortie pays it too).
+    """
     params = params or SolveParams()
     weights = get_weights(params.weight_preset)
     started = time.perf_counter()
     matrix = matrix or build_matrix(ctx)
-    greedy = greedy_plan(ctx, scenario_id, "greedy_priority", matrix)
+    frozen = frozen or []
+    seed = seed_plan or greedy_plan(ctx, scenario_id, "greedy_priority", matrix)
+    seed_rows = [a for a in seed.assignments if not a.frozen]
+    parent_rows = [a for a in (parent.assignments if parent else []) if not a.frozen]
+    parent_keys = {(a.mission_id, a.aircraft_id, a.loadout_id, a.takeoff_min) for a in parent_rows}
+    parent_crew = {(a.mission_id, a.aircraft_id, a.takeoff_min): set(a.crew_ids)
+                   for a in parent_rows}
     forced: set[Key] = (
-        {(a.mission_id, a.aircraft_id, a.loadout_id, a.takeoff_min) for a in greedy.assignments}
+        {(a.mission_id, a.aircraft_id, a.loadout_id, a.takeoff_min) for a in seed_rows}
         if params.use_greedy_hint else set()
-    )
-    hint_crew = {(a.mission_id, a.aircraft_id, a.takeoff_min): set(a.crew_ids)
-                 for a in greedy.assignments}
+    ) | parent_keys
+    hint_keys = {(a.mission_id, a.aircraft_id, a.loadout_id, a.takeoff_min) for a in seed_rows}
+    hint_crew = {(a.mission_id, a.aircraft_id, a.takeoff_min): set(a.crew_ids) for a in seed_rows}
+    keep_crew = {k: v | parent_crew.get(k, set()) for k, v in hint_crew.items()}
+    for k, v in parent_crew.items():
+        keep_crew.setdefault(k, v)
 
     model = cp_model.CpModel()
     z: dict[str, cp_model.IntVar] = {}
@@ -138,6 +160,10 @@ def solve(
     objective: list = []
     rest = ctx.rules.min_rest_min
     slot_min = ctx.cfg.slot_min
+    stab = weights.stability_points() if parent is not None else 0
+    frozen_count: dict[str, int] = defaultdict(int)
+    for f in frozen:
+        frozen_count[f.mission_id] += 1
 
     for mid, feas in matrix.missions.items():
         if not feas.coverable:
@@ -163,6 +189,7 @@ def solve(
                 objective.append(-(
                     weights.risk_points(s.risk.total) + weights.cost_points(opt.land_offset)
                     + weights.early_points(t // slot_min)
+                    + (0 if key in parent_keys else stab)
                 ) * var)
                 if opt.loadout_id != NO_LOADOUT:
                     for item, qty in ctx.loadouts[opt.loadout_id].items.items():
@@ -170,11 +197,21 @@ def solve(
                 for b in (t // slot_min, (t + opt.land_offset) // slot_min):
                     runway[(opt.base_id, b)][var] = runway[(opt.base_id, b)].get(var, 0) + 1
                 _crew(model, ctx, mission, opt, s, key, var, type_, y, crew_iv, crew_duty, rest,
-                      params.crew_per_role, hint_crew.get((mid, opt.aircraft_id, t), set()))
-        model.Add(sum(mine) == mission.aircraft_required * z[mid])
+                      params.crew_per_role, keep_crew.get((mid, opt.aircraft_id, t), set()))
+                if stab and key in parent_keys:  # a kept sortie with a different crew is a change
+                    for (k2, cid), yv in y.items():
+                        if k2 == key and cid not in parent_crew.get((mid, opt.aircraft_id, t), ()):
+                            objective.append(-stab * yv)
+        fc = frozen_count.get(mid, 0)
+        if fc:
+            model.Add(sum(mine) + fc == mission.aircraft_required * z[mid]).OnlyEnforceIf(z[mid])
+            model.Add(sum(mine) == 0).OnlyEnforceIf(z[mid].Not())
+        else:
+            model.Add(sum(mine) == mission.aircraft_required * z[mid])
         for vars_ in per_aircraft.values():
             model.AddAtMostOne(vars_)
 
+    _add_frozen(model, ctx, frozen, aircraft_iv, crew_iv, crew_duty, stock, runway)
     for ivs in aircraft_iv.values():
         model.AddNoOverlap(ivs)
     for ivs in crew_iv.values():
@@ -189,13 +226,12 @@ def solve(
     model.Maximize(sum(objective))
 
     if params.use_greedy_hint:
-        chosen = forced
         for key, var in x.items():
-            model.AddHint(var, 1 if key in chosen else 0)
+            model.AddHint(var, 1 if key in hint_keys else 0)
         for (key, cid), var in y.items():
             hinted = hint_crew.get((key[0], key[1], key[3]), set())
-            model.AddHint(var, 1 if key in chosen and cid in hinted else 0)
-        covered = {a.mission_id for a in greedy.assignments}
+            model.AddHint(var, 1 if key in hint_keys and cid in hinted else 0)
+        covered = {a.mission_id for a in seed.assignments}
         for mid, var in z.items():
             model.AddHint(var, 1 if mid in covered else 0)
 
@@ -209,13 +245,15 @@ def solve(
     wall_ms = int((time.perf_counter() - started) * 1000)
 
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-        fallback = greedy.model_copy(update={"created_by": "cpsat"})
-        fallback.solver.name = "cpsat"
-        fallback.solver.status = f"FALLBACK_GREEDY ({status_name})"
-        fallback.solver.wall_ms = wall_ms
+        fallback = seed.model_copy(update={"created_by": "cpsat"})
+        fallback.solver = fallback.solver.model_copy(update={
+            "name": "cpsat", "status": f"FALLBACK_GREEDY ({status_name})", "wall_ms": wall_ms,
+            "objective": None, "gap": None,
+        })
         return fallback
 
-    assignments, placed_by_mission = _extract(ctx, solver, matrix, x, y, info)
+    new_rows, _ = _extract(ctx, solver, matrix, x, y, info, taken_ids={a.id for a in frozen})
+    assignments = [*frozen, *new_rows]
     unassigned = _unassigned(ctx, matrix, assignments)
     objective_value = int(round(solver.ObjectiveValue()))
     bound = solver.BestObjectiveBound()
@@ -227,6 +265,26 @@ def solve(
     return plan
 
 
+def _add_frozen(model, ctx, frozen, aircraft_iv, crew_iv, crew_duty, stock, runway) -> None:
+    """Sorties already under way are constants: they occupy resources but are not decisions."""
+    one = model.NewConstant(1)
+    slot_min, rest = ctx.cfg.slot_min, ctx.rules.min_rest_min
+    for f in frozen:
+        ac = ctx.aircraft[f.aircraft_id]
+        turn = ctx.turnaround_min(ac.base_id, ac.type_id)
+        aircraft_iv[f.aircraft_id].append(model.NewFixedSizeIntervalVar(
+            f.takeoff_min, f.land_min - f.takeoff_min + turn, f"fa_{f.id}"))
+        for cid in f.crew_ids:
+            crew_iv[cid].append(model.NewFixedSizeIntervalVar(
+                f.takeoff_min, f.land_min - f.takeoff_min + rest, f"fc_{f.id}_{cid}"))
+            crew_duty[cid].append((one, f.takeoff_min, f.land_min, True))
+        if f.loadout_id != NO_LOADOUT:
+            for item, qty in ctx.loadouts[f.loadout_id].items.items():
+                stock[(ac.base_id, item)].append((one, qty))
+        for b in (f.takeoff_min // slot_min, f.land_min // slot_min):
+            runway[(ac.base_id, b)][one] = runway[(ac.base_id, b)].get(one, 0) + 1
+
+
 def _duty(model, ctx, cid: str, items: list) -> None:
     """Crew duty exactly as the validator states it: the carried `duty_minutes_last_24h` counts in
     every window that reaches back before t0, i.e. for sorties landing before T+1440 (so all of
@@ -234,11 +292,13 @@ def _duty(model, ctx, cid: str, items: list) -> None:
     rolling 24 h window that ends at its landing."""
     cap = ctx.rules.max_duty_min_24h
     day = 1440
-    early = [(y, land - take) for y, take, land in items if land < day]
+    early = [(y, land - take) for y, take, land, _ in items if land < day]
     if early:
         model.Add(sum(y * d for y, d in early) <= cap - ctx.crew[cid].duty_minutes_last_24h)
-    for yi, _, end in (i for i in items if i[2] >= day):
-        window = [y * (land - take) for y, take, land in items
+    for yi, _, end, is_frozen in items:
+        if end < day or is_frozen:
+            continue
+        window = [y * (land - take) for y, take, land, _ in items
                   if take <= end and land > end - day]
         model.Add(sum(window) <= cap).OnlyEnforceIf(yi)
 
@@ -260,11 +320,13 @@ def _crew(model, ctx, mission, opt, s, key, var, type_, y, crew_iv, crew_duty, r
             role_vars.append(yv)
             crew_iv[c.id].append(model.NewOptionalFixedSizeIntervalVar(
                 s.takeoff_min, opt.land_offset + rest, yv, f"c_{key}_{c.id}"))
-            crew_duty[c.id].append((yv, s.takeoff_min, s.takeoff_min + opt.land_offset))
+            crew_duty[c.id].append(
+                (yv, s.takeoff_min, s.takeoff_min + opt.land_offset, False)
+            )
         model.Add(sum(role_vars) == need * var)
 
 
-def _extract(ctx, solver, matrix, x, y, info):
+def _extract(ctx, solver, matrix, x, y, info, taken_ids=frozenset()):
     assignments: list[Assignment] = []
     placed_by_mission: dict[str, int] = defaultdict(int)
     chosen_keys = sorted(k for k, v in x.items() if solver.Value(v))
@@ -285,6 +347,8 @@ def _extract(ctx, solver, matrix, x, y, info):
         alt = next(((o.aircraft_id, s.risk.total) for o, s in ranked[mid]
                     if o.aircraft_id not in taken), None)
         placed_by_mission[mid] += 1
+        while f"S-{mid}-{placed_by_mission[mid]}" in taken_ids:
+            placed_by_mission[mid] += 1
         assignments.append(make_assignment(
             ctx, placed_by_mission[mid], mid, aid, lid, t, opt.land_offset, crew, slot.risk,
             explain_assignment(
