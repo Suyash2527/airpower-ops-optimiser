@@ -38,7 +38,7 @@ def test_snapshot_returns_every_entity_group_with_provenance(client: TestClient)
         assert snap[group], f"group {group} is empty"
         for record in snap[group]:
             prov = record["provenance"]
-            assert prov["source"] in ("SYNTHETIC", "OURAIRPORTS")
+            assert prov["source"] in ("SYNTHETIC", "SYNTHETIC_SECONDARY", "OURAIRPORTS")
             assert set(prov) == {"source", "observed_at", "ingested_at", "confidence", "data_label"}
 
 
@@ -47,7 +47,7 @@ def test_snapshot_round_trips_the_stored_scenario_exactly(client: TestClient) ->
     from app.sim.generate import generate_scenario
 
     sid = _generate(client)["scenario_id"]
-    snap = client.get(f"/api/v1/scenarios/{sid}/snapshot").json()
+    snap = client.get(f"/api/v1/scenarios/{sid}/snapshot?fused=false").json()
     rebuilt = ScenarioFile(**{k: snap[k] for k in ScenarioFile.model_fields})
     expected = generate_scenario(GeneratorParams(**SMALL)).to_canonical_json()
     assert rebuilt.to_canonical_json() == expected

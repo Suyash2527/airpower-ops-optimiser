@@ -95,3 +95,10 @@ class ProposalRow(EntityRow, table=True):
 
 class AuditEntryRow(EntityRow, table=True):
     __tablename__ = "audit_entry"
+
+
+class FusionPinRow(EntityRow, table=True):
+    """Human pins from the fusion layer (Phase 2); `entity_id` holds the conflict id. Append-only:
+    the newest row for a conflict id wins."""
+
+    __tablename__ = "fusion_pin"

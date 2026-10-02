@@ -8,9 +8,9 @@ Base URL `/api/v1`. JSON. Every response includes `data_label` (`"synthetic" | "
 | POST | `/scenarios/generate` | body `{seed, n_bases, n_aircraft, n_crew, n_missions, horizon_min, ...}` → creates + loads a synthetic scenario |
 | POST | `/scenarios/load` | body `{path}` → load saved scenario JSON |
 | GET | `/scenarios` | list |
-| GET | `/scenarios/{id}/snapshot` | fused state (bases, aircraft, crew, weapons, missions, threats, airspace, weather) with provenance/staleness |
-| GET | `/scenarios/{id}/fusion-report` | merged/conflict/stale counts + conflict list |
-| POST | `/scenarios/{id}/conflicts/{cid}/pin` | human pins a value (audited) |
+| GET | `/scenarios/{id}/snapshot` | fused state (bases, aircraft, crew, weapons, missions, threats, airspace, weather) with provenance/staleness. Query: `fused=true` (default; `false` = stored scenario), `now_min=0` (fusion time, minutes from t0), `secondary=true` (include the noisy synthetic second source). Adds `fusion_meta[group][key]` (source, sources, staleness_min, stale_fields, conflict_fields, pinned_fields) and `state_version` |
+| GET | `/scenarios/{id}/fusion-report` | merged/conflict/stale counts + conflict list; same `now_min` / `secondary` query. Each conflict: `id`, `group`, `entity_id`, `field`, `status` (open/pinned), `reason` (`HIGHEST_SCORE`, `STALE_OBSERVATION_DISCARDED`, `ALL_OBSERVATIONS_STALE`, `PINNED_BY_HUMAN`), `resolved_value/source`, `candidates[]` (source, value, observed_at, confidence, trust, age_min, score, stale, selected, discarded_stale), `explanation` |
+| POST | `/scenarios/{id}/conflicts/{cid}/pin` | human pins a value (audited). Body `{actor, reason?, source}` (pin to the value a source reported) **or** `{actor, reason?, value}` (explicit value, validated against the entity schema). Same `now_min` / `secondary` query as the report. Returns `{conflict, state_version, data_label}` |
 
 ## Data entities (read mostly)
 `GET /aircraft`, `/crew`, `/missions`, `/bases`, `/threats`, `/airspace`, `/weather` — all take `scenario_id` query; filters by status/base/type.

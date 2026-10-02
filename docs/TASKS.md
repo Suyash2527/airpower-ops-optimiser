@@ -18,12 +18,12 @@ Tick `[x]` as you complete. IDs map to `PRD.md` requirements. Do tasks in order 
 - [x] 1.6 Test: same seed → identical JSON; intentionally infeasible missions present
 
 ## Phase 2 — Fusion (F-1…F-5)
-- [ ] 2.1 `Adapter` protocol + `SyntheticAdapter`
-- [ ] 2.2 `FileAdapter` for CSV/JSON (documented as the template for real feeds)
-- [ ] 2.3 Secondary noisy synthetic source for conflicts
-- [ ] 2.4 Fusion rules: trust × confidence × time-decay; staleness; conflict list
-- [ ] 2.5 `GET fusion-report`, `POST conflicts/{id}/pin` (audited)
-- [ ] 2.6 Tests: merge, staleness, conflict, determinism
+- [x] 2.1 `Adapter` protocol + `SyntheticAdapter`
+- [x] 2.2 `FileAdapter` for CSV/JSON (documented as the template for real feeds)
+- [x] 2.3 Secondary noisy synthetic source for conflicts
+- [x] 2.4 Fusion rules: trust × confidence × time-decay; staleness; conflict list
+- [x] 2.5 `GET fusion-report`, `POST conflicts/{id}/pin` (audited)
+- [x] 2.6 Tests: merge, staleness, conflict, determinism
 
 ## Phase 3 — Feasibility & baselines (P-1, P-4, P-5 partial)
 - [ ] 3.1 Capability check + test

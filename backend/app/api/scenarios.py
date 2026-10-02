@@ -5,12 +5,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Literal
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 from pydantic import AwareDatetime, BaseModel, ValidationError
 from sqlmodel import Session
 
 from app.core.db import get_session
 from app.core.errors import ApiError
+from app.ingest import service
+from app.ingest.models import RecordFusion
 from app.models import store
 from app.models.entities import Model
 from app.models.scenario import GeneratorParams, ScenarioFile
@@ -40,11 +42,16 @@ class ScenarioList(BaseModel):
 
 
 class Snapshot(ScenarioFile):
-    """Fused state. Phase 1 returns the stored records with their provenance; staleness and
-    conflict handling arrive with the fusion layer (Phase 2)."""
+    """Fused state: every live record carries its fused provenance, and `fusion_meta` holds the
+    per-record staleness, sources and conflicts (PRD F-2). With `fused=false` it is the stored
+    scenario exactly, and `fusion_meta` is empty."""
 
     scenario_id: str
     data_label: DataLabel
+    fused: bool = True
+    now_min: int = 0
+    state_version: int = 0
+    fusion_meta: dict[str, dict[str, RecordFusion]] = {}
 
 
 class LoadRequest(Model):
@@ -104,11 +111,38 @@ def list_all(session: Session = Depends(get_session)) -> ScenarioList:
 
 
 @router.get("/{scenario_id}/snapshot", response_model=Snapshot)
-def snapshot(scenario_id: str, session: Session = Depends(get_session)) -> Snapshot:
-    scenario = store.load_scenario_rows(session, scenario_id)
-    if scenario is None:
+def snapshot(
+    scenario_id: str,
+    fused: bool = True,
+    now_min: int = Query(0, ge=0, le=100_000),
+    secondary: bool = True,
+    session: Session = Depends(get_session),
+) -> Snapshot:
+    if not fused:
+        scenario = store.load_scenario_rows(session, scenario_id)
+        if scenario is None:
+            raise ApiError(404, "not_found", f"unknown scenario: {scenario_id}")
+        return _snapshot(scenario, scenario_id, fused=False)
+    result = service.fused_snapshot(session, scenario_id, now_min=now_min, secondary=secondary)
+    if result is None:
         raise ApiError(404, "not_found", f"unknown scenario: {scenario_id}")
+    return _snapshot(
+        result.scenario, scenario_id, fused=True, now_min=now_min,
+        state_version=result.state_version, meta=result.meta,
+    )
+
+
+def _snapshot(
+    scenario: ScenarioFile,
+    scenario_id: str,
+    *,
+    fused: bool,
+    now_min: int = 0,
+    state_version: int = 0,
+    meta: dict[str, dict[str, RecordFusion]] | None = None,
+) -> Snapshot:
     return Snapshot(
         **{name: getattr(scenario, name) for name in ScenarioFile.model_fields},
-        scenario_id=scenario_id, data_label=scenario.scenario.data_label,
+        scenario_id=scenario_id, data_label=scenario.scenario.data_label, fused=fused,
+        now_min=now_min, state_version=state_version, fusion_meta=meta or {},
     )
