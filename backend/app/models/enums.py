@@ -141,6 +141,7 @@ class Region(StrEnum):
 
 class ClimateZone(StrEnum):
     HIMALAYAN_HIGH_ALTITUDE = "himalayan_high_altitude"
+    INDO_GANGETIC_PLAIN = "indo_gangetic_plain"
     ARID_DESERT = "arid_desert"
     TROPICAL_PLATEAU = "tropical_plateau"
     HUMID_HILL_NE = "humid_hill_ne"

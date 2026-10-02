@@ -42,6 +42,10 @@ Serviceability model + model card; weather-impact + Open-Meteo adapter with offl
 Performance tuning (candidate caps/decomposition), error handling, accessibility pass, README with architecture diagram and honest limitations section, Docker compose end-to-end check, a `docs/LIMITATIONS.md`.
 **DoD:** `docker compose up` brings up working app; README commands verified; limitations documented.
 
+## Phase 9 — AI layer (Gemini copilot, robustness, anomalies, preferences)
+Follow `docs/AI_LAYER.md` §4 build order. Gemini runs through a swappable `LLMProvider` with read-only function-calling tools; the key and model come from env vars; the app works with no key.
+**DoD:** as defined in `AI_LAYER.md` §4.
+
 ---
 
 ## Cross-cutting checklist for every phase

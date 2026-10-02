@@ -12,6 +12,7 @@ Read this file fully, then read the docs in this order before writing code:
 6. `docs/API_SPEC.md` — REST + WebSocket contract
 7. `docs/BUILD_PLAN.md` and `docs/TASKS.md` — the order of work and the checklist
 8. `docs/INDIA_CONTEXT.md` — India-specific realism (regions, seasons, elevation, HADR, airspace). Its rules override generic defaults in DATA_MODEL §5 and ALGORITHMS §7.2. Real geography/climate, fictional bases and units.
+9. `docs/AI_LAYER.md` — AI components incl. the Gemini copilot (Phase 9, after MVP).
 
 ## Problem in one paragraph
 
@@ -30,6 +31,7 @@ Air-ops planners must assign scarce aircraft, crews and weapon loads to prioriti
 - Backend: Python 3.11+, FastAPI, Pydantic v2, SQLModel (SQLite in dev, PostgreSQL in compose), Google OR-Tools (CP-SAT), shapely + pyproj (geometry), scikit-learn (predictive models), httpx (open weather API), pytest, ruff.
 - Frontend: Next.js (App Router) + TypeScript + Tailwind, MapLibre GL JS for the map, a Gantt/timeline component (build simply with SVG/div; do not add heavy libs without logging a decision).
 - Realtime: FastAPI WebSocket for events and plan updates.
+- Assistant AI: Google Gemini API (official Google Gen AI Python SDK), function calling over read-only tools, behind a swappable `LLMProvider`. Key/model via `GEMINI_API_KEY` / `GEMINI_MODEL` env vars only. See `docs/AI_LAYER.md` (Phase 9).
 - Packaging: Docker Compose (api, web, db).
 
 ## Repository layout to create

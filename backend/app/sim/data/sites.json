@@ -1,0 +1,326 @@
+{
+ "note": "Fictional base SITES (arbitrary points in the INDIA_CONTEXT region boxes). Elevation: Open-Meteo elevation API (CC BY 4.0), https://open-meteo.com/",
+ "fetched_on": "2026-10-02",
+ "sites": [
+  {
+   "code": "BASE-N1",
+   "region": "north",
+   "lat": 33.6,
+   "lon": 76.4,
+   "elevation_m": 4830.0,
+   "climate_zone": "himalayan_high_altitude"
+  },
+  {
+   "code": "BASE-N2",
+   "region": "north",
+   "lat": 32.4,
+   "lon": 77.2,
+   "elevation_m": 4867.0,
+   "climate_zone": "himalayan_high_altitude"
+  },
+  {
+   "code": "BASE-N3",
+   "region": "north",
+   "lat": 31.2,
+   "lon": 76.1,
+   "elevation_m": 254.0,
+   "climate_zone": "indo_gangetic_plain"
+  },
+  {
+   "code": "BASE-N4",
+   "region": "north",
+   "lat": 30.6,
+   "lon": 75.2,
+   "elevation_m": 220.0,
+   "climate_zone": "indo_gangetic_plain"
+  },
+  {
+   "code": "BASE-N5",
+   "region": "north",
+   "lat": 34.1,
+   "lon": 74.4,
+   "elevation_m": 2036.0,
+   "climate_zone": "himalayan_high_altitude"
+  },
+  {
+   "code": "BASE-N6",
+   "region": "north",
+   "lat": 32.9,
+   "lon": 75.6,
+   "elevation_m": 2813.0,
+   "climate_zone": "himalayan_high_altitude"
+  },
+  {
+   "code": "BASE-N7",
+   "region": "north",
+   "lat": 33.1,
+   "lon": 78.1,
+   "elevation_m": 5306.0,
+   "climate_zone": "himalayan_high_altitude"
+  },
+  {
+   "code": "BASE-N8",
+   "region": "north",
+   "lat": 31.9,
+   "lon": 78.4,
+   "elevation_m": 5218.0,
+   "climate_zone": "himalayan_high_altitude"
+  },
+  {
+   "code": "BASE-W1",
+   "region": "west",
+   "lat": 26.1,
+   "lon": 70.9,
+   "elevation_m": 236.0,
+   "climate_zone": "arid_desert"
+  },
+  {
+   "code": "BASE-W2",
+   "region": "west",
+   "lat": 27.6,
+   "lon": 72.3,
+   "elevation_m": 198.0,
+   "climate_zone": "arid_desert"
+  },
+  {
+   "code": "BASE-W3",
+   "region": "west",
+   "lat": 25.3,
+   "lon": 71.8,
+   "elevation_m": 52.0,
+   "climate_zone": "arid_desert"
+  },
+  {
+   "code": "BASE-W4",
+   "region": "west",
+   "lat": 28.4,
+   "lon": 73.5,
+   "elevation_m": 215.0,
+   "climate_zone": "arid_desert"
+  },
+  {
+   "code": "BASE-W5",
+   "region": "west",
+   "lat": 24.8,
+   "lon": 73.2,
+   "elevation_m": 589.0,
+   "climate_zone": "arid_desert"
+  },
+  {
+   "code": "BASE-W6",
+   "region": "west",
+   "lat": 26.9,
+   "lon": 74.1,
+   "elevation_m": 322.0,
+   "climate_zone": "arid_desert"
+  },
+  {
+   "code": "BASE-W7",
+   "region": "west",
+   "lat": 27.9,
+   "lon": 70.4,
+   "elevation_m": 131.0,
+   "climate_zone": "arid_desert"
+  },
+  {
+   "code": "BASE-W8",
+   "region": "west",
+   "lat": 28.9,
+   "lon": 74.7,
+   "elevation_m": 215.0,
+   "climate_zone": "arid_desert"
+  },
+  {
+   "code": "BASE-C1",
+   "region": "central",
+   "lat": 21.2,
+   "lon": 79.6,
+   "elevation_m": 258.0,
+   "climate_zone": "tropical_plateau"
+  },
+  {
+   "code": "BASE-C2",
+   "region": "central",
+   "lat": 22.6,
+   "lon": 77.9,
+   "elevation_m": 337.0,
+   "climate_zone": "tropical_plateau"
+  },
+  {
+   "code": "BASE-C3",
+   "region": "central",
+   "lat": 19.7,
+   "lon": 78.8,
+   "elevation_m": 236.0,
+   "climate_zone": "tropical_plateau"
+  },
+  {
+   "code": "BASE-C4",
+   "region": "central",
+   "lat": 20.4,
+   "lon": 76.2,
+   "elevation_m": 611.0,
+   "climate_zone": "tropical_plateau"
+  },
+  {
+   "code": "BASE-C5",
+   "region": "central",
+   "lat": 23.3,
+   "lon": 80.4,
+   "elevation_m": 571.0,
+   "climate_zone": "tropical_plateau"
+  },
+  {
+   "code": "BASE-C6",
+   "region": "central",
+   "lat": 18.9,
+   "lon": 80.7,
+   "elevation_m": 302.0,
+   "climate_zone": "tropical_plateau"
+  },
+  {
+   "code": "BASE-C7",
+   "region": "central",
+   "lat": 21.9,
+   "lon": 81.5,
+   "elevation_m": 278.0,
+   "climate_zone": "tropical_plateau"
+  },
+  {
+   "code": "BASE-C8",
+   "region": "central",
+   "lat": 19.1,
+   "lon": 76.7,
+   "elevation_m": 388.0,
+   "climate_zone": "tropical_plateau"
+  },
+  {
+   "code": "BASE-NE1",
+   "region": "east_ne",
+   "lat": 26.3,
+   "lon": 92.6,
+   "elevation_m": 65.0,
+   "climate_zone": "humid_hill_ne"
+  },
+  {
+   "code": "BASE-NE2",
+   "region": "east_ne",
+   "lat": 25.6,
+   "lon": 93.6,
+   "elevation_m": 357.0,
+   "climate_zone": "humid_hill_ne"
+  },
+  {
+   "code": "BASE-NE3",
+   "region": "east_ne",
+   "lat": 27.6,
+   "lon": 88.7,
+   "elevation_m": 3235.0,
+   "climate_zone": "humid_hill_ne"
+  },
+  {
+   "code": "BASE-NE4",
+   "region": "east_ne",
+   "lat": 26.7,
+   "lon": 89.9,
+   "elevation_m": 106.0,
+   "climate_zone": "humid_hill_ne"
+  },
+  {
+   "code": "BASE-NE5",
+   "region": "east_ne",
+   "lat": 24.9,
+   "lon": 91.9,
+   "elevation_m": 19.0,
+   "climate_zone": "humid_hill_ne"
+  },
+  {
+   "code": "BASE-NE6",
+   "region": "east_ne",
+   "lat": 27.9,
+   "lon": 93.8,
+   "elevation_m": 2209.0,
+   "climate_zone": "humid_hill_ne"
+  },
+  {
+   "code": "BASE-NE7",
+   "region": "east_ne",
+   "lat": 26.0,
+   "lon": 95.1,
+   "elevation_m": 2204.0,
+   "climate_zone": "humid_hill_ne"
+  },
+  {
+   "code": "BASE-NE8",
+   "region": "east_ne",
+   "lat": 27.2,
+   "lon": 94.6,
+   "elevation_m": 91.0,
+   "climate_zone": "humid_hill_ne"
+  },
+  {
+   "code": "BASE-S1",
+   "region": "south",
+   "lat": 12.1,
+   "lon": 76.9,
+   "elevation_m": 689.0,
+   "climate_zone": "tropical_plateau"
+  },
+  {
+   "code": "BASE-S2",
+   "region": "south",
+   "lat": 13.6,
+   "lon": 79.2,
+   "elevation_m": 321.0,
+   "climate_zone": "tropical_plateau"
+  },
+  {
+   "code": "BASE-S3",
+   "region": "south",
+   "lat": 10.6,
+   "lon": 77.4,
+   "elevation_m": 293.0,
+   "climate_zone": "tropical_plateau"
+  },
+  {
+   "code": "BASE-S4",
+   "region": "south",
+   "lat": 9.4,
+   "lon": 78.4,
+   "elevation_m": 35.0,
+   "climate_zone": "tropical_coastal"
+  },
+  {
+   "code": "BASE-S5",
+   "region": "south",
+   "lat": 11.2,
+   "lon": 75.9,
+   "elevation_m": 23.0,
+   "climate_zone": "tropical_coastal"
+  },
+  {
+   "code": "BASE-S6",
+   "region": "south",
+   "lat": 14.4,
+   "lon": 77.3,
+   "elevation_m": 521.0,
+   "climate_zone": "tropical_plateau"
+  },
+  {
+   "code": "BASE-S7",
+   "region": "south",
+   "lat": 8.6,
+   "lon": 76.9,
+   "elevation_m": 54.0,
+   "climate_zone": "tropical_coastal"
+  },
+  {
+   "code": "BASE-S8",
+   "region": "south",
+   "lat": 10.6,
+   "lon": 72.6,
+   "elevation_m": 0.0,
+   "climate_zone": "tropical_coastal"
+  }
+ ]
+}

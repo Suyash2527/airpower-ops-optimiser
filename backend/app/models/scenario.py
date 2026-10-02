@@ -44,7 +44,7 @@ class GeneratorParams(Model):
     serviceable_fraction: float = Field(0.85, ge=0.5, le=1)
     crew_available_fraction: float = Field(0.75, ge=0.3, le=1)
     infeasible_fraction: float = Field(0.1, ge=0, le=0.5)  # intentionally infeasible missions
-    history_days: int = Field(60, ge=1, le=365)  # synthetic maintenance history length
+    history_days: int = Field(30, ge=1, le=365)  # synthetic maintenance history length
 
 
 class DutyRules(Model):
