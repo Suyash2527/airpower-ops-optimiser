@@ -588,15 +588,6 @@
    "elevation_m": 208.8
   },
   {
-   "id": "VIAG",
-   "name": "Agra Airport / Agra Air Force Station",
-   "iata": "AGR",
-   "type": "medium_airport",
-   "lat": 27.158,
-   "lon": 77.961,
-   "elevation_m": 167.9
-  },
-  {
    "id": "VIAL",
    "name": "Prayagraj Airport",
    "iata": "IXD",
@@ -633,15 +624,6 @@
    "elevation_m": 1089.1
   },
   {
-   "id": "VIBY",
-   "name": "Bareilly Air Force Station",
-   "iata": "BEK",
-   "type": "medium_airport",
-   "lat": 28.4221,
-   "lon": 79.4508,
-   "elevation_m": 176.8
-  },
-  {
    "id": "VICG",
    "name": "Shaheed Bhagat Singh International Airport",
    "iata": "IXC",
@@ -676,15 +658,6 @@
    "lat": 28.5556,
    "lon": 77.0952,
    "elevation_m": 236.8
-  },
-  {
-   "id": "VIDX",
-   "name": "Hindon Airport / Hindon Air Force Station",
-   "iata": "HDO",
-   "type": "small_airport",
-   "lat": 28.7077,
-   "lon": 77.3589,
-   "elevation_m": 213.4
   },
   {
    "id": "VIGG",
@@ -973,15 +946,6 @@
    "lat": 12.2298,
    "lon": 76.6537,
    "elevation_m": 716.0
-  },
-  {
-   "id": "VOPB",
-   "name": "Veer Savarkar International Airport / INS Utkrosh",
-   "iata": "IXZ",
-   "type": "large_airport",
-   "lat": 11.6402,
-   "lon": 92.729,
-   "elevation_m": 4.0
   },
   {
    "id": "VOPC",

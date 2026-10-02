@@ -19,6 +19,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import re
 from datetime import date
 from pathlib import Path
 from urllib.request import urlopen
@@ -51,6 +52,18 @@ def climate_zone(region: str, elevation_m: float) -> str:
     if region == "east_ne":
         return "humid_hill_ne"
     return "tropical_coastal" if elevation_m < 100 else "tropical_plateau"
+
+
+# Real air force / naval / army stations that also appear with civil service are excluded:
+# INDIA_CONTEXT forbids using real units or sensitive installations (HONESTY.md).
+MILITARY_NAME = re.compile(
+    r"air force|\bafs\b|air base|air station|military|naval|\bnavy\b|\barmy\b|\bins\b",
+    re.IGNORECASE,
+)
+
+
+def is_military_name(name: str) -> bool:
+    return bool(MILITARY_NAME.search(name))
 
 
 def fetch_elevations(points: list[tuple[float, float]]) -> list[float]:
@@ -91,7 +104,7 @@ def build_airports() -> None:
             continue
         if row["type"] not in ("large_airport", "medium_airport", "small_airport"):
             continue
-        if not row["elevation_ft"]:
+        if not row["elevation_ft"] or is_military_name(row["name"]):
             continue
         rows.append({
             "id": row["ident"], "name": row["name"], "iata": row["iata_code"] or None,
@@ -111,7 +124,22 @@ def build_airports() -> None:
     print("airports:", len(rows))
 
 
+def refilter_existing() -> None:
+    """Apply the military-name filter to the committed file without re-downloading."""
+    path = OUT / "india_airports.json"
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    before = len(doc["airports"])
+    doc["airports"] = [a for a in doc["airports"] if not is_military_name(a["name"])]
+    path.write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8", newline="\n")
+    print(f"airports: {before} -> {len(doc['airports'])}")
+
+
 if __name__ == "__main__":
+    import sys
+
+    if "--refilter" in sys.argv:
+        refilter_existing()
+        raise SystemExit(0)
     OUT.mkdir(parents=True, exist_ok=True)
     build_sites()
     build_airports()
