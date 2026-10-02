@@ -26,20 +26,20 @@ Tick `[x]` as you complete. IDs map to `PRD.md` requirements. Do tasks in order 
 - [x] 2.6 Tests: merge, staleness, conflict, determinism
 
 ## Phase 3 — Feasibility & baselines (P-1, P-4, P-5 partial)
-- [ ] 3.1 Capability check + test
-- [ ] 3.2 Serviceability/availability check + test
-- [ ] 3.3 Range/endurance (pyproj geodesic) + test
-- [ ] 3.4 Loadout compatibility + stock + test
-- [ ] 3.5 Crew qualification, duty limit, rest + tests
-- [ ] 3.6 Time-window/transit + test
-- [ ] 3.7 Airspace route intersection (shapely) + test
-- [ ] 3.8 Weather minima (base + target) + test
-- [ ] 3.9 Threat risk limit + test
-- [ ] 3.10 Feasibility matrix builder with slot discretisation and reason-code aggregation
-- [ ] 3.11 `risk.py` breakdown (threat, weather, service, combined)
-- [ ] 3.12 `validate.py` independent validator
-- [ ] 3.13 `greedy.py` greedy_priority + fifo; all pass validator on 20 seeds
-- [ ] 3.14 `GET /feasibility`
+- [x] 3.1 Capability check + test
+- [x] 3.2 Serviceability/availability check + test
+- [x] 3.3 Range/endurance (pyproj geodesic) + test
+- [x] 3.4 Loadout compatibility + stock + test
+- [x] 3.5 Crew qualification, duty limit, rest + tests
+- [x] 3.6 Time-window/transit + test
+- [x] 3.7 Airspace route intersection (shapely) + test
+- [x] 3.8 Weather minima (base + target) + test
+- [x] 3.9 Threat risk limit + test
+- [x] 3.10 Feasibility matrix builder with slot discretisation and reason-code aggregation
+- [x] 3.11 `risk.py` breakdown (threat, weather, service, combined)
+- [x] 3.12 `validate.py` independent validator
+- [x] 3.13 `greedy.py` greedy_priority + fifo; all pass validator on 20 seeds
+- [x] 3.14 `GET /feasibility`
 
 ## Phase 4 — Optimiser (P-2, P-3, P-6)
 - [ ] 4.1 CP-SAT model: options, z[m], intervals, aircraft NoOverlap

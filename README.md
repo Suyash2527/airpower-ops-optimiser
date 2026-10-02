@@ -40,4 +40,4 @@ Phase 7 (scikit-learn) and for exact geodesics, run the backend under **WSL2** o
 (Linux), where they install normally. The policy is not bypassed (docs/DECISIONS.md D-11, D-35).
 
 ## Status
-Phases 0–2 built (scaffold, synthetic scenarios, fusion layer). See `docs/TASKS.md` for the checklist.
+Phases 0–3 built (scaffold, synthetic scenarios, fusion layer, feasibility engine, risk, validator, greedy/FIFO baselines). See `docs/TASKS.md` for the checklist.

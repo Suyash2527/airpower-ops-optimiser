@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import fusion, health, scenarios
+from app.api import fusion, health, planning, scenarios
 from app.core.config import Settings, get_settings
 from app.core.db import init_db, make_engine
 from app.core.errors import install_error_handlers
@@ -39,6 +39,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health.router, prefix=API_PREFIX)
     app.include_router(scenarios.router, prefix=API_PREFIX)
     app.include_router(fusion.router, prefix=API_PREFIX)
+    app.include_router(planning.router, prefix=API_PREFIX)
     return app
 
 

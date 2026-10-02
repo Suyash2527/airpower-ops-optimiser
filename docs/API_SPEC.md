@@ -26,7 +26,7 @@ Base URL `/api/v1`. JSON. Every response includes `data_label` (`"synthetic" | "
 | POST | `/plans/{id}/validate` | runs validator, returns violations |
 | GET | `/plans/{id}/explain/{assignment_id}` | explanation + rejected alternatives |
 | GET | `/plans/compare?a=&b=` | KPI + diff between two plans |
-| GET | `/feasibility` | query `mission_id` → aircraft/loadout options with reason codes (debug/explain view) |
+| GET | `/feasibility` | query `scenario_id`, `mission_id` (+ `fused=true`, `secondary=true`, `now_min=0`) → every feasible aircraft/loadout option (takeoff-slot range, best slot, risk breakdown), every blocked option with reason codes, and a tally `blocked_by[{code, phrase, count, example}]`. Counts are aircraft options (aircraft x loadout); an option can appear under several reasons |
 
 ## Events & retasking
 | Method | Path | Purpose |
