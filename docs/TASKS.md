@@ -10,12 +10,12 @@ Tick `[x]` as you complete. IDs map to `PRD.md` requirements. Do tasks in order 
 - [x] 0.5 `docs/DECISIONS.md` created; smoke test passes
 
 ## Phase 1 — Models & generator
-- [ ] 1.1 SQLModel tables + Pydantic schemas for all entities in DATA_MODEL.md
-- [ ] 1.2 Provenance block on all ingested entities
-- [ ] 1.3 `sim/generate.py` with seed + parameters; maintenance-history hazard function documented in code docstring
-- [ ] 1.4 Save/load scenario JSON; `scenarios/demo.json` (seed 42)
-- [ ] 1.5 Endpoints: generate, load, list, snapshot
-- [ ] 1.6 Test: same seed → identical JSON; intentionally infeasible missions present
+- [x] 1.1 SQLModel tables + Pydantic schemas for all entities in DATA_MODEL.md
+- [x] 1.2 Provenance block on all ingested entities
+- [x] 1.3 `sim/generate.py` with seed + parameters; maintenance-history hazard function documented in code docstring
+- [x] 1.4 Save/load scenario JSON; `scenarios/demo.json` (seed 42)
+- [x] 1.5 Endpoints: generate, load, list, snapshot
+- [x] 1.6 Test: same seed → identical JSON; intentionally infeasible missions present
 
 ## Phase 2 — Fusion (F-1…F-5)
 - [ ] 2.1 `Adapter` protocol + `SyntheticAdapter`
@@ -92,3 +92,18 @@ Tick `[x]` as you complete. IDs map to `PRD.md` requirements. Do tasks in order 
 - [ ] 8.4 `docs/LIMITATIONS.md`
 - [ ] 8.5 `docker compose up` verified end-to-end
 - [ ] 8.6 Final pass: grep UI/docs for any unmeasured numeric claim
+
+## Phase 1 — India additions (INDIA_CONTEXT §3, §6)
+- [x] 1.7 Five region boxes, season presets (t0, weather, temperature, mission mix), base elevation + density-altitude helpers (`core/physics.py`)
+- [x] 1.8 HADR capability + `disaster_event`, civil routes (`Z-CIV-*`) and military corridors (`Z-MIL-*`), alternate airfields from open civil-airport data (military-named excluded)
+- [x] 1.9 Preset scenarios from recorded seeds: demo (42), monsoon_flood_hadr (101), winter_fog_north (202), cyclone_east_coast (303), pre_monsoon_heat_dust (404)
+
+## Phase 9 — AI layer (after Phases 0–6; see docs/AI_LAYER.md §4)
+- [ ] 9.1 `assistant/llm.py` `LLMProvider` + `GeminiProvider` + no-key fallback (app works with no key)
+- [ ] 9.2 Read-only tool wrappers + function-calling loop + number-grounding check
+- [ ] 9.3 Copilot UI panel + "Explain in plain words"
+- [ ] 9.4 Mission intake: draft → human confirms → `NEW_MISSION`
+- [ ] 9.5 A4 anomaly detection (`ingest/anomaly.py`) → fusion-report flags
+- [ ] 9.6 A5 plan robustness score (`planning/robustness.py`)
+- [ ] 9.7 A6 preference learning (`planning/preferences.py`) → suggested weights card
+- [ ] 9.8 Evaluation scripts for A4–A7 (numbers only from scripts)
