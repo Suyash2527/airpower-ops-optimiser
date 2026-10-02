@@ -4,6 +4,7 @@ INDIA_CONTEXT §6)."""
 from __future__ import annotations
 
 import json
+from enum import Enum
 from typing import Any, Literal
 
 from pydantic import AwareDatetime, Field
@@ -93,6 +94,27 @@ GROUPS: dict[str, type[Model]] = {
     "maintenance_history": MaintenanceRecord,
     "events": Event,
 }
+
+
+# Fields that identify a record within its group (the entity-resolution key, ALGORITHMS §1.2).
+KEY_FIELDS: dict[str, tuple[str, ...]] = {
+    **{group: ("id",) for group in GROUPS},
+    "weapon_stocks": ("base_id", "item_type"),
+    "weather": ("base_id", "kind", "time_min"),
+}
+
+
+def _key_part(value: Any) -> str:
+    return str(value.value) if isinstance(value, Enum) else str(value)
+
+
+def entity_key(group: str, entity: Model) -> str:
+    return ":".join(_key_part(getattr(entity, f)) for f in KEY_FIELDS[group])
+
+
+def record_key(group: str, record: dict[str, Any]) -> str:
+    """Same key from a JSON-mode dict (enums are already their string values)."""
+    return ":".join(str(record[f]) for f in KEY_FIELDS[group])
 
 
 class ScenarioFile(Model):
