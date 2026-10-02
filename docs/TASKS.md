@@ -7,7 +7,7 @@ Tick `[x]` as you complete. IDs map to `PRD.md` requirements. Do tasks in order 
 - [x] 0.2 Backend `pyproject.toml` (fastapi, uvicorn, pydantic, sqlmodel, ortools, shapely, pyproj, scikit-learn, httpx, pytest, ruff), `app/main.py`, `/api/v1/health`
 - [x] 0.3 Frontend Next.js + TS + Tailwind + MapLibre; layout with SYNTHETIC DATA badge (U-8)
 - [x] 0.4 `docker-compose.yml` (api, web, db)
-- [ ] 0.5 `docs/DECISIONS.md` created; smoke test passes
+- [x] 0.5 `docs/DECISIONS.md` created; smoke test passes
 
 ## Phase 1 — Models & generator
 - [ ] 1.1 SQLModel tables + Pydantic schemas for all entities in DATA_MODEL.md
