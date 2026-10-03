@@ -114,7 +114,7 @@ export default function ProposalsPage() {
                   : "Approve a plan on the Plan page first. Re-plans are always made against the active plan."}
               </EmptyState>
             ) : (
-              <section className="flex flex-col gap-5">
+              <section className="stagger flex flex-col gap-5">
                 <div className="flex items-start gap-3 rounded-card border border-line bg-surface p-5 shadow-card">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600"><Icon name="zap" size={20} /></span>
                   <div className="min-w-0">
@@ -286,7 +286,7 @@ function OptionCard({
         {d.added.length + d.removed.length + d.changed.length === 0 ? (
           <p className="mt-3 text-sm text-ink-3">No sortie changes: the active plan already copes with this event.</p>
         ) : (
-          <div className="mt-3 flex flex-col gap-2">
+          <div className="stagger mt-3 flex flex-col gap-2">
             {d.removed.map((id) => <DiffRow key={`r${id}`} kind="removed" id={id} a={before.get(id)} priority={priority} />)}
             {d.added.map((id) => <DiffRow key={`a${id}`} kind="added" id={id} a={after.get(id)} priority={priority} />)}
             {[...changed.entries()].map(([id, cs]) => (

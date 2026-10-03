@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useState, type ReactNode } from "react";
 import { Button, EmptyState, ErrorState, PageSkeleton, useToast } from "@/components/ui";
+import { busyEnd, busyStart } from "@/lib/busy";
 
 /** Shown when no scenario is chosen yet. */
 export function NeedScenario() {
@@ -45,7 +46,8 @@ export function Gate({
   if (scenarioId === null) return <NeedScenario />;
   if (error) return <ErrorState message={error} onRetry={onRetry} />;
   if (!ready) return <>{sk}</>;
-  return <>{children()}</>;
+  // Content replaces the skeleton with the page's rhythm: sections rise in order.
+  return <div className="stagger flex flex-col gap-8">{children()}</div>;
 }
 
 /** Run an async action with a busy flag and a toast for the result (success or failure). */
@@ -55,6 +57,7 @@ export function useAction() {
   const run = useCallback(
     async <T,>(label: string, fn: () => Promise<T>, ok: (r: T) => [string, string?], failTitle = "Action failed") => {
       setBusy(label);
+      busyStart();
       try {
         const r = await fn();
         const [title, body] = ok(r);
@@ -64,6 +67,7 @@ export function useAction() {
         toast.error(failTitle, (e as Error).message);
         return null;
       } finally {
+        busyEnd();
         setBusy(null);
       }
     },

@@ -40,8 +40,13 @@ function Hero() {
           maskImage: "linear-gradient(90deg, transparent 30%, black 80%)",
         }}
       />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-24 -top-32 h-[420px] w-[520px] rounded-full opacity-60 blur-3xl [animation:aurora_14s_ease-in-out_infinite]"
+        style={{ background: "radial-gradient(circle, var(--color-brand-200), transparent 65%)" }}
+      />
       <div className="relative grid gap-10 p-10 lg:grid-cols-[1fr_380px] lg:p-12">
-        <div className="max-w-2xl">
+        <div className="stagger max-w-2xl">
           <Badge tone="blue" size="md" icon="shield">Advisory decision-support prototype</Badge>
           <h1 className="mt-5 font-display text-display font-semibold text-ink">AirPower</h1>
           <p className="mt-3 text-xl leading-8 text-ink-2">
@@ -73,7 +78,7 @@ function SessionCard() {
   const loading = scenarioId === undefined || (scenarioId && (!list.data || !plans.data || !proposals.data) && !list.error);
 
   return (
-    <div className="self-start rounded-2xl border border-line bg-surface/90 p-6 shadow-raised backdrop-blur">
+    <div className="enter-rise self-start rounded-2xl border border-line bg-surface/90 p-6 shadow-raised backdrop-blur" style={{ ["--d" as string]: 250 }}>
       <div className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-4">Current session</div>
       {loading ? (
         <div className="mt-4 flex flex-col gap-3">
@@ -131,9 +136,9 @@ function Workflow() {
       </div>
       <ol className="mt-6 grid grid-cols-7 gap-0">
         {STEPS.map((s, i) => (
-          <li key={s.title} className="relative flex flex-col items-center px-2 text-center">
+          <li key={s.title} className="enter-rise relative flex flex-col items-center px-2 text-center" style={{ ["--d" as string]: 200 + i * 110 }}>
             {i < STEPS.length - 1 && (
-              <span aria-hidden className="absolute left-[calc(50%+30px)] right-[calc(-50%+30px)] top-[27px] flex items-center">
+              <span aria-hidden className="enter-grow-x absolute left-[calc(50%+30px)] right-[calc(-50%+30px)] top-[27px] flex items-center" style={{ ["--d" as string]: 320 + i * 110 }}>
                 <span className="h-px flex-1 bg-line-strong" />
                 <Icon name="chevronRight" size={14} className="-ml-1 text-ink-4" />
               </span>
@@ -163,9 +168,9 @@ function Principles() {
     { icon: "list", title: "Every decision explained", text: "Each assignment, rejection and re-plan carries reason codes and a plain sentence. Hover any reason to read it." },
   ];
   return (
-    <section className="grid grid-cols-3 gap-6">
+    <section className="stagger grid grid-cols-3 gap-6">
       {items.map((it) => (
-        <div key={it.title} className="rounded-card border border-line bg-surface p-6 shadow-card">
+        <div key={it.title} className="lift rounded-card border border-line bg-surface p-6 shadow-card">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-700"><Icon name={it.icon} size={20} /></span>
           <h3 className="mt-4 text-[15px] font-semibold text-ink">{it.title}</h3>
           <p className="mt-1.5 text-sm leading-6 text-ink-3">{it.text}</p>

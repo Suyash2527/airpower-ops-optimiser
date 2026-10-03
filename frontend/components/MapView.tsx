@@ -137,7 +137,7 @@ export default function MapView({ snapshot, assignments = [], planLabel }: { sna
     onPointerMove: (ev: RPointerEvent) => !drag.current?.moved && place(info, ev),
     onPointerLeave: () => setHover(null),
     onClick: () => { if (!wasDrag.current) setSelected(info); },
-    style: { cursor: "pointer" },
+    "data-hit": true,
   });
   const place = (info: Info, ev: RPointerEvent) => {
     const rect = box.current!.getBoundingClientRect();
@@ -203,7 +203,7 @@ export default function MapView({ snapshot, assignments = [], planLabel }: { sna
           <svg
             ref={svg}
             viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
-            className="absolute inset-0 block h-full w-full cursor-grab touch-none select-none active:cursor-grabbing"
+            className="absolute inset-0 block h-full w-full [&_[data-hit]]:cursor-pointer cursor-grab touch-none select-none active:cursor-grabbing"
             data-testid="cop-map"
             onWheel={onWheel}
             onPointerDown={onDown}
@@ -302,12 +302,13 @@ export default function MapView({ snapshot, assignments = [], planLabel }: { sna
                 >
                   <circle cx={cx} cy={cy} r={rr} fill={on ? `rgb(217 45 32 / ${0.08 + th.severity * 0.16})` : "rgb(217 45 32 / 0.02)"} />
                   {on && <circle cx={cx} cy={cy} r={rr} fill="url(#hatch)" />}
+                  {on && <circle className="pulse-ring" cx={cx} cy={cy} r={rr} fill="none" stroke="var(--color-threat)" strokeWidth={2} vectorEffect="non-scaling-stroke" />}
                   <circle cx={cx} cy={cy} r={rr} fill="none" stroke="var(--color-threat)" strokeOpacity={on ? 0.95 : 0.3} strokeDasharray={on ? undefined : "4 4"} strokeWidth={on ? 1.6 : 1.2} vectorEffect="non-scaling-stroke" />
                 </g>
               );
             })}
 
-            {shown.routes && assignments.map((a) => {
+            {shown.routes && assignments.map((a, i) => {
               const b = baseById.get(a.base_from);
               const m = missionById.get(a.mission_id);
               if (!b || !m) return null;
@@ -316,6 +317,8 @@ export default function MapView({ snapshot, assignments = [], planLabel }: { sna
               return (
                 <polyline
                   key={a.id}
+                  className="enter-fade"
+                  style={{ ["--d" as string]: 500 + i * 30 }}
                   points={pts.map((q) => `${x(q.lon)},${y(q.lat)}`).join(" ")}
                   fill="none"
                   stroke="var(--color-route)"
@@ -342,7 +345,7 @@ export default function MapView({ snapshot, assignments = [], planLabel }: { sna
               );
             })}
 
-            {shown.missions && snapshot.missions.map((m) => {
+            {shown.missions && snapshot.missions.map((m, i) => {
               const on = active(t, m.window_start_min, m.window_end_min);
               const covered = assignments.filter((a) => a.mission_id === m.id);
               const cx = x(m.aoi.center.lon);
@@ -368,6 +371,8 @@ export default function MapView({ snapshot, assignments = [], planLabel }: { sna
                 >
                   <circle cx={cx} cy={cy} r={Math.max(r(m.aoi.radius_km), s)} fill={pColor(m.priority)} fillOpacity={0.07} stroke={pColor(m.priority)} strokeOpacity={0.45} strokeWidth={1} vectorEffect="non-scaling-stroke" />
                   <path
+                    className="enter-pop"
+                    style={{ ["--d" as string]: 250 + i * 12 }}
                     d={`M${cx} ${cy - s}L${cx + s} ${cy}L${cx} ${cy + s}L${cx - s} ${cy}Z`}
                     fill={covered.length ? pColor(m.priority) : "white"}
                     stroke={covered.length ? (m.priority >= 4 ? pColor(3) : "white") : pColor(Math.min(3, m.priority))}
@@ -390,7 +395,7 @@ export default function MapView({ snapshot, assignments = [], planLabel }: { sna
               />
             ))}
 
-            {shown.bases && snapshot.bases.map((b) => (
+            {shown.bases && snapshot.bases.map((b, i) => (
               <g
                 key={b.id}
                 {...bind({
@@ -407,7 +412,7 @@ export default function MapView({ snapshot, assignments = [], planLabel }: { sna
                   ],
                 })}
               >
-                <rect x={x(b.lon) - fs(7)} y={y(b.lat) - fs(7)} width={fs(14)} height={fs(14)} rx={fs(3)} fill="var(--color-base)" stroke="white" strokeWidth={fs(2)} />
+                <rect className="enter-pop" style={{ ["--d" as string]: 100 + i * 80 }} x={x(b.lon) - fs(7)} y={y(b.lat) - fs(7)} width={fs(14)} height={fs(14)} rx={fs(3)} fill="var(--color-base)" stroke="white" strokeWidth={fs(2)} />
                 <text x={x(b.lon) + fs(12)} y={y(b.lat) + fs(4.5)} fontSize={fs(13)} fontWeight={600} fill="var(--color-ink)" stroke="white" strokeWidth={fs(3.5)} paintOrder="stroke" strokeLinejoin="round">
                   {b.name}
                 </text>
@@ -433,7 +438,7 @@ export default function MapView({ snapshot, assignments = [], planLabel }: { sna
 
           {hover && (
             <div
-              className="pointer-events-none absolute z-10 w-64 animate-fade-in rounded-xl border border-line bg-surface/97 p-3.5 shadow-overlay backdrop-blur"
+              className="pointer-events-none absolute z-10 w-64 animate-pop-in rounded-xl border border-line bg-surface/97 p-3.5 shadow-overlay backdrop-blur"
               style={{
                 left: size && hover.x > size.w - 290 ? hover.x - 276 : hover.x + 16,
                 top: size && hover.y > size.h - 220 ? Math.max(8, hover.y - 200) : hover.y + 16,

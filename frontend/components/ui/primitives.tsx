@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode, SelectHTMLAttributes, InputHTMLAttributes } from "react";
 import { Icon, type IconName } from "./Icon";
 import { Tooltip } from "./Tooltip";
+import { CountUp } from "./CountUp";
 import type { Tone } from "@/lib/format";
 
 /* ---------------------------------------------------------------- Button */
@@ -34,7 +35,7 @@ export function Button({
   return (
     <button
       disabled={disabled || loading}
-      className={`inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-control border font-medium transition-colors focus-visible:shadow-focus focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-55 ${VARIANT[variant]} ${SIZE[size]} ${className}`}
+      className={`press inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-control border font-medium focus-visible:shadow-focus focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-55 ${VARIANT[variant]} ${SIZE[size]} ${className}`}
       {...props}
     >
       {loading ? <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-r-transparent" aria-hidden /> : icon && <Icon name={icon} size={size === "lg" ? 18 : 16} />}
@@ -49,7 +50,7 @@ export function IconButton({ icon, label, className = "", ...props }: ButtonHTML
     <Tooltip content={label}>
       <button
         aria-label={label}
-        className={`inline-flex h-9 w-9 items-center justify-center rounded-control border border-line-strong bg-surface text-ink-2 shadow-card transition-colors hover:bg-subtle hover:text-ink focus-visible:shadow-focus focus-visible:outline-none ${className}`}
+        className={`press inline-flex h-9 w-9 items-center justify-center rounded-control border border-line-strong bg-surface text-ink-2 shadow-card hover:bg-subtle hover:text-ink focus-visible:shadow-focus focus-visible:outline-none ${className}`}
         {...props}
       >
         <Icon name={icon} size={17} />
@@ -176,7 +177,7 @@ export function KpiCard({
   footer?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col rounded-card border border-line bg-surface p-5 shadow-card">
+    <div className="lift flex flex-col rounded-card border border-line bg-surface p-5 shadow-card">
       <div className="flex items-center justify-between gap-2">
         <span className="text-[13px] font-medium text-ink-3">{label}</span>
         {icon && (
@@ -186,7 +187,7 @@ export function KpiCard({
         )}
       </div>
       <div className="mt-2 flex items-baseline gap-1.5">
-        <span className="font-display text-[30px] font-semibold leading-9 tracking-[-0.01em] text-ink tnum">{value}</span>
+        <span className="font-display text-[30px] font-semibold leading-9 tracking-[-0.01em] text-ink tnum">{typeof value === "string" || typeof value === "number" ? <CountUp value={value} /> : value}</span>
         {unit && <span className="text-sm font-medium text-ink-3">{unit}</span>}
       </div>
       <p className="mt-1 text-[13px] leading-5 text-ink-3">{meaning}</p>
@@ -200,7 +201,7 @@ export function KpiCard({
 export function EmptyState({ icon = "info", title, children, action }: { icon?: IconName; title: string; children?: ReactNode; action?: ReactNode }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-card border border-dashed border-line-strong bg-surface px-6 py-14 text-center">
-      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-700 ring-8 ring-brand-50/50">
+      <span className="enter-pop flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-700 ring-8 ring-brand-50/50">
         <Icon name={icon} size={22} />
       </span>
       <h3 className="mt-4 text-base font-semibold text-ink">{title}</h3>
@@ -303,7 +304,7 @@ export function Table({ head, children, className = "", dense = false }: { head:
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-line">{children}</tbody>
+        <tbody className="stagger divide-y divide-line">{children}</tbody>
       </table>
     </div>
   );
@@ -364,7 +365,7 @@ export function DetailRows({ rows }: { rows: [ReactNode, ReactNode][] }) {
 export function Meter({ value, color = "var(--color-brand-500)", className = "" }: { value: number; color?: string; className?: string }) {
   return (
     <div className={`h-1.5 w-full overflow-hidden rounded-full bg-slate-100 ${className}`}>
-      <div className="h-full rounded-full transition-[width] duration-300" style={{ width: `${Math.max(0, Math.min(1, value)) * 100}%`, background: color }} />
+      <div className="enter-grow-x h-full rounded-full transition-[width] duration-300" style={{ width: `${Math.max(0, Math.min(1, value)) * 100}%`, background: color }} />
     </div>
   );
 }

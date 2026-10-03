@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Icon, type IconName } from "./Icon";
 
@@ -139,40 +139,69 @@ export function useToast() {
 
 /* ---------------------------------------------------------------- Tabs */
 
+/** Measures the active child of `box` so an indicator can slide to it. */
+function useIndicator(active: string) {
+  const box = useRef<HTMLDivElement>(null);
+  const [rect, setRect] = useState<{ left: number; width: number } | null>(null);
+  useLayoutEffect(() => {
+    const el = box.current?.querySelector<HTMLElement>(`[data-key="${CSS.escape(active)}"]`);
+    if (el) setRect({ left: el.offsetLeft, width: el.offsetWidth });
+  }, [active]);
+  return { box, rect };
+}
+
 export function Tabs<K extends string>({ tabs, value, onChange }: { tabs: { key: K; label: ReactNode; count?: number; icon?: IconName }[]; value: K; onChange: (k: K) => void }) {
+  const { box, rect } = useIndicator(value);
   return (
-    <div role="tablist" className="flex gap-1 border-b border-line">
+    <div ref={box} role="tablist" className="relative flex gap-1 border-b border-line">
       {tabs.map((t) => {
         const on = t.key === value;
         return (
           <button
             key={t.key}
+            data-key={t.key}
             role="tab"
             aria-selected={on}
             onClick={() => onChange(t.key)}
-            className={`relative -mb-px flex items-center gap-2 border-b-2 px-3 pb-3 pt-1 text-sm font-medium transition-colors ${on ? "border-brand-600 text-brand-700" : "border-transparent text-ink-3 hover:border-line-strong hover:text-ink"}`}
+            className={`relative -mb-px flex items-center gap-2 px-3 pb-3 pt-1 text-sm font-medium transition-colors ${on ? "text-brand-700" : "text-ink-3 hover:text-ink"}`}
           >
             {t.icon && <Icon name={t.icon} size={16} />}
             {t.label}
             {t.count !== undefined && (
-              <span className={`rounded-full px-2 py-0.5 text-xs tnum ${on ? "bg-brand-50 text-brand-700" : "bg-slate-100 text-ink-3"}`}>{t.count}</span>
+              <span className={`rounded-full px-2 py-0.5 text-xs tnum transition-colors ${on ? "bg-brand-50 text-brand-700" : "bg-slate-100 text-ink-3"}`}>{t.count}</span>
             )}
           </button>
         );
       })}
+      {rect && (
+        <span
+          aria-hidden
+          className="absolute -bottom-px h-0.5 rounded-full bg-brand-600 transition-[left,width] duration-300 ease-[var(--ease-out)]"
+          style={{ left: rect.left, width: rect.width }}
+        />
+      )}
     </div>
   );
 }
 
-/** Segmented control for small filters. */
+/** Segmented control for small filters, with a sliding thumb. */
 export function Segmented<K extends string>({ options, value, onChange }: { options: { key: K; label: ReactNode }[]; value: K; onChange: (k: K) => void }) {
+  const { box, rect } = useIndicator(value);
   return (
-    <div className="inline-flex rounded-control border border-line bg-subtle p-0.5">
+    <div ref={box} className="relative inline-flex rounded-control border border-line bg-subtle p-0.5">
+      {rect && (
+        <span
+          aria-hidden
+          className="absolute inset-y-0.5 rounded-md bg-surface shadow-card transition-[left,width] duration-300 ease-[var(--ease-out)]"
+          style={{ left: rect.left, width: rect.width }}
+        />
+      )}
       {options.map((o) => (
         <button
           key={o.key}
+          data-key={o.key}
           onClick={() => onChange(o.key)}
-          className={`rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors ${o.key === value ? "bg-surface text-ink shadow-card" : "text-ink-3 hover:text-ink"}`}
+          className={`relative rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors ${o.key === value ? "text-ink" : "text-ink-3 hover:text-ink"}`}
         >
           {o.label}
         </button>

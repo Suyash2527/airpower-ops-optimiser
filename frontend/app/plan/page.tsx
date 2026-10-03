@@ -176,7 +176,7 @@ function PlanBody({
         )}
       </Card>
 
-      <div className="grid grid-cols-4 gap-6">
+      <div className="stagger grid grid-cols-4 gap-6">
         <KpiCard
           icon="target"
           tone="blue"
@@ -321,7 +321,7 @@ function PriorityBars({ by }: { by: Record<string, number> }) {
           <Tooltip key={p} content={`Priority ${p}: ${pct(v)} covered`}>
             <span className="flex flex-1 flex-col items-center gap-1">
               <span className="flex h-10 w-full items-end overflow-hidden rounded-sm bg-slate-100">
-                <span className="w-full rounded-sm" style={{ height: `${Math.max(v * 100, v > 0 ? 6 : 0)}%`, background: `var(--color-p${p})` }} />
+                <span className="enter-grow-y w-full rounded-sm" style={{ height: `${Math.max(v * 100, v > 0 ? 6 : 0)}%`, background: `var(--color-p${p})`, ["--d" as string]: 400 + p * 80 }} />
               </span>
               <span className="text-[11px] font-medium text-ink-3">P{p}</span>
             </span>

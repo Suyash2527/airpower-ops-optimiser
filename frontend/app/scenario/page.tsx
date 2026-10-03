@@ -136,7 +136,7 @@ function Summary({ s }: { s: Snapshot }) {
         <Badge tone="amber" size="md" icon="alert">Data: {s.data_label}</Badge>
       </div>
 
-      <div className="grid grid-cols-4 gap-6">
+      <div className="stagger grid grid-cols-4 gap-6">
         <KpiCard icon="home" label="Bases" value={s.bases.length} meaning="Fictional air bases at real locations and elevations." />
         <KpiCard
           icon="plane"
@@ -163,7 +163,7 @@ function Summary({ s }: { s: Snapshot }) {
           value={s.missions.length}
           meaning={`${s.threats.length} threat zones and ${s.airspace.length} airspace restrictions constrain them.`}
           footer={
-            <div className="flex h-2 overflow-hidden rounded-full">
+            <div className="enter-grow-x flex h-2 overflow-hidden rounded-full" style={{ ["--d" as string]: 350 }}>
               {[1, 2, 3, 4, 5].map((p) => (
                 <span key={p} title={`P${p}: ${pri[p] ?? 0}`} style={{ flex: pri[p] ?? 0, background: `var(--color-p${p})` }} />
               ))}
@@ -220,7 +220,7 @@ function StatusBreakdown({ title, counts, total }: { title: string; counts: Reco
         <span className="font-medium text-ink-2">{title}</span>
         <span className="text-ink-3 tnum">{total} total</span>
       </div>
-      <div className="mt-2 flex h-2 gap-0.5 overflow-hidden rounded-full">
+      <div className="enter-grow-x mt-2 flex h-2 gap-0.5 overflow-hidden rounded-full" style={{ ["--d" as string]: 300 }}>
         {entries.map(([k, v]) => {
           const t = healthTone(k);
           return <span key={k} style={{ flex: v }} className={t === "green" ? "bg-emerald-500" : t === "red" ? "bg-red-500" : "bg-amber-400"} />;

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useBusy } from "@/lib/busy";
 import { useApi, useScenarioId } from "@/lib/api";
 import type { ScenarioSummary } from "@/lib/types";
 import { SEASONS } from "@/lib/labels";
@@ -21,15 +22,17 @@ const NAV: { href: string; label: string; icon: IconName }[] = [
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const [about, setAbout] = useState(false);
+  const path = usePathname();
   return (
     <ToastProvider>
       <div className="min-h-screen">
         <Sidebar />
         <div className="flex min-h-screen flex-col pl-64">
           <TopBar onAbout={() => setAbout(true)} />
-          <main className="mx-auto flex w-full max-w-[1360px] flex-1 flex-col gap-8 px-10 pb-16 pt-8">{children}</main>
+          <main key={path} className="stagger mx-auto flex w-full max-w-[1360px] flex-1 flex-col gap-8 px-10 pb-16 pt-8">{children}</main>
         </div>
       </div>
+      <BusyBar />
       <AboutDrawer open={about} onClose={() => setAbout(false)} />
     </ToastProvider>
   );
@@ -37,6 +40,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
 function Sidebar() {
   const path = usePathname();
+  const nav = useRef<HTMLElement>(null);
+  const [pill, setPill] = useState<{ top: number; height: number } | null>(null);
+  useLayoutEffect(() => {
+    const el = nav.current?.querySelector<HTMLElement>('[aria-current="page"]');
+    setPill(el ? { top: el.offsetTop, height: el.offsetHeight } : null);
+  }, [path]);
   return (
     <aside className="fixed inset-y-0 left-0 z-30 flex w-64 flex-col border-r border-line bg-surface">
       <Link href="/" className="flex h-16 items-center gap-3 border-b border-line px-5">
@@ -46,16 +55,25 @@ function Sidebar() {
           <div className="text-[11px] font-medium text-ink-3">Air-ops decision support</div>
         </div>
       </Link>
-      <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3 py-4" aria-label="Main">
+      <nav ref={nav} className="relative flex flex-1 flex-col gap-0.5 overflow-y-auto px-3 py-4" aria-label="Main">
+        {pill && (
+          <span
+            aria-hidden
+            className="absolute inset-x-3 rounded-lg bg-brand-50 transition-[top,height] duration-300 ease-[var(--ease-out)]"
+            style={{ top: pill.top, height: pill.height }}
+          >
+            <span className="absolute inset-y-2 left-0 w-[3px] rounded-full bg-brand-600" />
+          </span>
+        )}
         <div className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-4">Workflow</div>
-        {NAV.map((n, i) => {
+        {NAV.map((n) => {
           const active = n.href === "/" ? path === "/" : path.startsWith(n.href);
           return (
             <Link
               key={n.href}
               href={n.href}
               aria-current={active ? "page" : undefined}
-              className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active ? "bg-brand-50 text-brand-800" : "text-ink-2 hover:bg-subtle hover:text-ink"} ${i === 1 ? "mt-0" : ""}`}
+              className={`group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active ? "text-brand-800" : "text-ink-2 hover:bg-subtle hover:text-ink"}`}
             >
               <Icon name={n.icon} size={18} className={active ? "text-brand-600" : "text-ink-4 transition-colors group-hover:text-ink-3"} />
               {n.label}
@@ -202,5 +220,15 @@ function AboutSection({ icon, tone, title, children }: { icon: IconName; tone: s
       </h3>
       <ul className="mt-2 flex list-disc flex-col gap-1.5 pl-6 marker:text-ink-4">{children}</ul>
     </section>
+  );
+}
+
+/** Thin indeterminate bar at the top of the window while any action is running. */
+function BusyBar() {
+  const busy = useBusy();
+  return (
+    <div aria-hidden className={`pointer-events-none fixed inset-x-0 top-0 z-[95] h-[3px] overflow-hidden transition-opacity duration-300 ${busy ? "opacity-100" : "opacity-0"}`}>
+      <div className="h-full w-full origin-left bg-gradient-to-r from-brand-400 via-brand-600 to-brand-400 [animation:indeterminate_1.4s_var(--ease-standard)_infinite]" />
+    </div>
   );
 }

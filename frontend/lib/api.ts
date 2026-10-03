@@ -2,7 +2,11 @@
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5050/api/v1";
+// Dev talks to the local API on 5050 (D-63); a production build defaults to the same origin, where
+// vercel.json routes /api/* to the FastAPI service (D-66). NEXT_PUBLIC_API_URL overrides both.
+const BASE =
+  process.env.NEXT_PUBLIC_API_URL ??
+  (process.env.NODE_ENV === "production" ? "/api/v1" : "http://localhost:5050/api/v1");
 
 export async function api<T>(path: string, init?: { method?: string; body?: unknown }): Promise<T> {
   let res: Response;

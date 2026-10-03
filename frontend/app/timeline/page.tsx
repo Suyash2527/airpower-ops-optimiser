@@ -112,14 +112,14 @@ function Gantt({ plan, snap, now, nowEvent, onPick, picked }: { plan: Plan; snap
 
           {/* Rows */}
           <div className="relative">
-            {groups.map(([base, rows]) => (
+            {groups.map(([base, rows], gi) => (
               <div key={base}>
                 <div className="flex items-center gap-2 border-b border-line bg-surface px-6 py-2">
                   <Icon name="home" size={14} className="text-ink-4" />
                   <span className="text-xs font-semibold uppercase tracking-[0.06em] text-ink-3">{baseName.get(base) ?? base}</span>
                   <span className="text-xs text-ink-4">{base} · {rows.length} aircraft</span>
                 </div>
-                {rows.map(([ac, sorties]) => {
+                {rows.map(([ac, sorties], ri) => {
                   const info = aircraft.get(ac);
                   return (
                     <div key={ac} className="flex border-b border-line last:border-b-0 hover:bg-subtle/70" style={{ height: ROW_H }}>
@@ -129,13 +129,13 @@ function Gantt({ plan, snap, now, nowEvent, onPick, picked }: { plan: Plan; snap
                       </div>
                       <div className="relative mr-6 flex-1">
                         {ticks.map((m) => <div key={m} className="absolute inset-y-0 border-l border-dashed border-line" style={{ left: x(m) }} />)}
-                        <div className="absolute inset-y-0 left-0 bg-[repeating-linear-gradient(135deg,transparent_0_6px,rgb(16_24_40/0.035)_6px_12px)]" style={{ width: x(now) }} />
-                        {sorties.map((a) => {
+                        <div className="enter-grow-x absolute inset-y-0 left-0 bg-[repeating-linear-gradient(135deg,transparent_0_6px,rgb(16_24_40/0.035)_6px_12px)]" style={{ width: x(now), ["--d" as string]: 300 }} />
+                        {sorties.map((a, si) => {
                           const p = missions.get(a.mission_id)?.priority ?? 3;
                           const light = p >= 4;
                           const sel = picked?.id === a.id;
                           return (
-                            <div key={a.id} className="absolute inset-y-[7px]" style={{ left: x(a.takeoff_min), width: `max(14px, calc(${x(a.land_min)} - ${x(a.takeoff_min)}))` }}>
+                            <div key={a.id} className="enter-grow-x absolute inset-y-[7px]" style={{ left: x(a.takeoff_min), width: `max(14px, calc(${x(a.land_min)} - ${x(a.takeoff_min)}))`, ["--d" as string]: 150 + (gi * 4 + ri) * 45 + si * 60 }}>
                               <Tooltip
                                 className="h-full w-full"
                                 content={
@@ -168,7 +168,7 @@ function Gantt({ plan, snap, now, nowEvent, onPick, picked }: { plan: Plan; snap
             ))}
 
             {/* Now line spans every row. */}
-            <div className="pointer-events-none absolute inset-y-0 mr-6" style={{ left: LABEL_W, right: 24 }}>
+            <div className="enter-fade pointer-events-none absolute inset-y-0 mr-6" style={{ left: LABEL_W, right: 24, ["--d" as string]: 700 }}>
               <div className="absolute inset-y-0 w-0.5 -translate-x-1/2 bg-red-500" style={{ left: x(now) }}>
                 <span className="absolute top-1.5 left-1.5 whitespace-nowrap rounded-full bg-red-500 px-2 py-0.5 text-[11px] font-semibold text-white shadow-card tnum">
                   Now {tmin(now)}
