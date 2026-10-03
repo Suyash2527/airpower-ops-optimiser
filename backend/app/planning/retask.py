@@ -292,7 +292,8 @@ def explain_proposal(
     codes = sorted({v.code for vs in affected.violations.values() for v in vs})
     text = (
         f"{describe_event(event)}. {len(affected.ids)} assignment(s) affected"
-        f"{' (' + ', '.join(codes) + ')' if codes else ''}. This plan ({preset}) changes "
+        f"{'; violations found in the current plan: ' + ', '.join(codes) if codes else ''}. "
+        f"This plan ({preset}) changes "
         f"{diff.n_changes} assignment(s): {_changes_text(diff, plan, parent)}. Priority-weighted "
         f"coverage {parent.kpis.priority_weighted_coverage:.2f} -> "
         f"{plan.kpis.priority_weighted_coverage:.2f}; mean risk {parent.kpis.mean_risk:.3f} -> "

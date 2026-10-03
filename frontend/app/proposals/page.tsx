@@ -20,6 +20,7 @@ export default function ProposalsPage() {
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<string | null>(null);  // proposal id with a decision in flight
 
   const refresh = useCallback(async () => {
     const id = getScenarioId();
@@ -61,8 +62,19 @@ export default function ProposalsPage() {
       setNote(`Injected simulated event: ${e?.type} at t+${e?.time_min} min. ${r.note ?? ""}`);
     });
 
-  const decide = (id: string, verb: "approve" | "reject") =>
-    guarded(() => api(`/proposals/${id}/${verb}`, { method: "POST", body: { actor: ACTOR } }));
+  // Only the proposal being decided is locked, so a second proposal can still be clicked.
+  const decide = async (id: string, verb: "approve" | "reject") => {
+    setPending(id);
+    setError(null);
+    try {
+      await api(`/proposals/${id}/${verb}`, { method: "POST", body: { actor: ACTOR } });
+      await refresh();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setPending(null);
+    }
+  };
 
   return (
     <main className="flex flex-col gap-3 p-4">
@@ -87,8 +99,8 @@ export default function ProposalsPage() {
             </p>
             {p.status === "open" && (
               <div className="mt-2 flex gap-2">
-                <button disabled={busy} className="rounded border px-3 py-1" onClick={() => decide(p.id, "approve")}>Approve</button>
-                <button disabled={busy} className="rounded border px-3 py-1" onClick={() => decide(p.id, "reject")}>Reject</button>
+                <button disabled={pending === p.id} className="rounded border px-3 py-1" onClick={() => decide(p.id, "approve")}>Approve</button>
+                <button disabled={pending === p.id} className="rounded border px-3 py-1" onClick={() => decide(p.id, "reject")}>Reject</button>
               </div>
             )}
           </li>

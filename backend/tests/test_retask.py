@@ -114,6 +114,20 @@ def test_a_priority_change_marks_that_missions_sorties_affected_without_a_violat
     assert aff.violations == {} and aff.priority_changed == {"S-M-3-1"}
 
 
+def test_explanation_does_not_present_a_violation_code_as_the_events_cause() -> None:
+    scn = base_world()
+    parent = parent_plan(scn)
+    ev = event(EventType.PRIORITY_CHANGE, {"mission_id": "M-3", "new_priority": 1}, 300)
+    aff = rt.Affected(violations={"S-M-2-1": [rt.Violation(
+        code="AIRCRAFT_UNSERVICEABLE", message="x", assignment_id="S-M-2-1", mission_id="M-2")]},
+        priority_changed={"S-M-3-1"})
+    from app.planning.diff import diff_plans
+    text = rt.explain_proposal(ev, parent, parent, diff_plans(parent, parent), aff, "p", False)
+    assert "priority changed" in text
+    assert "violations found in the current plan: AIRCRAFT_UNSERVICEABLE" in text
+    assert "affected (AIRCRAFT_UNSERVICEABLE)" not in text
+
+
 # --------------------------------------------------------------------------- greedy repair
 def test_greedy_repair_keeps_everything_unaffected_and_re_places_the_rest() -> None:
     scn = base_world()
