@@ -56,7 +56,7 @@ export default function PlanPage() {
   }
 
   return (
-    <main className="flex flex-col gap-3 p-4">
+    <div className="flex flex-col gap-3">
       <div>
         <button disabled={busy} onClick={generate} className="rounded border px-3 py-1">
           {busy ? "Solving…" : "Generate plan"}
@@ -93,6 +93,6 @@ export default function PlanPage() {
           </table>
         </>
       )}
-    </main>
+    </div>
   );
 }

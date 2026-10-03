@@ -77,7 +77,7 @@ export default function ProposalsPage() {
   };
 
   return (
-    <main className="flex flex-col gap-3 p-4">
+    <div className="flex flex-col gap-3">
       <div>
         <button disabled={busy} onClick={inject} className="rounded border px-3 py-1">
           Inject one simulated event
@@ -106,6 +106,6 @@ export default function ProposalsPage() {
           </li>
         ))}
       </ul>
-    </main>
+    </div>
   );
 }
