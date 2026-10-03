@@ -155,7 +155,9 @@ export default function MapView({ snapshot, assignments = [], planLabel }: { sna
   });
 
   const grid: number[] = [];
-  const step = c.w > 600 ? 5 : c.w > 250 ? 2 : 1;
+  // Grid spacing in screen pixels, so labels never crowd on a phone or spread thin on a 4K screen.
+  const pxPerDeg = (k * scale) / px;
+  const step = [1, 2, 5, 10].find((d) => d * pxPerDeg >= 80) ?? 10;
   for (let g = -180; g <= 180; g += step) grid.push(g);
   const baseById = new Map(snapshot.bases.map((b) => [b.id, b]));
   const missionById = new Map(snapshot.missions.map((m) => [m.id, m]));
@@ -174,11 +176,11 @@ export default function MapView({ snapshot, assignments = [], planLabel }: { sna
   ];
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_320px] items-start gap-6">
+    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <Card padded={false} className="flex min-w-0 flex-col overflow-hidden">
         {/* Time control */}
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-line px-5 py-4">
-          <div className="flex min-w-[340px] flex-1 items-center gap-4">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-line px-4 py-4 sm:px-5">
+          <div className="flex w-full min-w-0 flex-1 items-center gap-4 sm:min-w-[340px]">
             <div className="shrink-0">
               <div className="text-xs font-medium text-ink-3">Scenario time</div>
               <div className="font-display text-lg font-semibold text-ink tnum">{tmin(t)}</div>
@@ -199,7 +201,7 @@ export default function MapView({ snapshot, assignments = [], planLabel }: { sna
         </div>
 
         {/* Map */}
-        <div ref={box} className="relative h-[calc(100vh-410px)] min-h-[500px] bg-map-sea">
+        <div ref={box} className="relative h-[60vh] min-h-[360px] bg-map-sea lg:h-[calc(100vh-410px)] lg:min-h-[500px]">
           <svg
             ref={svg}
             viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
@@ -421,24 +423,24 @@ export default function MapView({ snapshot, assignments = [], planLabel }: { sna
           </svg>
 
           {/* Controls */}
-          <div className="absolute right-4 top-4 flex flex-col gap-2">
+          <div className="absolute right-3 top-3 flex flex-col gap-2 sm:right-4 sm:top-4">
             <IconButton icon="plus" label="Zoom in" onClick={() => zoomAt(0.7, c.cx, c.cy)} />
             <IconButton icon="minus" label="Zoom out" onClick={() => zoomAt(1 / 0.7, c.cx, c.cy)} />
             <IconButton icon="crosshair" label="Fit India" onClick={() => setCam(null)} />
             <IconButton icon="maximize" label="Show every plotted object" onClick={() => setCam(all)} />
           </div>
-          <div className="pointer-events-none absolute bottom-4 left-4 flex max-w-[70%] items-center gap-2 rounded-lg border border-line bg-surface/95 px-3 py-2 text-xs text-ink-3 shadow-card backdrop-blur">
+          <div className="pointer-events-none absolute bottom-3 left-3 flex max-w-[calc(100%-1.5rem)] items-center gap-2 sm:bottom-4 sm:left-4 lg:max-w-[70%] rounded-lg border border-line bg-surface/95 px-3 py-2 text-xs text-ink-3 shadow-card backdrop-blur">
             <Icon name="info" size={14} className="shrink-0" />
             <span>
               {geoError ? "Map outline could not be loaded; objects are drawn on the grid only. " : "Outline: Natural Earth (public domain), India point of view, simplified. "}
               <b className="font-semibold text-ink-2">Boundaries are not authoritative.</b>
             </span>
           </div>
-          <div className="pointer-events-none absolute bottom-4 right-4 rounded-lg bg-surface/90 px-2.5 py-1.5 text-[11px] text-ink-3 shadow-card">Scroll to zoom · drag to pan · click for details</div>
+          <div className="pointer-events-none absolute bottom-4 right-4 hidden rounded-lg bg-surface/90 px-2.5 py-1.5 text-[11px] text-ink-3 shadow-card xl:block">Scroll to zoom · drag to pan · click for details</div>
 
           {hover && (
             <div
-              className="pointer-events-none absolute z-10 w-64 animate-pop-in rounded-xl border border-line bg-surface/97 p-3.5 shadow-overlay backdrop-blur"
+              className="pointer-events-none absolute z-10 w-56 animate-pop-in sm:w-64 rounded-xl border border-line bg-surface/97 p-3.5 shadow-overlay backdrop-blur"
               style={{
                 left: size && hover.x > size.w - 290 ? hover.x - 276 : hover.x + 16,
                 top: size && hover.y > size.h - 220 ? Math.max(8, hover.y - 200) : hover.y + 16,

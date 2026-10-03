@@ -140,7 +140,7 @@ export default function ProposalsPage() {
             )}
 
             <Card padded={false}>
-              <button className="flex w-full items-center justify-between gap-4 p-6 text-left" onClick={() => setHistoryOpen(!historyOpen)} aria-expanded={historyOpen}>
+              <button className="flex w-full items-center justify-between gap-4 p-4 text-left sm:p-6" onClick={() => setHistoryOpen(!historyOpen)} aria-expanded={historyOpen}>
                 <CardHeader icon="history" title={`Decided and expired options (${history.length})`} subtitle="Every earlier option and what happened to it, newest first." />
                 <Icon name="chevronDown" size={18} className={`text-ink-3 transition-transform ${historyOpen ? "rotate-180" : ""}`} />
               </button>
@@ -241,7 +241,7 @@ function OptionCard({
 
   return (
     <Card padded={false} className={p.rank === 1 ? "ring-1 ring-brand-200" : ""}>
-      <div className="flex flex-wrap items-start justify-between gap-4 p-6 pb-5">
+      <div className="flex flex-wrap items-start justify-between gap-4 p-4 pb-4 sm:p-6 sm:pb-5">
         <div className="flex items-start gap-4">
           <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-base font-bold tnum ${p.rank === 1 ? "bg-brand-600 text-white" : "bg-slate-100 text-ink-2"}`}>#{p.rank}</span>
           <div>
@@ -263,7 +263,7 @@ function OptionCard({
         </div>
       </div>
 
-      <div className="grid grid-cols-4 border-y border-line bg-subtle">
+      <div className="grid grid-cols-2 border-y border-line bg-subtle md:grid-cols-4">
         <Metric label="Coverage change" value={`${signed(d.coverage_delta * 100, 1)}`} unit="pts" good={d.coverage_delta > 0} bad={d.coverage_delta < 0} hint="Change in priority-weighted coverage versus the active plan, in percentage points." />
         <Metric label="Mean risk change" value={signed(d.risk_delta, 3)} good={d.risk_delta < 0} bad={d.risk_delta > 0} hint="Change in mean sortie risk (0 to 1). Lower is better." />
         <Metric label="Sorties changed" value={String(d.n_changes)} hint="Sorties added, removed or modified. Fewer changes are easier to brief." />
@@ -274,8 +274,8 @@ function OptionCard({
         />
       </div>
 
-      <div className="p-6">
-        <div className="flex items-center justify-between">
+      <div className="p-4 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h4 className="flex items-center gap-2 text-sm font-semibold text-ink"><Icon name="diff" size={16} className="text-ink-3" /> Changes to the active plan</h4>
           <div className="flex items-center gap-3 text-xs text-ink-3">
             <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-emerald-500" />Added</span>
@@ -293,7 +293,7 @@ function OptionCard({
               <DiffRow key={`c${id}`} kind="changed" id={id} a={after.get(id) ?? before.get(id)} priority={priority}>
                 <div className="mt-2 flex flex-col gap-1.5">
                   {cs.map((c, i) => (
-                    <div key={i} className="grid grid-cols-[120px_1fr] items-baseline gap-3 text-[13px]">
+                    <div key={i} className="grid grid-cols-[88px_1fr] items-baseline gap-3 text-[13px] sm:grid-cols-[120px_1fr]">
                       <span className="text-ink-3">{FIELD_LABELS[c.field] ?? c.field}</span>
                       <span className="flex flex-wrap items-baseline gap-2 tnum">
                         <span className="rounded bg-red-50 px-1.5 text-red-700 line-through decoration-red-400">{show(c.field, c.from)}</span>
@@ -324,7 +324,7 @@ function OptionCard({
 
 function Metric({ label, value, unit, hint, good = false, bad = false }: { label: string; value: string; unit?: string; hint: string; good?: boolean; bad?: boolean }) {
   return (
-    <Tooltip content={hint} className="block border-r border-line px-6 py-4 last:border-r-0">
+    <Tooltip content={hint} className="block border-b border-r border-line px-4 py-3 sm:px-6 sm:py-4 md:border-b-0 md:last:border-r-0">
       <div tabIndex={0} className="w-full cursor-help">
         <div className="text-xs font-medium text-ink-3">{label}</div>
         <div className={`mt-1 font-display text-xl font-semibold tnum ${good ? "text-emerald-700" : bad ? "text-red-700" : "text-ink"}`}>

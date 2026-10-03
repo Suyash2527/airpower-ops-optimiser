@@ -74,13 +74,13 @@ function Gantt({ plan, snap, now, nowEvent, onPick, picked }: { plan: Plan; snap
 
   return (
     <Card padded={false} className="overflow-hidden">
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-line px-6 py-4">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-line px-4 py-4 sm:px-6">
         <div className="flex items-center gap-2">
           <span className="text-[15px] font-semibold text-ink">Plan v{plan.version}</span>
           <Badge tone={statusTone(plan.status)} dot>{plan.status === "approved" ? "Approved, active" : plan.status}</Badge>
           <span className="text-[13px] text-ink-3 tnum">· {plan.assignments.length} sorties on {groups.reduce((n, [, r]) => n + r.length, 0)} aircraft{frozen ? ` · ${frozen} frozen` : ""}</span>
         </div>
-        <div className="ml-auto flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-ink-3">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-ink-3 xl:ml-auto">
           <span className="flex items-center gap-1.5">
             Priority
             {[1, 2, 3, 4, 5].map((p) => <span key={p} className="h-3 w-5 rounded-[3px]" style={{ background: `var(--color-p${p})` }} title={`P${p}`} />)}

@@ -74,7 +74,7 @@ export default function ResourcesPage() {
           const c = r.counts;
           return (
             <>
-              <div className="stagger grid grid-cols-4 gap-6">
+              <div className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
                 <KpiCard icon="layers" tone="blue" label="Records fused" value={c.records} meaning={`${c.multi_source} of them were reported by both feeds and merged.`} />
                 <KpiCard icon="check" tone="green" label="Fields in agreement" value={c.fields_agree} unit={`of ${c.fields_compared}`} meaning="Fields reported by both feeds with the same value." />
                 <KpiCard icon="alert" tone="amber" label="Open conflicts" value={c.conflicts_open} meaning={`Feeds disagree; a rule picked one value. ${c.conflicts_pinned} pinned by a person.`} />
@@ -190,7 +190,7 @@ function Conflicts({ report }: { report: FusionReport }) {
           <span className="h-3 w-3 rounded border-2 border-brand-500 bg-brand-50" /> Value kept by the fusion rule
         </p>
       </div>
-      <div className="stagger grid grid-cols-2 gap-4">
+      <div className="stagger grid grid-cols-1 gap-4 lg:grid-cols-2">
         {rows.slice(0, shown).map((c) => <ConflictCard key={c.id} c={c} />)}
       </div>
       {shown < rows.length && (
@@ -206,8 +206,8 @@ function Conflicts({ report }: { report: FusionReport }) {
 function ConflictCard({ c }: { c: Conflict }) {
   const cands = [...c.candidates].sort((a, b) => Number(b.selected) - Number(a.selected));
   return (
-    <div className="lift rounded-card border border-line bg-surface p-5 shadow-card">
-      <div className="flex items-start justify-between gap-3">
+    <div className="lift min-w-0 rounded-card border border-line bg-surface p-4 shadow-card sm:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="text-xs font-medium text-ink-3">{humanize(c.group)}</div>
           <div className="mt-0.5 text-[15px] font-semibold text-ink">

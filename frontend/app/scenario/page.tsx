@@ -50,8 +50,8 @@ export default function ScenarioPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader icon="book" title="Load a saved scenario" subtitle="Curated, seeded scenarios covering India's main seasons and regions." />
-          <div className="mt-5 flex flex-wrap items-end gap-3">
-            <Select label="Scenario file" value={file} onChange={(e) => setFile(e.target.value)} className="w-80">
+          <div className="mt-5 flex flex-wrap items-end gap-3 [&>label]:w-full sm:[&>label]:w-auto">
+            <Select label="Scenario file" value={file} onChange={(e) => setFile(e.target.value)} className="w-full sm:w-80">
               {SAVED.map((s) => <option key={s.file} value={s.file}>{s.label}</option>)}
             </Select>
             <Button variant="primary" icon="database" loading={busy === "load"} disabled={busy !== null} onClick={() => start("load", "/scenarios/load", { path: file })}>
@@ -136,7 +136,7 @@ function Summary({ s }: { s: Snapshot }) {
         <Badge tone="amber" size="md" icon="alert">Data: {s.data_label}</Badge>
       </div>
 
-      <div className="stagger grid grid-cols-4 gap-6">
+      <div className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
         <KpiCard icon="home" label="Bases" value={s.bases.length} meaning="Fictional air bases at real locations and elevations." />
         <KpiCard
           icon="plane"

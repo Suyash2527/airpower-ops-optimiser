@@ -8,6 +8,7 @@ import { useApi, useScenarioId } from "@/lib/api";
 import type { ScenarioSummary } from "@/lib/types";
 import { SEASONS } from "@/lib/labels";
 import { Drawer, Icon, LogoMark, ToastProvider, Tooltip, type IconName } from "@/components/ui";
+import { createPortal } from "react-dom";
 
 const NAV: { href: string; label: string; icon: IconName }[] = [
   { href: "/", label: "Home", icon: "home" },
@@ -22,14 +23,22 @@ const NAV: { href: string; label: string; icon: IconName }[] = [
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const [about, setAbout] = useState(false);
+  const [menu, setMenu] = useState(false);
   const path = usePathname();
+  // Close the mobile menu whenever the route changes.
+  const [lastPath, setLastPath] = useState(path);
+  if (path !== lastPath) {
+    setLastPath(path);
+    setMenu(false);
+  }
   return (
     <ToastProvider>
       <div className="min-h-screen">
-        <Sidebar />
-        <div className="flex min-h-screen flex-col pl-64">
-          <TopBar onAbout={() => setAbout(true)} />
-          <main key={path} className="stagger mx-auto flex w-full max-w-[1360px] flex-1 flex-col gap-8 px-10 pb-16 pt-8">{children}</main>
+        <Sidebar className="hidden lg:flex" />
+        {menu && <MobileNav onClose={() => setMenu(false)} />}
+        <div className="flex min-h-screen flex-col lg:pl-64">
+          <TopBar onAbout={() => setAbout(true)} onMenu={() => setMenu(true)} />
+          <main key={path} className="stagger mx-auto flex w-full min-w-0 max-w-[1360px] flex-1 flex-col gap-6 px-4 pb-12 pt-6 sm:gap-8 sm:px-6 sm:pt-8 lg:px-10 lg:pb-16">{children}</main>
         </div>
       </div>
       <BusyBar />
@@ -38,7 +47,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   );
 }
 
-function Sidebar() {
+function Sidebar({ className = "" }: { className?: string }) {
   const path = usePathname();
   const nav = useRef<HTMLElement>(null);
   const [pill, setPill] = useState<{ top: number; height: number } | null>(null);
@@ -47,7 +56,7 @@ function Sidebar() {
     setPill(el ? { top: el.offsetTop, height: el.offsetHeight } : null);
   }, [path]);
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 flex w-64 flex-col border-r border-line bg-surface">
+    <aside className={`fixed inset-y-0 left-0 z-30 w-64 flex-col border-r border-line bg-surface ${className}`}>
       <Link href="/" className="flex h-16 items-center gap-3 border-b border-line px-5">
         <LogoMark size={32} />
         <div className="leading-tight">
@@ -92,21 +101,25 @@ function Sidebar() {
   );
 }
 
-function TopBar({ onAbout }: { onAbout: () => void }) {
+function TopBar({ onAbout, onMenu }: { onAbout: () => void; onMenu: () => void }) {
   const scenarioId = useScenarioId();
   const list = useApi<{ scenarios: ScenarioSummary[] }>(scenarioId ? `/scenarios?current=${scenarioId}` : null);
   const current = list.data?.scenarios.find((s) => s.scenario_id === scenarioId);
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-line bg-surface/85 px-10 backdrop-blur-md">
+    <header className="sticky top-0 z-20 flex h-16 items-center gap-2 border-b border-line bg-surface/85 px-4 backdrop-blur-md sm:gap-4 sm:px-6 lg:px-10">
+      <button onClick={onMenu} aria-label="Open menu" className="press -ml-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-control text-ink-2 hover:bg-subtle lg:hidden">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+      <span className="lg:hidden"><LogoMark size={28} /></span>
       <div className="flex min-w-0 items-center gap-3">
-        <span className="text-[13px] font-medium text-ink-3">Scenario</span>
-        <Icon name="chevronRight" size={14} className="text-ink-4" />
+        <span className="hidden text-[13px] font-medium text-ink-3 md:inline">Scenario</span>
+        <Icon name="chevronRight" size={14} className="hidden text-ink-4 md:block" />
         {scenarioId === undefined ? (
           <span className="skeleton h-4 w-40" />
         ) : current ? (
           <Link href="/scenario" className="flex min-w-0 items-center gap-2 rounded-md px-1.5 py-1 transition-colors hover:bg-subtle">
-            <span className="truncate text-sm font-semibold capitalize text-ink">{current.name}</span>
+            <span className="hidden truncate text-sm font-semibold capitalize text-ink sm:inline">{current.name}</span>
             <span className="hidden whitespace-nowrap text-xs text-ink-3 xl:inline">
               · {SEASONS[current.season_preset] ?? current.season_preset} · seed {current.seed}
             </span>
@@ -114,23 +127,24 @@ function TopBar({ onAbout }: { onAbout: () => void }) {
         ) : scenarioId && !list.data && !list.error ? (
           <span className="skeleton h-4 w-40" />
         ) : (
-          <Link href="/scenario" className="text-sm font-medium text-brand-700 hover:underline">No scenario loaded</Link>
+          <Link href="/scenario" className="hidden text-sm font-medium text-brand-700 hover:underline sm:inline">No scenario loaded</Link>
         )}
       </div>
-      <div className="ml-auto flex items-center gap-3">
+      <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
         <Tooltip content="Every fleet, crew, mission, threat, weather and event record is synthetic, generated from a seed. Only base elevations, alternate airfields and the map outline come from open data.">
           <span tabIndex={0} className="inline-flex cursor-help items-center gap-1.5 whitespace-nowrap rounded-md bg-amber-400 px-2.5 py-1 text-[11px] font-bold tracking-[0.08em] text-amber-950 shadow-card">
             <Icon name="alert" size={13} strokeWidth={2.25} />
-            SYNTHETIC DATA
+            SYNTHETIC<span className="hidden sm:inline"> DATA</span>
           </span>
         </Tooltip>
         <IstClock />
         <button
           onClick={onAbout}
-          className="inline-flex h-9 items-center gap-2 rounded-control border border-line-strong bg-surface px-3 text-[13px] font-medium text-ink-2 shadow-card transition-colors hover:bg-subtle hover:text-ink"
+          aria-label="About this prototype"
+          className="press inline-flex h-9 items-center gap-2 rounded-control border border-line-strong bg-surface px-2.5 text-[13px] font-medium text-ink-2 shadow-card transition-colors hover:bg-subtle hover:text-ink sm:px-3"
         >
           <Icon name="info" size={16} />
-          About this prototype
+          <span className="hidden md:inline">About this prototype</span>
         </button>
       </div>
     </header>
@@ -149,7 +163,7 @@ function IstClock() {
   const date = now?.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short" });
   return (
     <Tooltip content="Wall-clock time in India Standard Time (UTC+05:30). The system stores all times in UTC.">
-      <span className="inline-flex h-9 cursor-default items-center gap-2 rounded-control border border-line bg-subtle px-3 text-[13px] text-ink-2">
+      <span className="hidden h-9 cursor-default items-center gap-2 rounded-control border border-line bg-subtle px-3 text-[13px] text-ink-2 sm:inline-flex">
         <Icon name="clock" size={15} className="text-ink-3" />
         <span className="whitespace-nowrap font-semibold text-ink tnum">{time ?? "--:--:--"}</span>
         <span className="hidden text-ink-3 xl:inline">{date ?? ""}</span>
@@ -230,5 +244,31 @@ function BusyBar() {
     <div aria-hidden className={`pointer-events-none fixed inset-x-0 top-0 z-[95] h-[3px] overflow-hidden transition-opacity duration-300 ${busy ? "opacity-100" : "opacity-0"}`}>
       <div className="h-full w-full origin-left bg-gradient-to-r from-brand-400 via-brand-600 to-brand-400 [animation:indeterminate_1.4s_var(--ease-standard)_infinite]" />
     </div>
+  );
+}
+
+/** Slide-in navigation for phones and tablets (the fixed sidebar shows from 1024 px). */
+function MobileNav({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", key);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", key);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+  return createPortal(
+    <div className="fixed inset-0 z-50 lg:hidden">
+      <div className="absolute inset-0 animate-fade-in bg-ink/30 backdrop-blur-[2px]" onClick={onClose} aria-hidden />
+      <div className="absolute inset-y-0 left-0 w-72 max-w-[85vw] [animation:slide-in-left_240ms_var(--ease-out)_both]">
+        <Sidebar className="flex !w-full shadow-overlay" />
+        <button onClick={onClose} aria-label="Close menu" className="absolute right-3 top-4 z-40 rounded-md p-2 text-ink-3 hover:bg-subtle hover:text-ink">
+          <Icon name="x" size={18} />
+        </button>
+      </div>
+    </div>,
+    document.body,
   );
 }

@@ -62,7 +62,7 @@ export function IconButton({ icon, label, className = "", ...props }: ButtonHTML
 /* ---------------------------------------------------------------- Card */
 
 export function Card({ children, className = "", padded = true }: { children: ReactNode; className?: string; padded?: boolean }) {
-  return <section className={`rounded-card border border-line bg-surface shadow-card ${padded ? "p-6" : ""} ${className}`}>{children}</section>;
+  return <section className={`min-w-0 rounded-card border border-line bg-surface shadow-card ${padded ? "p-4 sm:p-6" : ""} ${className}`}>{children}</section>;
 }
 
 export function CardHeader({ title, subtitle, actions, icon, className = "" }: { title: ReactNode; subtitle?: ReactNode; actions?: ReactNode; icon?: IconName; className?: string }) {
@@ -149,8 +149,8 @@ export function PageHeader({ title, purpose, actions, eyebrow }: { title: string
     <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
       <div className="min-w-0 max-w-2xl">
         {eyebrow && <div className="mb-1 text-xs font-semibold uppercase tracking-[0.08em] text-brand-700">{eyebrow}</div>}
-        <h1 className="font-display text-[28px] font-semibold leading-9 tracking-[-0.01em] text-ink">{title}</h1>
-        <p className="mt-1.5 text-[15px] leading-6 text-ink-3">{purpose}</p>
+        <h1 className="font-display text-2xl font-semibold leading-8 tracking-[-0.01em] text-ink sm:text-[28px] sm:leading-9">{title}</h1>
+        <p className="mt-1.5 text-sm leading-6 text-ink-3 sm:text-[15px]">{purpose}</p>
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </header>
@@ -177,7 +177,7 @@ export function KpiCard({
   footer?: ReactNode;
 }) {
   return (
-    <div className="lift flex flex-col rounded-card border border-line bg-surface p-5 shadow-card">
+    <div className="lift flex min-w-0 flex-col rounded-card border border-line bg-surface p-4 shadow-card sm:p-5">
       <div className="flex items-center justify-between gap-2">
         <span className="text-[13px] font-medium text-ink-3">{label}</span>
         {icon && (
@@ -187,7 +187,7 @@ export function KpiCard({
         )}
       </div>
       <div className="mt-2 flex items-baseline gap-1.5">
-        <span className="font-display text-[30px] font-semibold leading-9 tracking-[-0.01em] text-ink tnum">{typeof value === "string" || typeof value === "number" ? <CountUp value={value} /> : value}</span>
+        <span className="font-display text-[26px] font-semibold leading-9 sm:text-[30px] tracking-[-0.01em] text-ink tnum">{typeof value === "string" || typeof value === "number" ? <CountUp value={value} /> : value}</span>
         {unit && <span className="text-sm font-medium text-ink-3">{unit}</span>}
       </div>
       <p className="mt-1 text-[13px] leading-5 text-ink-3">{meaning}</p>
@@ -200,7 +200,7 @@ export function KpiCard({
 
 export function EmptyState({ icon = "info", title, children, action }: { icon?: IconName; title: string; children?: ReactNode; action?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-card border border-dashed border-line-strong bg-surface px-6 py-14 text-center">
+    <div className="flex flex-col items-center justify-center rounded-card border border-dashed border-line-strong bg-surface px-4 py-10 text-center sm:px-6 sm:py-14">
       <span className="enter-pop flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-700 ring-8 ring-brand-50/50">
         <Icon name={icon} size={22} />
       </span>
@@ -255,7 +255,7 @@ export function Skeleton({ className = "" }: { className?: string }) {
 
 export function SkeletonCards({ n = 4 }: { n?: number }) {
   return (
-    <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:[grid-template-columns:repeat(var(--n),minmax(0,1fr))]" style={{ ["--n" as string]: n }}>
       {Array.from({ length: n }, (_, i) => (
         <div key={i} className="rounded-card border border-line bg-surface p-5 shadow-card">
           <Skeleton className="h-3.5 w-24" />
@@ -324,14 +324,14 @@ const CONTROL = "h-10 rounded-control border border-line-strong bg-surface px-3 
 
 export function Select({ label, className = "", children, ...props }: SelectHTMLAttributes<HTMLSelectElement> & { label?: string }) {
   const el = (
-    <span className="relative inline-flex">
+    <span className="relative inline-flex max-w-full">
       <select className={`${CONTROL} appearance-none pr-9 ${className}`} aria-label={label} {...props}>{children}</select>
       <Icon name="chevronDown" size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-3" />
     </span>
   );
   if (!label) return el;
   return (
-    <label className="inline-flex flex-col gap-1.5">
+    <label className="inline-flex min-w-0 max-w-full flex-col gap-1.5">
       <span className="text-xs font-medium text-ink-3">{label}</span>
       {el}
     </label>

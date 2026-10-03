@@ -25,8 +25,8 @@ export default function MapPage() {
         ready={!!snap.data && !!plans.data}
         onRetry={() => { snap.reload(); plans.reload(); }}
         skeleton={
-          <div className="grid grid-cols-[minmax(0,1fr)_320px] gap-6" role="status" aria-label="Loading">
-            <Skeleton className="h-[calc(100vh-260px)] min-h-[640px] !rounded-card" />
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]" role="status" aria-label="Loading">
+            <Skeleton className="h-[60vh] min-h-[360px] !rounded-card lg:h-[calc(100vh-260px)] lg:min-h-[640px]" />
             <div className="flex flex-col gap-6"><Skeleton className="h-80 !rounded-card" /><Skeleton className="h-48 !rounded-card" /></div>
           </div>
         }

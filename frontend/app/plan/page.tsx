@@ -138,7 +138,7 @@ function PlanBody({
 
   return (
     <>
-      <Card className="!p-5">
+      <Card className="sm:!p-5">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-700"><Icon name="clipboard" size={20} /></span>
@@ -161,7 +161,7 @@ function PlanBody({
                 <span tabIndex={0}><Badge tone={plan.solver.status.startsWith("FALLBACK") ? "amber" : "grey"} icon="gauge">Solver: {plan.solver.status}</Badge></span>
               </Tooltip>
             )}
-            <Select label="" aria-label="Plan version" value={plan.id} onChange={(e) => onSelect(e.target.value)} className="w-52">
+            <Select label="" aria-label="Plan version" value={plan.id} onChange={(e) => onSelect(e.target.value)} className="w-full sm:w-52">
               {[...plans].reverse().map((p) => <option key={p.id} value={p.id}>Version {p.version} · {p.status}</option>)}
             </Select>
             {plan.status === "draft" && (
@@ -176,7 +176,7 @@ function PlanBody({
         )}
       </Card>
 
-      <div className="stagger grid grid-cols-4 gap-6">
+      <div className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
         <KpiCard
           icon="target"
           tone="blue"

@@ -33,7 +33,7 @@ export function Drawer({ open, onClose, title, subtitle, children, footer, width
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 animate-fade-in bg-ink/30 backdrop-blur-[2px]" onClick={onClose} aria-hidden />
       <aside role="dialog" aria-modal="true" className="relative flex h-full w-full animate-slide-in-right flex-col bg-surface shadow-overlay" style={{ maxWidth: width }}>
-        <div className="flex items-start justify-between gap-4 border-b border-line px-6 py-5">
+        <div className="flex items-start justify-between gap-4 border-b border-line px-4 py-4 sm:px-6 sm:py-5">
           <div className="min-w-0">
             <h2 className="text-lg font-semibold leading-7 text-ink">{title}</h2>
             {subtitle && <p className="mt-0.5 text-sm text-ink-3">{subtitle}</p>}
@@ -42,7 +42,7 @@ export function Drawer({ open, onClose, title, subtitle, children, footer, width
             <Icon name="x" size={18} />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">{children}</div>
         {footer && <div className="border-t border-line bg-subtle px-6 py-4">{footer}</div>}
       </aside>
     </div>,
@@ -59,13 +59,13 @@ export function Modal({ open, onClose, title, children, actions, icon = "info", 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 animate-fade-in bg-ink/40 backdrop-blur-[2px]" onClick={onClose} aria-hidden />
-      <div role="dialog" aria-modal="true" className="relative w-full max-w-md animate-pop-in rounded-2xl bg-surface p-6 shadow-overlay">
+      <div role="dialog" aria-modal="true" className="relative w-full max-w-md animate-pop-in rounded-2xl bg-surface p-5 shadow-overlay sm:p-6">
         <span className={`flex h-11 w-11 items-center justify-center rounded-full ring-8 ${ring}`}>
           <Icon name={icon} size={20} />
         </span>
         <h2 className="mt-4 text-lg font-semibold text-ink">{title}</h2>
         <div className="mt-2 text-sm leading-6 text-ink-3">{children}</div>
-        <div className="mt-6 flex justify-end gap-3">{actions}</div>
+        <div className="mt-6 flex flex-wrap justify-end gap-3">{actions}</div>
       </div>
     </div>,
     document.body,
@@ -101,7 +101,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {items.length > 0 &&
         createPortal(
-          <div className="pointer-events-none fixed bottom-6 right-6 z-[90] flex w-[380px] max-w-[calc(100vw-3rem)] flex-col gap-3" aria-live="polite">
+          <div className="pointer-events-none fixed bottom-4 right-4 z-[90] flex w-[380px] max-w-[calc(100vw-2rem)] flex-col gap-3 sm:bottom-6 sm:right-6" aria-live="polite">
             {items.map((t) => (
               <div key={t.id} role="status" className="pointer-events-auto flex animate-toast-in items-start gap-3 rounded-xl border border-line bg-surface p-4 shadow-overlay">
                 <Icon
@@ -153,7 +153,7 @@ function useIndicator(active: string) {
 export function Tabs<K extends string>({ tabs, value, onChange }: { tabs: { key: K; label: ReactNode; count?: number; icon?: IconName }[]; value: K; onChange: (k: K) => void }) {
   const { box, rect } = useIndicator(value);
   return (
-    <div ref={box} role="tablist" className="relative flex gap-1 border-b border-line">
+    <div ref={box} role="tablist" className="relative flex gap-1 overflow-x-auto border-b border-line [scrollbar-width:none]">
       {tabs.map((t) => {
         const on = t.key === value;
         return (
@@ -163,7 +163,7 @@ export function Tabs<K extends string>({ tabs, value, onChange }: { tabs: { key:
             role="tab"
             aria-selected={on}
             onClick={() => onChange(t.key)}
-            className={`relative -mb-px flex items-center gap-2 px-3 pb-3 pt-1 text-sm font-medium transition-colors ${on ? "text-brand-700" : "text-ink-3 hover:text-ink"}`}
+            className={`relative -mb-px flex shrink-0 items-center gap-2 whitespace-nowrap px-3 pb-3 pt-1 text-sm font-medium transition-colors ${on ? "text-brand-700" : "text-ink-3 hover:text-ink"}`}
           >
             {t.icon && <Icon name={t.icon} size={16} />}
             {t.label}
@@ -188,7 +188,7 @@ export function Tabs<K extends string>({ tabs, value, onChange }: { tabs: { key:
 export function Segmented<K extends string>({ options, value, onChange }: { options: { key: K; label: ReactNode }[]; value: K; onChange: (k: K) => void }) {
   const { box, rect } = useIndicator(value);
   return (
-    <div ref={box} className="relative inline-flex rounded-control border border-line bg-subtle p-0.5">
+    <div ref={box} className="relative inline-flex max-w-full overflow-x-auto rounded-control border border-line bg-subtle p-0.5 [scrollbar-width:none]">
       {rect && (
         <span
           aria-hidden
@@ -201,7 +201,7 @@ export function Segmented<K extends string>({ options, value, onChange }: { opti
           key={o.key}
           data-key={o.key}
           onClick={() => onChange(o.key)}
-          className={`relative rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors ${o.key === value ? "text-ink" : "text-ink-3 hover:text-ink"}`}
+          className={`relative shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors ${o.key === value ? "text-ink" : "text-ink-3 hover:text-ink"}`}
         >
           {o.label}
         </button>

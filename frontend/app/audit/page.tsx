@@ -53,7 +53,7 @@ export default function AuditPage() {
         actions={
           scenarioId && (
             <>
-              <Select label="Show" value={filter} onChange={(e) => setFilter(e.target.value)} className="w-56">
+              <Select label="Show" value={filter} onChange={(e) => setFilter(e.target.value)} className="w-48 sm:w-56">
                 <option value="all">All actions</option>
                 {actions.map((a) => <option key={a} value={a}>{action(a).label}</option>)}
               </Select>

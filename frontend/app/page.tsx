@@ -45,15 +45,15 @@ function Hero() {
         className="pointer-events-none absolute -right-24 -top-32 h-[420px] w-[520px] rounded-full opacity-60 blur-3xl [animation:aurora_14s_ease-in-out_infinite]"
         style={{ background: "radial-gradient(circle, var(--color-brand-200), transparent 65%)" }}
       />
-      <div className="relative grid gap-10 p-10 lg:grid-cols-[1fr_380px] lg:p-12">
+      <div className="relative grid gap-8 p-6 sm:p-10 lg:grid-cols-[1fr_380px] lg:gap-10 lg:p-12">
         <div className="stagger max-w-2xl">
           <Badge tone="blue" size="md" icon="shield">Advisory decision-support prototype</Badge>
-          <h1 className="mt-5 font-display text-display font-semibold text-ink">AirPower</h1>
-          <p className="mt-3 text-xl leading-8 text-ink-2">
+          <h1 className="mt-5 font-display text-5xl font-semibold tracking-[-0.02em] text-ink sm:text-display">AirPower</h1>
+          <p className="mt-3 text-lg leading-7 text-ink-2 sm:text-xl sm:leading-8">
             Plan air operations from one fused picture and get ranked re-plan options the moment something changes, with a
             reason for every decision and a person approving every change.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-3 [&>a]:flex-1 sm:[&>a]:flex-none [&_button]:w-full">
             <Link href="/scenario"><Button variant="primary" size="lg" icon="database">Scenario</Button></Link>
             <Link href="/map"><Button size="lg" icon="map">Operating picture</Button></Link>
             <Link href="/plan"><Button size="lg" icon="clipboard">Plan</Button></Link>
@@ -134,11 +134,11 @@ function Workflow() {
           <span className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-amber-500" /> Human decision</span>
         </div>
       </div>
-      <ol className="mt-6 grid grid-cols-7 gap-0">
+      <ol className="mt-6 grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-7 xl:gap-0">
         {STEPS.map((s, i) => (
           <li key={s.title} className="enter-rise relative flex flex-col items-center px-2 text-center" style={{ ["--d" as string]: 200 + i * 110 }}>
             {i < STEPS.length - 1 && (
-              <span aria-hidden className="enter-grow-x absolute left-[calc(50%+30px)] right-[calc(-50%+30px)] top-[27px] flex items-center" style={{ ["--d" as string]: 320 + i * 110 }}>
+              <span aria-hidden className="enter-grow-x absolute hidden xl:flex left-[calc(50%+30px)] right-[calc(-50%+30px)] top-[27px] flex items-center" style={{ ["--d" as string]: 320 + i * 110 }}>
                 <span className="h-px flex-1 bg-line-strong" />
                 <Icon name="chevronRight" size={14} className="-ml-1 text-ink-4" />
               </span>
@@ -168,7 +168,7 @@ function Principles() {
     { icon: "list", title: "Every decision explained", text: "Each assignment, rejection and re-plan carries reason codes and a plain sentence. Hover any reason to read it." },
   ];
   return (
-    <section className="stagger grid grid-cols-3 gap-6">
+    <section className="stagger grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
       {items.map((it) => (
         <div key={it.title} className="lift rounded-card border border-line bg-surface p-6 shadow-card">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-700"><Icon name={it.icon} size={20} /></span>
