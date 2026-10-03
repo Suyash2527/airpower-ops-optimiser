@@ -43,6 +43,16 @@ export const getScenarioId = (): string | null => {
     return null;
   }
 };
+/** Forget the current scenario (e.g. the server no longer has it). */
+export const clearScenarioId = (): void => {
+  try {
+    localStorage.removeItem(KEY);
+  } catch {
+    /* storage unavailable */
+  }
+  window.dispatchEvent(new Event(CHANGED));
+};
+
 export const setScenarioId = (id: string): void => {
   try {
     localStorage.setItem(KEY, id);
@@ -91,7 +101,16 @@ export function useApi<T>(path: string | null): Loaded<T> {
     let live = true;
     api<T>(path).then(
       (data) => live && setState({ key, data, error: null }),
-      (e: Error) => live && setState({ key, data: null, error: e.message }),
+      (e: Error) => {
+        // The server lost or never had this scenario (a reset database): drop the stale id so
+        // pages show "No scenario loaded" instead of an error.
+        const sid = getScenarioId();
+        if (sid && / 404 /.test(` ${e.message}`) && e.message.includes(`unknown scenario: ${sid}`)) {
+          clearScenarioId();
+          return;
+        }
+        if (live) setState({ key, data: null, error: e.message });
+      },
     );
     return () => {
       live = false;

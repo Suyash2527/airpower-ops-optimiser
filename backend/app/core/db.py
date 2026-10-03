@@ -20,7 +20,8 @@ def make_engine(url: str) -> Engine:
             connect_args={"check_same_thread": False},
             poolclass=StaticPool if in_memory else None,
         )
-    return create_engine(url)
+    # Serverless instances sleep between requests: check connections first, keep the pool small.
+    return create_engine(url, pool_pre_ping=True, pool_size=2, max_overflow=3, pool_recycle=300)
 
 
 def init_db(engine: Engine) -> None:

@@ -64,7 +64,15 @@ def save_scenario_rows(session: Session, scenario: ScenarioFile) -> str:
 def load_scenario_rows(session: Session, scenario_id: str) -> ScenarioFile | None:
     head = session.get(tables.ScenarioRow, scenario_id)
     if head is None:
-        return None
+        # A saved preset can be rebuilt exactly from its params (D-69/D-70), so a database that
+        # was reset (e.g. a new serverless instance) still serves it. Unknown ids stay unknown.
+        from app.sim.presets import preset_by_id
+
+        preset = preset_by_id().get(scenario_id)
+        if preset is None:
+            return None
+        save_scenario_rows(session, preset)
+        head = session.get(tables.ScenarioRow, scenario_id)
     parts: dict[str, Any] = {"scenario": ScenarioMeta.model_validate(head.meta)}
     for group, row_cls in _TABLES.items():
         model_cls: type[Model] = GROUPS[group]

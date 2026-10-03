@@ -7,8 +7,10 @@ next to the backend, for example on Vercel where only backend/ is shipped (D-66)
 
 from __future__ import annotations
 
+from functools import cache
+
 from app.models.enums import Region, SeasonPreset
-from app.models.scenario import GeneratorParams
+from app.models.scenario import GeneratorParams, ScenarioFile
 
 PRESETS: dict[str, GeneratorParams] = {
     "demo": GeneratorParams(seed=42),
@@ -29,3 +31,13 @@ PRESETS: dict[str, GeneratorParams] = {
         regions=[Region.WEST, Region.CENTRAL, Region.NORTH],
     ),
 }
+
+
+@cache
+def preset_by_id() -> dict[str, ScenarioFile]:
+    """Scenario id -> rebuilt preset. Ids are content hashes, so they never change (D-70)."""
+    from app.models.store import scenario_id_for  # local import: store must not import sim at load
+    from app.sim.generate import generate_scenario
+
+    built = [generate_scenario(p) for p in PRESETS.values()]
+    return {scenario_id_for(s): s for s in built}
