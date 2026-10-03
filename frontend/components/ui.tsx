@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import type { Plan } from "@/lib/types";
 
 export function PageHeader({ title, subtitle, actions }: { title: string; subtitle?: ReactNode; actions?: ReactNode }) {
   return (
@@ -125,3 +126,12 @@ export const tmin = (m: number) => {
 /** Format an ISO UTC time in IST for display (time is UTC internally). */
 export const ist = (iso: string) =>
   new Date(iso).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }) + " IST";
+
+export const statusTone = (s: string): Tone =>
+  s === "approved" ? "green" : s === "draft" || s === "open" ? "blue" : s === "superseded" || s === "expired" ? "grey" : s === "rejected" ? "red" : "amber";
+export const riskTone = (v: number): Tone => (v < 0.2 ? "green" : v < 0.4 ? "amber" : "red");
+
+/** Latest approved plan, else the newest plan. */
+export const pickPlan = (plans: Plan[]) =>
+  [...plans].reverse().find((p) => p.status === "approved") ?? plans[plans.length - 1] ?? null;
+
