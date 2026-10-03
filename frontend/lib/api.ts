@@ -8,16 +8,105 @@ const BASE =
   process.env.NEXT_PUBLIC_API_URL ??
   (process.env.NODE_ENV === "production" ? "/api/v1" : "http://localhost:5050/api/v1");
 
-export async function api<T>(path: string, init?: { method?: string; body?: unknown }): Promise<T> {
-  let res: Response;
+// ---------------------------------------------------------------------- state cache (D-72)
+// Serverless instances do not share a database, so the browser keeps the signed state bundle the
+// API returns after every write and re-uploads it when an instance reports it is out of sync.
+interface StateBundle {
+  scenario_id: string;
+  rev: string;
+  [k: string]: unknown;
+}
+const STATE_KEY = (sid: string) => `airpower.state.${sid}`;
+
+function readBundle(sid: string): StateBundle | null {
   try {
-    res = await fetch(`${BASE}${path}`, {
+    const raw = localStorage.getItem(STATE_KEY(sid));
+    return raw ? (JSON.parse(raw) as StateBundle) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeBundle(bundle: StateBundle): void {
+  try {
+    // One scenario at a time keeps us well inside the localStorage quota.
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k?.startsWith("airpower.state.") && k !== STATE_KEY(bundle.scenario_id)) localStorage.removeItem(k);
+    }
+    localStorage.setItem(STATE_KEY(bundle.scenario_id), JSON.stringify(bundle));
+  } catch {
+    /* storage full or blocked: works while requests land on the same instance */
+  }
+}
+
+function dropBundle(sid: string): void {
+  try {
+    localStorage.removeItem(STATE_KEY(sid));
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+/**
+ * The server would not take our cached state back (signed by an older deployment's secret, or a
+ * scenario it cannot rebuild). Decide what the user ends up with.
+ */
+function onRestoreFailed(sid: string, status: number, message: string): void {
+  // TODO(you): choose the recovery policy. Default: forget the cached copy so the page keeps
+  // working against whatever this instance has (plans made earlier may be gone).
+  console.warn(`state restore refused (${status}): ${message}`);
+  dropBundle(sid);
+}
+
+// Parallel requests that all hit a fresh instance share one restore.
+const restoring = new Map<string, Promise<void>>();
+
+function restore(sid: string, bundle: StateBundle): Promise<void> {
+  let p = restoring.get(sid);
+  if (!p) {
+    p = fetch(`${BASE}/sync/restore`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bundle),
+    })
+      .then(async (r) => {
+        if (!r.ok) onRestoreFailed(sid, r.status, (await r.text()).slice(0, 300));
+      })
+      .finally(() => restoring.delete(sid));
+    restoring.set(sid, p);
+  }
+  return p;
+}
+
+async function send(path: string, init?: { method?: string; body?: unknown }): Promise<Response> {
+  const sid = getScenarioId();
+  const bundle = sid ? readBundle(sid) : null;
+  const headers: Record<string, string> = { "X-AirPower-Sync": "1" };
+  if (init?.body) headers["Content-Type"] = "application/json";
+  if (sid) headers["X-AirPower-Scenario"] = sid;
+  if (bundle) headers["X-AirPower-Rev"] = bundle.rev;
+  try {
+    return await fetch(`${BASE}${path}`, {
       method: init?.method ?? "GET",
-      headers: init?.body ? { "Content-Type": "application/json" } : undefined,
+      headers,
       body: init?.body ? JSON.stringify(init.body) : undefined,
     });
   } catch {
     throw new Error(`Cannot reach the API at ${BASE}. Is the backend running (scripts/dev.ps1)?`);
+  }
+}
+
+export async function api<T>(path: string, init?: { method?: string; body?: unknown }): Promise<T> {
+  let res = await send(path, init);
+  if (res.status === 409) {
+    const sid = getScenarioId();
+    const bundle = sid ? readBundle(sid) : null;
+    const code = await res.clone().json().then((b) => b?.error?.code, () => null);
+    if (code === "state_out_of_sync" && sid && bundle) {
+      await restore(sid, bundle);
+      res = await send(path, init);
+    }
   }
   if (!res.ok) {
     const text = await res.text();
@@ -29,6 +118,11 @@ export async function api<T>(path: string, init?: { method?: string; body?: unkn
       /* not JSON: keep the raw text */
     }
     throw new Error(`${res.status} ${path}: ${message}`);
+  }
+  if (res.headers.get("X-AirPower-Envelope") === "1") {
+    const { data, state } = (await res.json()) as { data: T; state: StateBundle };
+    writeBundle(state);
+    return data;
   }
   return res.json() as Promise<T>;
 }
