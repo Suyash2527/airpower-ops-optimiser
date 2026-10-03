@@ -17,6 +17,7 @@ from app.models import store
 from app.models.entities import Model
 from app.models.scenario import GeneratorParams, ScenarioFile
 from app.sim.generate import generate_scenario
+from app.sim.presets import PRESETS
 from app.sim.scenario_io import load_scenario
 
 router = APIRouter(prefix="/scenarios", tags=["scenarios"])
@@ -86,7 +87,13 @@ def load(
     if not path.is_relative_to(root) or path.suffix != ".json":
         raise ApiError(400, "invalid_path", "path must be a .json file inside the scenario folder")
     if not path.is_file():
-        raise ApiError(404, "not_found", f"scenario file not found: {body.path}")
+        # The folder is not shipped with every deployment (D-66); presets are rebuilt from
+        # their params, which reproduces the saved file exactly.
+        preset = PRESETS.get(path.stem) if path.parent == root else None
+        if preset is None:
+            raise ApiError(404, "not_found", f"scenario file not found: {body.path}")
+        rebuilt = generate_scenario(preset)
+        return _summary(store.save_scenario_rows(session, rebuilt), rebuilt)
     try:
         scenario = load_scenario(path)
     except ValidationError as exc:

@@ -22,3 +22,6 @@ next-env.d.ts
 # Tooling
 .claude/
 .pnpm-store/
+
+# Rendered demo videos (large binaries; share outside git)
+*.mp4
