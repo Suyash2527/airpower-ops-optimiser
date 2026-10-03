@@ -4,9 +4,18 @@ import { useEffect, useRef, useState, type PointerEvent, type WheelEvent } from 
 import type { Assignment, Snapshot } from "@/lib/types";
 import { Button, tmin } from "@/components/ui";
 
-// D-22: no tiles and no administrative boundaries. Objects are placed by lat/lon on a plain
-// equirectangular grid; the initial view covers the India region and every plotted object.
-const INDIA_BOX = { minLon: 68, maxLon: 97.5, minLat: 6.5, maxLat: 36 };
+// D-22 / D-64: no tiles. Land comes from Natural Earth's India point-of-view countries file
+// (public domain), simplified by scripts/build_india_outline.py. Equirectangular projection.
+const REGION_BOX = { minLon: 55, maxLon: 120, minLat: -2, maxLat: 42 };
+const INDIA_BOX = { minLon: 67, maxLon: 98, minLat: 6, maxLat: 37.5 };
+const GEO_URL = "/geo/india_region.geojson";
+// Neighbours worth labelling; others are drawn but unlabelled.
+const LABELLED = new Set(["IND", "PAK", "CHN", "NPL", "BTN", "BGD", "MMR", "LKA", "AFG"]);
+
+interface GeoFeature {
+  properties: { name: string; iso: string };
+  geometry: { type: "Polygon" | "MultiPolygon"; coordinates: number[][][] | number[][][][] };
+}
 const WIDTH = 1000;
 const KM_PER_DEG = 111.32;
 
@@ -26,8 +35,8 @@ interface Selected {
 }
 
 function extent(s: Snapshot) {
-  const lons = [INDIA_BOX.minLon, INDIA_BOX.maxLon];
-  const lats = [INDIA_BOX.minLat, INDIA_BOX.maxLat];
+  const lons = [REGION_BOX.minLon, REGION_BOX.maxLon];
+  const lats = [REGION_BOX.minLat, REGION_BOX.maxLat];
   const add = (lat: number, lon: number) => {
     lats.push(lat);
     lons.push(lon);
@@ -36,7 +45,7 @@ function extent(s: Snapshot) {
   s.missions.forEach((m) => add(m.aoi.center.lat, m.aoi.center.lon));
   s.threats.forEach((t) => add(t.center.lat, t.center.lon));
   s.airspace.forEach((z) => z.polygon.coordinates[0].forEach(([lon, lat]) => add(lat, lon)));
-  const pad = 1.5;
+  const pad = 0.5;
   return {
     minLon: Math.min(...lons) - pad,
     maxLon: Math.max(...lons) + pad,
@@ -66,6 +75,18 @@ export default function MapView({
   });
   const [t, setT] = useState(0);
   const [selected, setSelected] = useState<Selected | null>(null);
+  const [geo, setGeo] = useState<GeoFeature[] | null>(null);
+  const [geoError, setGeoError] = useState(false);
+  useEffect(() => {
+    let live = true;
+    fetch(GEO_URL)
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((d: { features: GeoFeature[] }) => live && setGeo(d.features))
+      .catch(() => live && setGeoError(true));
+    return () => {
+      live = false;
+    };
+  }, []);
 
   const e = extent(snapshot);
   const k = Math.cos((((e.minLat + e.maxLat) / 2) * Math.PI) / 180); // shrink longitude at mid-latitude
@@ -78,7 +99,16 @@ export default function MapView({
 
   // View box in SVG units: zoom with the wheel or buttons, pan by dragging.
   const full = { x: 0, y: 0, w: WIDTH, h: H };
-  const [view, setView] = useState(full);
+  // Fit the India box while keeping the canvas aspect ratio.
+  const fit = (b: typeof INDIA_BOX) => {
+    const bw = x(b.maxLon) - x(b.minLon);
+    const bh = y(b.minLat) - y(b.maxLat);
+    const w = Math.max(bw, (bh * WIDTH) / H);
+    const h = (w * H) / WIDTH;
+    return { x: (x(b.minLon) + x(b.maxLon)) / 2 - w / 2, y: (y(b.maxLat) + y(b.minLat)) / 2 - h / 2, w, h };
+  };
+  const india = fit(INDIA_BOX);
+  const [view, setView] = useState(india);
   const svg = useRef<SVGSVGElement>(null);
   const drag = useRef<{ px: number; py: number; vx: number; vy: number; moved: boolean } | null>(null);
   // React wheel listeners are passive, so stop the page scrolling under the map natively.
@@ -129,6 +159,17 @@ export default function MapView({
     if (!wasDrag.current) setSelected(s);
   };
 
+  const ringPath = (ring: number[][]) => ring.map(([lon, lat], i) => `${i ? "L" : "M"}${x(lon).toFixed(1)},${y(lat).toFixed(1)}`).join("") + "Z";
+  const land = (geo ?? []).map((f) => {
+    const polys = (f.geometry.type === "Polygon" ? [f.geometry.coordinates] : f.geometry.coordinates) as number[][][][];
+    const d = polys.map((p) => p.map(ringPath).join("")).join("");
+    // Label at the centre of the largest polygon's outer ring.
+    const outer = polys.map((p) => p[0]).sort((a, b) => b.length - a.length)[0] ?? [];
+    const lon = outer.reduce((acc, c) => acc + c[0], 0) / Math.max(outer.length, 1);
+    const lat = outer.reduce((acc, c) => acc + c[1], 0) / Math.max(outer.length, 1);
+    return { iso: f.properties.iso, name: f.properties.name, d, lx: x(lon), ly: y(lat) };
+  });
+
   const grid: number[] = [];
   const step = z > 0.5 ? 5 : z > 0.2 ? 2 : 1;
   for (let g = -180; g <= 180; g += step) grid.push(g);
@@ -167,12 +208,12 @@ export default function MapView({
         </span>
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-[1fr_280px]">
-        <div className="relative overflow-hidden rounded-lg border border-slate-200 bg-[#eef3f8]">
+      <div className="relative">
+        <div className="relative overflow-hidden rounded-lg border border-slate-300 bg-[#dbeafe]">
           <svg
             ref={svg}
             viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
-            className="block h-auto max-h-[640px] w-full cursor-grab touch-none select-none active:cursor-grabbing"
+            className="block h-auto w-full cursor-grab touch-none select-none active:cursor-grabbing"
             style={{ aspectRatio: `${WIDTH} / ${H}` }}
             data-testid="cop-map"
             onWheel={onWheel}
@@ -181,15 +222,27 @@ export default function MapView({
             onPointerUp={onUp}
             onPointerLeave={onUp}
           >
+            <rect x={-WIDTH} y={-H} width={WIDTH * 3} height={H * 3} fill="#dbeafe" />
+            {land.map((c) => (
+              <path
+                key={c.iso + c.name}
+                d={c.d}
+                fill={c.iso === "IND" ? "#fefce8" : "#e5e7eb"}
+                stroke={c.iso === "IND" ? "#78716c" : "#9ca3af"}
+                strokeWidth={c.iso === "IND" ? 1.4 : 0.8}
+                vectorEffect="non-scaling-stroke"
+                fillRule="evenodd"
+              />
+            ))}
             {grid.filter((g) => g > e.minLon && g < e.maxLon).map((g) => (
               <g key={`lon${g}`}>
-                <line x1={x(g)} x2={x(g)} y1={0} y2={H} stroke="#cbd5e1" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+                <line x1={x(g)} x2={x(g)} y1={0} y2={H} stroke="#94a3b8" strokeOpacity={0.35} strokeWidth={1} vectorEffect="non-scaling-stroke" />
                 <text x={x(g) + fs(3)} y={view.y + view.h - fs(5)} fontSize={fs(11)} fill="#64748b">{g}°E</text>
               </g>
             ))}
             {grid.filter((g) => g > e.minLat && g < e.maxLat).map((g) => (
               <g key={`lat${g}`}>
-                <line y1={y(g)} y2={y(g)} x1={0} x2={WIDTH} stroke="#cbd5e1" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+                <line y1={y(g)} y2={y(g)} x1={0} x2={WIDTH} stroke="#94a3b8" strokeOpacity={0.35} strokeWidth={1} vectorEffect="non-scaling-stroke" />
                 <text x={view.x + fs(4)} y={y(g) - fs(3)} fontSize={fs(11)} fill="#64748b">{g}°N</text>
               </g>
             ))}
@@ -317,6 +370,21 @@ export default function MapView({
               />
             ))}
 
+            {land.filter((c) => LABELLED.has(c.iso)).map((c) => (
+              <text
+                key={`lbl${c.iso}`}
+                x={c.lx}
+                y={c.ly}
+                textAnchor="middle"
+                fontSize={fs(c.iso === "IND" ? 22 : 13)}
+                fontWeight={c.iso === "IND" ? 700 : 500}
+                letterSpacing={c.iso === "IND" ? fs(6) : 0}
+                fill={c.iso === "IND" ? "#a8a29e" : "#9ca3af"}
+                className="pointer-events-none uppercase"
+              >
+                {c.name}
+              </text>
+            ))}
             {shown.bases && snapshot.bases.map((b) => (
               <g
                 key={b.id}
@@ -343,42 +411,40 @@ export default function MapView({
           <div className="absolute right-2 top-2 flex flex-col gap-1">
             <Button aria-label="Zoom in" className="h-8 w-8 !px-0" onClick={() => zoomAt(0.7, view.x + view.w / 2, view.y + view.h / 2)}>+</Button>
             <Button aria-label="Zoom out" className="h-8 w-8 !px-0" onClick={() => zoomAt(1 / 0.7, view.x + view.w / 2, view.y + view.h / 2)}>−</Button>
-            <Button aria-label="Reset view" className="h-8 w-8 !px-0 text-xs" onClick={() => setView(full)}>⤢</Button>
+            <Button className="h-8 !px-2 text-xs" onClick={() => setView(india)} title="Zoom to India">India</Button>
+            <Button className="h-8 !px-2 text-xs" onClick={() => setView(full)} title="Show every plotted object">All</Button>
           </div>
           <p className="absolute bottom-2 left-2 max-w-[90%] rounded bg-white/90 px-2 py-1 text-xs text-slate-600 shadow-sm">
-            Position grid only: no land or boundaries are drawn. Boundaries are not authoritative. Scroll to zoom, drag to pan.
+            {geoError
+              ? "Map outline could not be loaded; positions are shown on the grid only. "
+              : "Outline: Natural Earth (public domain), India point of view, simplified. "}
+            Boundaries are not authoritative. Scroll to zoom, drag to pan.
           </p>
         </div>
 
-        <aside className="rounded-lg border border-slate-200 bg-white p-3 text-sm">
-          {selected ? (
-            <>
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="font-semibold text-slate-900">{selected.title}</h3>
-                <button className="text-xs text-slate-500 hover:text-slate-900" onClick={() => setSelected(null)}>Close</button>
-              </div>
-              <dl className="mt-2 divide-y divide-slate-100">
-                {selected.rows.map(([k2, v]) => (
-                  <div key={k2} className="flex justify-between gap-3 py-1.5">
-                    <dt className="text-slate-500">{k2}</dt>
-                    <dd className="text-right font-medium text-slate-800">{v}</dd>
-                  </div>
-                ))}
-              </dl>
-            </>
-          ) : (
-            <div className="text-slate-600">
-              <p className="font-medium text-slate-800">Click any object for details.</p>
-              <ul className="mt-2 list-disc space-y-1 pl-4 text-xs">
-                <li>Filled mission circles are covered by the plan; hollow ones are not.</li>
-                <li>Bold outlines are active at the selected time; faded ones are not.</li>
-                <li>Bold orange lines are sorties airborne at the selected time.</li>
-                <li>Circle sizes match each zone&apos;s radius in km.</li>
-              </ul>
+        {selected && (
+          <aside className="absolute left-2 top-2 w-72 max-w-[calc(100%-6rem)] rounded-lg border border-slate-200 bg-white/95 p-3 text-sm shadow-md">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="font-semibold text-slate-900">{selected.title}</h3>
+              <button className="text-xs text-slate-500 hover:text-slate-900" onClick={() => setSelected(null)}>Close</button>
             </div>
-          )}
-        </aside>
+            <dl className="mt-2 divide-y divide-slate-100">
+              {selected.rows.map(([k2, v]) => (
+                <div key={k2} className="flex justify-between gap-3 py-1.5">
+                  <dt className="text-slate-500">{k2}</dt>
+                  <dd className="text-right font-medium text-slate-800">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </aside>
+        )}
       </div>
+      <p className="text-xs text-slate-600">
+        <b>How to read it:</b> click any shape for details. Blue squares are (fictional) bases. Green circles are mission areas,
+        filled when the plan covers them. Red circles are threat zones and purple dashed shapes are airspace restrictions; both are
+        bold while active at the selected time. Orange lines are planned sorties, bold while airborne. Circle sizes match each
+        zone&apos;s radius in km.
+      </p>
     </div>
   );
 }
