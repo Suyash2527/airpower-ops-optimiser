@@ -25,3 +25,6 @@ next-env.d.ts
 
 # Rendered demo videos (large binaries; share outside git)
 *.mp4
+
+# Sarvam AI API key (never commit)
+.sarvam_key

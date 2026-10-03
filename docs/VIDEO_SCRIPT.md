@@ -1,42 +1,99 @@
-# AirPower demo video: voice-over script
+# AirPower demo video v2: narration script
 
-Final narration, Indian English neural voice (Neerja or Prabhat via edge-tts). Each line is timed to its scene and finishes before the scene ends, so the voice never lags the video.
-Video: `AirPower_SIH26250_demo_4K60.mp4`, 3840 × 2160, 60 fps, 3:07. The lines below are the source of truth for the narration.
+Voice: Sarvam AI Bulbul v3, speaker **Ritu**, English (India), pace 1.08. The video is built narration-first: every sentence is generated, measured, and the matching scene is rendered to last exactly as long as it, so voice and picture never drift. Subtitles show the same words on screen.
 
-| Time | Scene | Narration |
-|---|---|---|
-| 0:00–0:06 | Title | This is AirPower: AI decision support for air operations. |
-| 0:06–0:17 | Problem | Planners juggle scarce aircraft and crews against shifting priorities, with data locked in separate systems. Re-planning is slow. |
-| 0:17–0:26 | Solution | AirPower fuses the data, optimises the plan and proposes ranked re-plans, each explained, each approved by a person. |
-| 0:26–0:36 | Home: the workflow | Here is the whole workflow on one screen. The two amber steps are always a human decision, never the machine's. |
-| 0:36–0:48 | Scenario | We load a seeded scenario: real Indian geography and seasons, fictional bases and units. Same seed, same result, fully reproducible. |
-| 0:48–0:56 | Fusion: two feeds | Two feeds describe one fleet. AirPower fuses them into one record, with source and age. |
-| 0:56–1:05 | Fusion: conflicts | When feeds disagree, the fresher, more trusted value wins, and the other stays visible, with the rule. |
-| 1:05–1:17 | Plan: optimiser | Now the optimiser: Google's CP-SAT assigns aircraft, crews and loads within duty, weather and threat limits. |
-| 1:17–1:25 | Plan: explanations | Every assignment explains itself with a reason code and a plain sentence. No black box. |
-| 1:25–1:35 | Approval | The AI only proposes. A planner reviews the draft and approves it. Nothing executes on its own. |
-| 1:35–1:41 | Map | The operating picture: bases, missions, threats, airspace and sorties. |
-| 1:41–1:52 | Map: time scrub | Scrub the clock and see what is active at any moment: which threats, which mission windows, which sorties are airborne. |
-| 1:52–2:03 | Timeline | The timeline shows every sortie by aircraft. Locked sorties are already airborne, and no re-plan can ever change them. |
-| 2:03–2:17 | Retasking: disruption | Now, something changes mid-operation. We simulate a disruption, and AirPower returns ranked options, each with its coverage, risk and stability trade-offs. |
-| 2:17–2:31 | Retasking: options and decision | Each option shows exactly what it changes, before and after. The planner decides: approve one and it becomes the active plan. Reject, and nothing changes. |
-| 2:31–2:40 | Audit log | Every plan, event and decision goes to an append-only audit log, so every recommendation can be audited. |
-| 2:40–2:48 | Safe by design | Safe by design: advisory only, synthetic data labelled, and no targeting logic. |
-| 2:48–3:00 | Under the hood: the AI | This AI is constraint optimisation with explained reasons, not a black box. A validator re-checks every plan, and people decide. |
-| 3:00–3:07 | Close | AirPower proposes. A human approves. Thank you. |
+Every figure spoken comes from `benchmarks/results/results.csv` (see `benchmarks/RESULTS.md`).
+
+## Title  ·  card
+
+- (7.0 s) This is AirPower: decision support that helps air-operations planners plan better, and re-plan the moment things change.
+
+## The problem  ·  card
+
+- (5.4 s) Planners must match scarce aircraft, crews and weapon loads to missions with competing priorities.
+- (6.2 s) But the data is scattered: fleet status, crew rosters, weather, airspace and threats all live in separate systems.
+- (4.8 s) Plans take hours, aircraft are under-used, and every disruption means re-planning from scratch.
+
+## Our solution  ·  card
+
+- (8.8 s) AirPower fuses every source into one trusted picture, checks every possible sortie against real constraints, and lets an optimiser build the best plan.
+- (5.1 s) When something changes, it proposes ranked repairs, and a human stays in command at every step.
+
+## Live demo  ·  live app
+
+- (6.6 s) Here is the working prototype. The home page lays out the whole workflow, and the two amber steps are always a human decision.
+
+## Live demo · Scenario  ·  live app
+
+- (5.8 s) We start by loading a scenario: real Indian geography and seasons, with fictional bases and units.
+- (7.8 s) Everything is seeded, so the same scenario always produces the same result. Forty aircraft, sixty crew and fifty missions are now loaded.
+
+## Live demo · Data fusion  ·  live app
+
+- (4.3 s) Next, data fusion. Two independent feeds report on the same fleet and crews.
+- (6.5 s) AirPower merges them into one record per asset, and shows where every value came from, and how old it is.
+- (8.5 s) When the feeds disagree, nothing is hidden. The fresher, more trusted value is kept, and the other stays visible beside it, with the rule that decided.
+
+## Live demo · Optimised plan  ·  live app
+
+- (2.1 s) Now, the core of the system: planning.
+- (10.3 s) Google's CP-SAT optimiser assigns aircraft, crews and loadouts, respecting range, fuel, crew duty and rest, weather, airspace and threat limits.
+- (7.8 s) Every number on this screen comes from this run: missions covered, priority-weighted coverage, risk, and how long the solver took.
+- (7.3 s) And every assignment explains itself, with reason codes and a plain-English sentence. Planners see why, not just what.
+
+## Live demo · Human approval  ·  live app
+
+- (4.5 s) Crucially, this plan is only a draft. Nothing is committed until a planner approves it.
+- (3.2 s) That decision is recorded, and the plan becomes active.
+
+## Live demo · Operating picture  ·  live app
+
+- (6.7 s) The operating picture puts bases, missions by priority, threat zones, airspace and planned sorties on one map.
+- (6.6 s) Scrub the clock, and the picture updates: which threats are active, which mission windows are open, which aircraft are airborne.
+- (5.2 s) Hover over any mission to see its window, its requirements, and whether the plan covers it.
+
+## Live demo · Timeline  ·  live app
+
+- (4.1 s) The timeline shows every sortie by aircraft, coloured by mission priority.
+- (6.7 s) Open any sortie to see its crew, timing and risk. Locked sorties are already airborne, and no re-plan can touch them.
+
+## Live demo · Dynamic retasking  ·  live app
+
+- (5.2 s) Now, the real test. Mid-operation, an aircraft suddenly goes unserviceable.
+- (4.7 s) AirPower checks the active plan, finds every affected sortie, and solves for repairs.
+- (4.6 s) It returns ranked options, each showing its trade-off in coverage, risk and stability.
+- (5.9 s) Each option shows exactly what would change: sorties added, removed or modified, field by field.
+- (5.6 s) The planner decides. Approve one, and it becomes the active plan. Reject, and nothing changes at all.
+
+## Live demo · Audit trail  ·  live app
+
+- (5.4 s) Every plan, every event and every human decision is written to an append-only audit log.
+- (6.6 s) And the prototype is honest about itself: what is real, what is simulated, and what a real deployment would still need.
+
+## How we use AI  ·  card
+
+- (2.1 s) So, how does AirPower use AI?
+- (6.0 s) Its core is constraint optimisation, the same family of methods airlines use to schedule fleets and crews.
+- (7.1 s) It is deterministic and explainable, never a black box. Machine-learning forecasts and a plain-language copilot are next on our roadmap.
+
+## Safe by design  ·  card
+
+- (1.4 s) And how do we keep it safe?
+- (5.2 s) It is advisory only: it proposes, people decide, and it contains no targeting logic.
+- (5.9 s) A validator re-checks every plan, airborne sorties are frozen, and every decision is audited.
+
+## Measured results  ·  card
+
+- (2.4 s) We measured it, rather than claiming it.
+- (10.8 s) Across 20 seeded scenarios, it beat a greedy planner by 8 percent in priority-weighted coverage, and first-in, first-out planning by almost 30 percent, with zero constraint violations.
+
+## Close  ·  card
+
+- (5.4 s) AirPower: one trusted picture, one optimised plan, and explainable re-plans.
+- (3.1 s) The system proposes. A human approves. Thank you.
 
 ## If a judge asks: how do you use AI, and how is it safe?
 
-**How we use AI (be precise):**
-- The decision engine is constraint optimisation (Google OR-Tools CP-SAT) over a feasibility check of every aircraft, crew, loadout and take-off slot. It is deterministic and seeded: the same inputs give the same plan.
-- Every assignment and rejection carries a reason code and a plain sentence, so it is explainable.
-- Machine-learning models (serviceability, weather impact) and a Gemini copilot that explains plans in plain words are designed but **not built yet**. Say "planned".
-
-**How it stays safe:**
-- Advisory only: a person approves every change; no code path applies a plan on its own.
-- No targeting or weapon-employment logic: it only allocates aircraft, crews and loads.
-- An independent validator re-checks every plan (0 violations in 60 benchmark plans).
-- Airborne sorties are frozen, so a re-plan cannot change a flight under way.
-- Append-only audit log of every plan, event and human decision.
-- Data is synthetic and labelled; a solver fallback is labelled as a fallback.
-- Runs fully offline; the planned copilot would get read-only tools, and its numbers would be checked against the API.
+- **AI today:** constraint optimisation (Google OR-Tools CP-SAT) over a feasibility check of every aircraft, crew, loadout and slot; deterministic and seeded; every decision carries a reason code and a sentence.
+- **Roadmap, not built:** machine-learning forecasts (serviceability, weather impact) and a read-only plain-language copilot. Say "planned".
+- **Safety:** advisory only (a person approves every change); no targeting or weapon-employment logic; an independent validator re-checks every plan (0 violations in 60 benchmark plans); airborne sorties are frozen; append-only audit log; synthetic data labelled; runs offline.
