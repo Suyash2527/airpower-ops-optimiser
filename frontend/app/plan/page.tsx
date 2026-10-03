@@ -42,6 +42,19 @@ export default function PlanPage() {
     }
   }
 
+  async function approve() {
+    if (!plan) return;
+    setBusy(true);
+    setError(null);
+    try {
+      setPlan(await api<PlanResp>(`/plans/${plan.id}/approve`, { method: "POST", body: { actor: "planner-ui" } }));
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <main className="flex flex-col gap-3 p-4">
       <div>
@@ -57,6 +70,11 @@ export default function PlanPage() {
             Plan {plan.id} v{plan.version} · status {plan.status} · {plan.assignments.length} assigned ·{" "}
             {plan.unassigned.length} unassigned · label: {plan.data_label}
           </p>
+          {plan.status === "draft" && (
+            <div>
+              <button disabled={busy} onClick={approve} className="rounded border px-3 py-1">Approve plan (human decision)</button>
+            </div>
+          )}
           <table className="text-left text-sm">
             <thead>
               <tr><th className="pr-3">Mission</th><th className="pr-3">Aircraft</th><th className="pr-3">Base</th><th className="pr-3">Take-off / land (min)</th><th>Why</th></tr>
