@@ -39,5 +39,26 @@ Some Windows machines apply an Application Control policy that blocks unsigned c
 Phase 7 (scikit-learn) and for exact geodesics, run the backend under **WSL2** or **Docker**
 (Linux), where they install normally. The policy is not bypassed (docs/DECISIONS.md D-11, D-35).
 
+## Run on Windows
+
+One-time setup:
+
+```powershell
+cd backend; pip install --user -e ".[dev]"; cd ..
+cd frontend; npm install; cd ..
+```
+
+Then, from the repo root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\dev.ps1
+```
+
+This opens two windows: the API on `http://localhost:5050` (docs at `/docs`) and the web app on
+`http://localhost:3000`. The web app reads the API URL from `frontend/.env.local`
+(`NEXT_PUBLIC_API_URL`, copied from `frontend/.env.local.example`). `uvicorn` is started with
+`python -m uvicorn` because the `--user` install does not put it on PATH. If the script says port
+5050 is in use, an older backend is still running; close that window (or `Stop-Process -Id <pid>`).
+
 ## Status
 Phases 0–5 built (scaffold, synthetic scenarios, fusion, feasibility, risk, validator, greedy/FIFO baselines, CP-SAT optimiser, events and advisory retasking with approve/reject, audit log, WebSocket hub). See `docs/TASKS.md` for the checklist.
