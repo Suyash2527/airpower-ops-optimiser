@@ -57,9 +57,12 @@ function subscribe(cb: () => void) {
   };
 }
 
-/** Current scenario id; null on the server and until one is chosen. */
-export function useScenarioId(): string | null {
-  return useSyncExternalStore(subscribe, getScenarioId, () => null);
+/**
+ * Current scenario id: `undefined` while rendering on the server and during hydration (not known
+ * yet, so pages show skeletons instead of flashing "no scenario"), `null` when none is chosen.
+ */
+export function useScenarioId(): string | null | undefined {
+  return useSyncExternalStore(subscribe, getScenarioId, () => undefined);
 }
 
 export interface Loaded<T> {

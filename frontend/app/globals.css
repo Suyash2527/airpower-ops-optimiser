@@ -1,5 +1,161 @@
 @import "tailwindcss";
 
-body {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+/*
+ * AirPower design tokens (D-65). Tailwind v4 reads its theme from CSS, so this block is the
+ * "tailwind config": every colour, radius, shadow, type size and motion value used by the
+ * component library in components/ui is defined here. Light theme only.
+ */
+/* `static`: emit every token, including ones only read through var() (map SVG, priority chips). */
+@theme static {
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+  /* Brand: a calm, deep blue. */
+  --color-brand-50: #eff4ff;
+  --color-brand-100: #dbe5fe;
+  --color-brand-200: #bfd0fd;
+  --color-brand-300: #93b0fa;
+  --color-brand-400: #5f87f5;
+  --color-brand-500: #3a63ec;
+  --color-brand-600: #2647d6;
+  --color-brand-700: #1f38b0;
+  --color-brand-800: #1e318e;
+  --color-brand-900: #1d2d70;
+  --color-brand-950: #141c45;
+
+  /* Surfaces and lines. */
+  --color-canvas: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-subtle: #f9fafb;
+  --color-line: #e4e7ec;
+  --color-line-strong: #d0d5dd;
+  --color-ink: #101828;
+  --color-ink-2: #344054;
+  --color-ink-3: #667085;
+  --color-ink-4: #98a2b3;
+
+  /* Mission priority: one ordinal hue, darkest = most important (1 = highest .. 5). */
+  --color-p1: #2a1f7a;
+  --color-p2: #4433b8;
+  --color-p3: #6b5ce7;
+  --color-p4: #a69df2;
+  --color-p5: #d3cff9;
+
+  /* Map layers. */
+  --color-map-sea: #e8eef6;
+  --color-map-land: #fbfaf7;
+  --color-map-land-other: #eceef1;
+  --color-map-border: #a8a29e;
+  --color-threat: #d92d20;
+  --color-airspace: #475467;
+  --color-route: #0e9384;
+  --color-base: #101828;
+
+  /* Type scale (8px rhythm for line heights). */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-display: 2.75rem;
+  --text-display--line-height: 3.25rem;
+  --text-display--letter-spacing: -0.02em;
+
+  /* Radius, shadow, motion. */
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --shadow-card: 0 1px 2px 0 rgb(16 24 40 / 0.04), 0 1px 3px 0 rgb(16 24 40 / 0.05);
+  --shadow-raised: 0 2px 4px -2px rgb(16 24 40 / 0.06), 0 4px 8px -2px rgb(16 24 40 / 0.08);
+  --shadow-overlay: 0 8px 8px -4px rgb(16 24 40 / 0.04), 0 20px 24px -4px rgb(16 24 40 / 0.1);
+  --shadow-focus: 0 0 0 4px rgb(58 99 236 / 0.18);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --default-transition-duration: 160ms;
+  --default-transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+
+  --animate-fade-in: fade-in 160ms var(--ease-standard);
+  --animate-slide-in-right: slide-in-right 200ms var(--ease-standard);
+  --animate-pop-in: pop-in 180ms var(--ease-standard);
+  --animate-toast-in: toast-in 200ms var(--ease-standard);
+  --animate-shimmer: shimmer 1.4s linear infinite;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-in-right {
+    from { transform: translateX(24px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes pop-in {
+    from { transform: translateY(4px) scale(0.98); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  @keyframes toast-in {
+    from { transform: translateY(8px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes shimmer {
+    from { background-position: -400px 0; }
+    to { background-position: 400px 0; }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-brand-100);
+  }
+  input[type="range"] {
+    accent-color: var(--color-brand-600);
+  }
+}
+
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Smooth expand/collapse without measuring heights: animate grid row 0fr -> 1fr. */
+@utility collapsible {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms var(--ease-standard), opacity 200ms var(--ease-standard);
+  opacity: 0;
+  & > * {
+    overflow: hidden;
+    visibility: hidden; /* closed content leaves the tab order and the accessibility tree */
+    transition: visibility 200ms;
+  }
+  &[data-open="true"] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+  &[data-open="true"] > * {
+    visibility: visible;
+  }
+}
+
+@utility skeleton {
+  background: linear-gradient(90deg, #eef0f3 0px, #f6f7f9 160px, #eef0f3 320px);
+  background-size: 800px 100%;
+  animation: var(--animate-shimmer);
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
 }

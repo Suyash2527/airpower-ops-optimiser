@@ -98,11 +98,12 @@ export interface FusionMeta {
 }
 
 export interface Snapshot {
-  scenario: { name: string; seed: number; horizon_min: number; season_preset: string; t0: string };
+  scenario: { name: string; seed: number; horizon_min: number; season_preset: string; t0: string; region_mix?: Record<string, number> };
   scenario_id: string;
   data_label: string;
   state_version: number;
   bases: Base[];
+  aircraft_types?: { id: string; name?: string; capabilities?: string[] }[];
   aircraft: Aircraft[];
   crew: Crew[];
   missions: Mission[];
@@ -153,6 +154,7 @@ export interface Assignment {
   takeoff_min: number;
   land_min: number;
   base_from: string;
+  route?: LatLon[];
   risk: Risk;
   frozen: boolean;
   reasons: string[];
@@ -173,8 +175,30 @@ export interface Plan {
   data_label: string;
   assignments: Assignment[];
   unassigned: Unassigned[];
-  kpis: Record<string, number>;
-  solver: { name?: string; status?: string; wall_ms?: number };
+  kpis: PlanKpis;
+  solver: { name?: string; status?: string; wall_ms?: number; gap?: number; objective?: number };
+  inputs?: { planner?: string; weight_preset?: string; now_min?: number; time_limit_s?: number };
+}
+export interface PlanKpis {
+  priority_weighted_coverage?: number;
+  missions_covered?: number;
+  missions_total?: number;
+  by_priority?: Record<string, number>;
+  aircraft_utilisation?: number;
+  crew_utilisation?: number;
+  mean_risk?: number;
+  max_risk?: number;
+  total_flight_minutes?: number;
+  changes_vs_parent?: number;
+}
+
+export interface SimEvent {
+  id: string;
+  type: string;
+  time_min: number;
+  payload: Record<string, unknown>;
+  source: string;
+  created_by: string;
 }
 
 export interface DiffChange {
@@ -195,6 +219,7 @@ export interface Proposal {
   event_description: string;
   score_breakdown: Record<string, number>;
   affected_assignment_ids: string[];
+  plan?: Plan;
   diff: {
     added: string[];
     removed: string[];

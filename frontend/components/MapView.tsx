@@ -1,116 +1,76 @@
 "use client";
 
-import { useEffect, useRef, useState, type PointerEvent, type WheelEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent, type ReactNode, type WheelEvent } from "react";
 import type { Assignment, Snapshot } from "@/lib/types";
-import { Button, tmin } from "@/components/ui";
+import { CAPABILITIES, REGIONS } from "@/lib/labels";
+import { humanize, istAt, riskTone, tmin } from "@/lib/format";
+import { Badge, Button, Card, DetailRows, Icon, IconButton, PriorityChip, Tooltip } from "@/components/ui";
 
 // D-22 / D-64: no tiles. Land comes from Natural Earth's India point-of-view countries file
 // (public domain), simplified by scripts/build_india_outline.py. Equirectangular projection.
 const REGION_BOX = { minLon: 55, maxLon: 120, minLat: -2, maxLat: 42 };
 const INDIA_BOX = { minLon: 67, maxLon: 98, minLat: 6, maxLat: 37.5 };
 const GEO_URL = "/geo/india_region.geojson";
-// Neighbours worth labelling; others are drawn but unlabelled.
 const LABELLED = new Set(["IND", "PAK", "CHN", "NPL", "BTN", "BGD", "MMR", "LKA", "AFG"]);
+const WIDTH = 1000;
+const KM_PER_DEG = 111.32;
 
 interface GeoFeature {
   properties: { name: string; iso: string };
   geometry: { type: "Polygon" | "MultiPolygon"; coordinates: number[][][] | number[][][][] };
 }
-const WIDTH = 1000;
-const KM_PER_DEG = 111.32;
 
 type Layer = "bases" | "missions" | "threats" | "airspace" | "routes" | "airfields";
-const LAYERS: { key: Layer; label: string; swatch: string }[] = [
-  { key: "bases", label: "Bases", swatch: "bg-sky-700" },
-  { key: "missions", label: "Mission areas", swatch: "bg-emerald-500" },
-  { key: "threats", label: "Threat zones", swatch: "bg-red-500" },
-  { key: "airspace", label: "Airspace restrictions", swatch: "bg-violet-500" },
-  { key: "routes", label: "Planned sorties", swatch: "bg-amber-500" },
-  { key: "airfields", label: "Alternate airfields (open data)", swatch: "bg-slate-400" },
-];
-
-interface Selected {
-  title: string;
-  rows: [string, string][];
+interface Info {
+  key: string;
+  kind: string;
+  title: ReactNode;
+  subtitle?: ReactNode;
+  rows: [ReactNode, ReactNode][];
 }
+
+const active = (t: number, from: number, to: number) => t >= from && t <= to;
+const pColor = (p: number) => `var(--color-p${Math.min(5, Math.max(1, p))})`;
 
 function extent(s: Snapshot) {
   const lons = [REGION_BOX.minLon, REGION_BOX.maxLon];
   const lats = [REGION_BOX.minLat, REGION_BOX.maxLat];
-  const add = (lat: number, lon: number) => {
-    lats.push(lat);
-    lons.push(lon);
-  };
+  const add = (lat: number, lon: number) => { lats.push(lat); lons.push(lon); };
   s.bases.forEach((b) => add(b.lat, b.lon));
   s.missions.forEach((m) => add(m.aoi.center.lat, m.aoi.center.lon));
   s.threats.forEach((t) => add(t.center.lat, t.center.lon));
   s.airspace.forEach((z) => z.polygon.coordinates[0].forEach(([lon, lat]) => add(lat, lon)));
-  const pad = 0.5;
-  return {
-    minLon: Math.min(...lons) - pad,
-    maxLon: Math.max(...lons) + pad,
-    minLat: Math.min(...lats) - pad,
-    maxLat: Math.max(...lats) + pad,
-  };
+  return { minLon: Math.min(...lons) - 0.5, maxLon: Math.max(...lons) + 0.5, minLat: Math.min(...lats) - 0.5, maxLat: Math.max(...lats) + 0.5 };
 }
 
-const active = (t: number, from: number, to: number) => t >= from && t <= to;
-
-export default function MapView({
-  snapshot,
-  assignments = [],
-  planLabel,
-}: {
-  snapshot: Snapshot;
-  assignments?: Assignment[];
-  planLabel?: string;
-}) {
-  const [shown, setShown] = useState<Record<Layer, boolean>>({
-    bases: true,
-    missions: true,
-    threats: true,
-    airspace: true,
-    routes: true,
-    airfields: false,
-  });
+export default function MapView({ snapshot, assignments = [], planLabel }: { snapshot: Snapshot; assignments?: Assignment[]; planLabel?: string }) {
+  const [shown, setShown] = useState<Record<Layer, boolean>>({ bases: true, missions: true, threats: true, airspace: true, routes: true, airfields: false });
   const [t, setT] = useState(0);
-  const [selected, setSelected] = useState<Selected | null>(null);
+  const [selected, setSelected] = useState<Info | null>(null);
+  const [hover, setHover] = useState<{ info: Info; x: number; y: number } | null>(null);
   const [geo, setGeo] = useState<GeoFeature[] | null>(null);
   const [geoError, setGeoError] = useState(false);
+  const [size, setSize] = useState<{ w: number; h: number } | null>(null);
+  const box = useRef<HTMLDivElement>(null);
+  const svg = useRef<SVGSVGElement>(null);
+
   useEffect(() => {
     let live = true;
     fetch(GEO_URL)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((d: { features: GeoFeature[] }) => live && setGeo(d.features))
       .catch(() => live && setGeoError(true));
-    return () => {
-      live = false;
-    };
+    return () => { live = false; };
   }, []);
 
-  const e = extent(snapshot);
-  const k = Math.cos((((e.minLat + e.maxLat) / 2) * Math.PI) / 180); // shrink longitude at mid-latitude
-  const scale = WIDTH / ((e.maxLon - e.minLon) * k);
-  const H = (e.maxLat - e.minLat) * scale;
-  const x = (lon: number) => (lon - e.minLon) * k * scale;
-  const y = (lat: number) => (e.maxLat - lat) * scale;
-  const r = (km: number) => (km / KM_PER_DEG) * scale;
-  const horizon = snapshot.scenario.horizon_min;
+  useLayoutEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setSize({ w: entry.contentRect.width, h: entry.contentRect.height }));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
-  // View box in SVG units: zoom with the wheel or buttons, pan by dragging.
-  const full = { x: 0, y: 0, w: WIDTH, h: H };
-  // Fit the India box while keeping the canvas aspect ratio.
-  const fit = (b: typeof INDIA_BOX) => {
-    const bw = x(b.maxLon) - x(b.minLon);
-    const bh = y(b.minLat) - y(b.maxLat);
-    const w = Math.max(bw, (bh * WIDTH) / H);
-    const h = (w * H) / WIDTH;
-    return { x: (x(b.minLon) + x(b.maxLon)) / 2 - w / 2, y: (y(b.maxLat) + y(b.minLat)) / 2 - h / 2, w, h };
-  };
-  const india = fit(INDIA_BOX);
-  const [view, setView] = useState(india);
-  const svg = useRef<SVGSVGElement>(null);
-  const drag = useRef<{ px: number; py: number; vx: number; vy: number; moved: boolean } | null>(null);
   // React wheel listeners are passive, so stop the page scrolling under the map natively.
   useEffect(() => {
     const el = svg.current;
@@ -119,102 +79,131 @@ export default function MapView({
     el.addEventListener("wheel", stop, { passive: false });
     return () => el.removeEventListener("wheel", stop);
   }, []);
-  const z = view.w / WIDTH; // < 1 when zoomed in; keeps labels and markers a constant screen size
+
+  const e = extent(snapshot);
+  const k = Math.cos((((e.minLat + e.maxLat) / 2) * Math.PI) / 180);
+  const scale = WIDTH / ((e.maxLon - e.minLon) * k);
+  const H = (e.maxLat - e.minLat) * scale;
+  const x = (lon: number) => (lon - e.minLon) * k * scale;
+  const y = (lat: number) => (e.maxLat - lat) * scale;
+  const r = (km: number) => (km / KM_PER_DEG) * scale;
+  const horizon = snapshot.scenario.horizon_min;
+  const aspect = size ? size.h / Math.max(1, size.w) : 0.62;
+
+  const fit = (b: typeof INDIA_BOX) => {
+    const bw = x(b.maxLon) - x(b.minLon);
+    const bh = y(b.minLat) - y(b.maxLat);
+    const w = Math.max(bw, bh / aspect) * 1.04;
+    return { cx: (x(b.minLon) + x(b.maxLon)) / 2, cy: (y(b.maxLat) + y(b.minLat)) / 2, w };
+  };
+  const all = { cx: WIDTH / 2, cy: H / 2, w: Math.max(WIDTH, H / aspect) };
+  const [cam, setCam] = useState<{ cx: number; cy: number; w: number } | null>(null);
+  const c = cam ?? fit(INDIA_BOX);
+  const view = { x: c.cx - c.w / 2, y: c.cy - (c.w * aspect) / 2, w: c.w, h: c.w * aspect };
+  const px = size ? view.w / size.w : view.w / 1000; // one screen pixel in SVG units
+  const fs = (n: number) => n * px;
 
   const toSvg = (clientX: number, clientY: number) => {
     const rect = svg.current!.getBoundingClientRect();
-    return { sx: view.x + ((clientX - rect.left) / rect.width) * view.w, sy: view.y + ((clientY - rect.top) / rect.height) * view.h, rect };
+    return { sx: view.x + ((clientX - rect.left) / rect.width) * view.w, sy: view.y + ((clientY - rect.top) / rect.height) * view.h };
   };
-  const zoomAt = (factor: number, sx: number, sy: number) =>
-    setView((v) => {
-      const w = Math.min(WIDTH, Math.max(WIDTH / 20, v.w * factor));
-      const f = w / v.w;
-      return { x: sx - (sx - v.x) * f, y: sy - (sy - v.y) * f, w, h: v.h * f };
-    });
+  const zoomAt = (factor: number, sx: number, sy: number) => {
+    const w = Math.min(all.w * 1.2, Math.max(WIDTH / 30, c.w * factor));
+    const f = w / c.w;
+    setCam({ cx: sx - (sx - c.cx) * f, cy: sy - (sy - c.cy) * f, w });
+  };
   const onWheel = (ev: WheelEvent<SVGSVGElement>) => {
     const { sx, sy } = toSvg(ev.clientX, ev.clientY);
     zoomAt(ev.deltaY < 0 ? 0.8 : 1.25, sx, sy);
   };
-  const onDown = (ev: PointerEvent<SVGSVGElement>) => {
-    drag.current = { px: ev.clientX, py: ev.clientY, vx: view.x, vy: view.y, moved: false };
-  };
-  const onMove = (ev: PointerEvent<SVGSVGElement>) => {
+  const drag = useRef<{ px: number; py: number; cx: number; cy: number; moved: boolean } | null>(null);
+  const wasDrag = useRef(false);
+  const onDown = (ev: RPointerEvent<SVGSVGElement>) => { drag.current = { px: ev.clientX, py: ev.clientY, cx: c.cx, cy: c.cy, moved: false }; };
+  const onMove = (ev: RPointerEvent<SVGSVGElement>) => {
     const d = drag.current;
     if (!d) return;
-    const rect = svg.current!.getBoundingClientRect();
-    const dx = ((ev.clientX - d.px) / rect.width) * view.w;
-    const dy = ((ev.clientY - d.py) / rect.height) * view.h;
-    if (Math.abs(ev.clientX - d.px) + Math.abs(ev.clientY - d.py) > 3) {
+    if (Math.abs(ev.clientX - d.px) + Math.abs(ev.clientY - d.py) > 3 && !d.moved) {
       d.moved = true;
       svg.current!.setPointerCapture(ev.pointerId);
+      setHover(null);
     }
-    if (d.moved) setView((v) => ({ ...v, x: d.vx - dx, y: d.vy - dy }));
+    if (d.moved) setCam({ cx: d.cx - (ev.clientX - d.px) * px, cy: d.cy - (ev.clientY - d.py) * px, w: c.w });
   };
-  const wasDrag = useRef(false);
-  const onUp = () => {
-    wasDrag.current = drag.current?.moved ?? false;
-    drag.current = null;
-  };
-  const pick = (s: Selected) => () => {
-    if (!wasDrag.current) setSelected(s);
+  const onUp = () => { wasDrag.current = drag.current?.moved ?? false; drag.current = null; };
+
+  // Hover and click handlers for any plotted object.
+  const bind = (info: Info) => ({
+    onPointerEnter: (ev: RPointerEvent) => !drag.current?.moved && place(info, ev),
+    onPointerMove: (ev: RPointerEvent) => !drag.current?.moved && place(info, ev),
+    onPointerLeave: () => setHover(null),
+    onClick: () => { if (!wasDrag.current) setSelected(info); },
+    style: { cursor: "pointer" },
+  });
+  const place = (info: Info, ev: RPointerEvent) => {
+    const rect = box.current!.getBoundingClientRect();
+    setHover({ info, x: ev.clientX - rect.left, y: ev.clientY - rect.top });
   };
 
   const ringPath = (ring: number[][]) => ring.map(([lon, lat], i) => `${i ? "L" : "M"}${x(lon).toFixed(1)},${y(lat).toFixed(1)}`).join("") + "Z";
   const land = (geo ?? []).map((f) => {
     const polys = (f.geometry.type === "Polygon" ? [f.geometry.coordinates] : f.geometry.coordinates) as number[][][][];
     const d = polys.map((p) => p.map(ringPath).join("")).join("");
-    // Label at the centre of the largest polygon's outer ring.
     const outer = polys.map((p) => p[0]).sort((a, b) => b.length - a.length)[0] ?? [];
-    const lon = outer.reduce((acc, c) => acc + c[0], 0) / Math.max(outer.length, 1);
-    const lat = outer.reduce((acc, c) => acc + c[1], 0) / Math.max(outer.length, 1);
+    const lon = outer.reduce((acc, q) => acc + q[0], 0) / Math.max(outer.length, 1);
+    const lat = outer.reduce((acc, q) => acc + q[1], 0) / Math.max(outer.length, 1);
     return { iso: f.properties.iso, name: f.properties.name, d, lx: x(lon), ly: y(lat) };
   });
 
   const grid: number[] = [];
-  const step = z > 0.5 ? 5 : z > 0.2 ? 2 : 1;
+  const step = c.w > 600 ? 5 : c.w > 250 ? 2 : 1;
   for (let g = -180; g <= 180; g += step) grid.push(g);
-  const fs = (px: number) => px * z * (WIDTH / 900);
   const baseById = new Map(snapshot.bases.map((b) => [b.id, b]));
+  const missionById = new Map(snapshot.missions.map((m) => [m.id, m]));
   const airborne = assignments.filter((a) => active(t, a.takeoff_min, a.land_min));
+  const threatsOn = snapshot.threats.filter((th) => active(t, th.active_from_min, th.active_to_min)).length;
+  const windowsOpen = snapshot.missions.filter((m) => active(t, m.window_start_min, m.window_end_min)).length;
+  const t0 = snapshot.scenario.t0;
+
+  const LAYERS: { key: Layer; label: string; symbol: ReactNode; count: number }[] = [
+    { key: "bases", label: "Air bases (fictional)", count: snapshot.bases.length, symbol: <rect x="3" y="3" width="10" height="10" rx="2" fill="var(--color-base)" stroke="white" strokeWidth="1.5" /> },
+    { key: "missions", label: "Mission areas", count: snapshot.missions.length, symbol: <path d="M8 2 14 8 8 14 2 8Z" fill="var(--color-p2)" stroke="white" strokeWidth="1.2" /> },
+    { key: "threats", label: "Threat zones", count: snapshot.threats.length, symbol: <circle cx="8" cy="8" r="6" fill="rgb(217 45 32 / 0.25)" stroke="var(--color-threat)" strokeWidth="1.5" /> },
+    { key: "airspace", label: "Airspace restrictions", count: snapshot.airspace.length, symbol: <rect x="2.5" y="3.5" width="11" height="9" fill="rgb(71 84 103 / 0.1)" stroke="var(--color-airspace)" strokeWidth="1.3" strokeDasharray="2.5 1.5" /> },
+    { key: "routes", label: "Planned sorties", count: assignments.length, symbol: <path d="M2 12 14 4" stroke="var(--color-route)" strokeWidth="2.2" strokeLinecap="round" /> },
+    { key: "airfields", label: "Alternate airfields (open data)", count: snapshot.alternate_airfields.length, symbol: <circle cx="8" cy="8" r="3.5" fill="white" stroke="var(--color-ink-3)" strokeWidth="1.5" /> },
+  ];
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-        {LAYERS.map((l) => (
-          <label key={l.key} className="flex cursor-pointer items-center gap-1.5 text-slate-700">
-            <input type="checkbox" checked={shown[l.key]} onChange={() => setShown({ ...shown, [l.key]: !shown[l.key] })} />
-            <span className={`inline-block h-2.5 w-2.5 rounded-full ${l.swatch}`} />
-            {l.label}
-          </label>
-        ))}
-      </div>
+    <div className="grid grid-cols-[minmax(0,1fr)_320px] items-start gap-6">
+      <Card padded={false} className="flex min-w-0 flex-col overflow-hidden">
+        {/* Time control */}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-line px-5 py-4">
+          <div className="flex min-w-[340px] flex-1 items-center gap-4">
+            <div className="shrink-0">
+              <div className="text-xs font-medium text-ink-3">Scenario time</div>
+              <div className="font-display text-lg font-semibold text-ink tnum">{tmin(t)}</div>
+            </div>
+            <div className="flex-1">
+              <input type="range" min={0} max={horizon} step={15} value={t} onChange={(ev) => setT(Number(ev.target.value))} className="w-full" aria-label="Scenario time" />
+              <div className="mt-0.5 flex justify-between text-[11px] text-ink-4 tnum">
+                {[0, 0.25, 0.5, 0.75, 1].map((f) => <span key={f}>{tmin(horizon * f)}</span>)}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[13px] text-ink-3 tnum">{istAt(t0, t)}</span>
+            <Badge tone={threatsOn ? "red" : "grey"} dot size="md">{threatsOn} threat zone{threatsOn === 1 ? "" : "s"} active</Badge>
+            <Badge tone={windowsOpen ? "violet" : "grey"} dot size="md">{windowsOpen} mission window{windowsOpen === 1 ? "" : "s"} open</Badge>
+            <Badge tone={airborne.length ? "green" : "grey"} dot size="md">{airborne.length} sortie{airborne.length === 1 ? "" : "s"} airborne</Badge>
+          </div>
+        </div>
 
-      <div className="flex flex-wrap items-center gap-3 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
-        <span className="font-medium text-slate-700">Time</span>
-        <input
-          type="range"
-          min={0}
-          max={horizon}
-          step={15}
-          value={t}
-          onChange={(ev) => setT(Number(ev.target.value))}
-          className="min-w-40 flex-1 accent-sky-700"
-          aria-label="Scenario time"
-        />
-        <span className="w-20 font-mono tabular-nums text-slate-900">{tmin(t)}</span>
-        <span className="text-xs text-slate-500">
-          {snapshot.threats.filter((th) => active(t, th.active_from_min, th.active_to_min)).length} threat zone(s) active ·{" "}
-          {airborne.length} sortie(s) airborne{planLabel ? ` (${planLabel})` : ""}
-        </span>
-      </div>
-
-      <div className="relative">
-        <div className="relative overflow-hidden rounded-lg border border-slate-300 bg-[#dbeafe]">
+        {/* Map */}
+        <div ref={box} className="relative h-[calc(100vh-410px)] min-h-[500px] bg-map-sea">
           <svg
             ref={svg}
             viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
-            className="block h-auto w-full cursor-grab touch-none select-none active:cursor-grabbing"
-            style={{ aspectRatio: `${WIDTH} / ${H}` }}
+            className="absolute inset-0 block h-full w-full cursor-grab touch-none select-none active:cursor-grabbing"
             data-testid="cop-map"
             onWheel={onWheel}
             onPointerDown={onDown}
@@ -222,29 +211,49 @@ export default function MapView({
             onPointerUp={onUp}
             onPointerLeave={onUp}
           >
-            <rect x={-WIDTH} y={-H} width={WIDTH * 3} height={H * 3} fill="#dbeafe" />
-            {land.map((c) => (
+            <defs>
+              <pattern id="hatch" width={fs(6)} height={fs(6)} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2={fs(6)} stroke="var(--color-threat)" strokeOpacity="0.35" strokeWidth={fs(1.5)} />
+              </pattern>
+            </defs>
+            <rect x={-WIDTH * 2} y={-H * 2} width={WIDTH * 5} height={H * 5} fill="var(--color-map-sea)" />
+            {land.map((cn) => (
               <path
-                key={c.iso + c.name}
-                d={c.d}
-                fill={c.iso === "IND" ? "#fefce8" : "#e5e7eb"}
-                stroke={c.iso === "IND" ? "#78716c" : "#9ca3af"}
-                strokeWidth={c.iso === "IND" ? 1.4 : 0.8}
+                key={cn.iso + cn.name}
+                d={cn.d}
+                fill={cn.iso === "IND" ? "var(--color-map-land)" : "var(--color-map-land-other)"}
+                stroke={cn.iso === "IND" ? "var(--color-map-border)" : "#c4c9d1"}
+                strokeWidth={cn.iso === "IND" ? 1.3 : 0.8}
                 vectorEffect="non-scaling-stroke"
                 fillRule="evenodd"
               />
             ))}
             {grid.filter((g) => g > e.minLon && g < e.maxLon).map((g) => (
               <g key={`lon${g}`}>
-                <line x1={x(g)} x2={x(g)} y1={0} y2={H} stroke="#94a3b8" strokeOpacity={0.35} strokeWidth={1} vectorEffect="non-scaling-stroke" />
-                <text x={x(g) + fs(3)} y={view.y + view.h - fs(5)} fontSize={fs(11)} fill="#64748b">{g}°E</text>
+                <line x1={x(g)} x2={x(g)} y1={-H} y2={H * 2} stroke="#94a3b8" strokeOpacity={0.22} strokeWidth={1} vectorEffect="non-scaling-stroke" />
+                <text x={x(g) + fs(4)} y={view.y + fs(16)} fontSize={fs(10.5)} fill="#8b95a5" className="tnum">{g}°E</text>
               </g>
             ))}
             {grid.filter((g) => g > e.minLat && g < e.maxLat).map((g) => (
               <g key={`lat${g}`}>
-                <line y1={y(g)} y2={y(g)} x1={0} x2={WIDTH} stroke="#94a3b8" strokeOpacity={0.35} strokeWidth={1} vectorEffect="non-scaling-stroke" />
-                <text x={view.x + fs(4)} y={y(g) - fs(3)} fontSize={fs(11)} fill="#64748b">{g}°N</text>
+                <line y1={y(g)} y2={y(g)} x1={-WIDTH} x2={WIDTH * 2} stroke="#94a3b8" strokeOpacity={0.22} strokeWidth={1} vectorEffect="non-scaling-stroke" />
+                <text x={view.x + fs(8)} y={y(g) - fs(4)} fontSize={fs(10.5)} fill="#8b95a5" className="tnum">{g}°N</text>
               </g>
+            ))}
+            {land.filter((cn) => LABELLED.has(cn.iso)).map((cn) => (
+              <text
+                key={`lbl${cn.iso}`}
+                x={cn.lx}
+                y={cn.ly}
+                textAnchor="middle"
+                fontSize={fs(cn.iso === "IND" ? 20 : 12)}
+                fontWeight={cn.iso === "IND" ? 700 : 600}
+                letterSpacing={fs(cn.iso === "IND" ? 8 : 2)}
+                fill={cn.iso === "IND" ? "#d6d3d1" : "#b5bcc7"}
+                className="pointer-events-none uppercase"
+              >
+                {cn.name}
+              </text>
             ))}
 
             {shown.airspace && snapshot.airspace.map((zn) => {
@@ -252,17 +261,19 @@ export default function MapView({
               return (
                 <polygon
                   key={zn.id}
-                  className="cursor-pointer"
                   points={zn.polygon.coordinates[0].map(([lon, lat]) => `${x(lon)},${y(lat)}`).join(" ")}
-                  fill={on ? "rgb(139 92 246 / 0.18)" : "rgb(139 92 246 / 0.04)"}
-                  stroke="rgb(124 58 237)"
-                  strokeOpacity={on ? 1 : 0.35}
-                  strokeDasharray="5 3"
-                  strokeWidth={1.5}
+                  fill={on ? "rgb(71 84 103 / 0.13)" : "rgb(71 84 103 / 0.03)"}
+                  stroke="var(--color-airspace)"
+                  strokeOpacity={on ? 0.7 : 0.3}
+                  strokeDasharray="6 4"
+                  strokeWidth={1.4}
                   vectorEffect="non-scaling-stroke"
-                  onClick={pick({
-                    title: `${zn.id} · airspace`,
-                    rows: [["Kind", zn.kind], ["Active", `${tmin(zn.active_from_min)} to ${tmin(zn.active_to_min)}`], ["At current time", on ? "active" : "inactive"]],
+                  {...bind({
+                    key: zn.id,
+                    kind: "Airspace restriction",
+                    title: `${humanize(zn.kind)} airspace`,
+                    subtitle: zn.id,
+                    rows: [["Active", `${tmin(zn.active_from_min)} to ${tmin(zn.active_to_min)}`], ["At selected time", on ? "Active" : "Inactive"]],
                   })}
                 />
               );
@@ -270,27 +281,61 @@ export default function MapView({
 
             {shown.threats && snapshot.threats.map((th) => {
               const on = active(t, th.active_from_min, th.active_to_min);
+              const cx = x(th.center.lon);
+              const cy = y(th.center.lat);
+              const rr = Math.max(r(th.radius_km), fs(4));
               return (
-                <circle
+                <g
                   key={th.id}
-                  className="cursor-pointer"
-                  cx={x(th.center.lon)}
-                  cy={y(th.center.lat)}
-                  r={Math.max(r(th.radius_km), fs(3))}
-                  fill={on ? `rgb(239 68 68 / ${0.12 + th.severity * 0.3})` : "rgb(239 68 68 / 0.04)"}
-                  stroke="rgb(220 38 38)"
-                  strokeOpacity={on ? 1 : 0.3}
-                  strokeDasharray={on ? undefined : "4 3"}
-                  strokeWidth={1.5}
-                  vectorEffect="non-scaling-stroke"
-                  onClick={pick({
-                    title: `${th.id} · threat zone`,
+                  {...bind({
+                    key: th.id,
+                    kind: "Threat zone (synthetic)",
+                    title: humanize(th.type),
+                    subtitle: th.id,
                     rows: [
-                      ["Type", th.type],
                       ["Radius", `${th.radius_km.toFixed(0)} km`],
-                      ["Severity", th.severity.toFixed(2)],
+                      ["Severity", `${th.severity.toFixed(2)} of 1`],
                       ["Active", `${tmin(th.active_from_min)} to ${tmin(th.active_to_min)}`],
-                      ["At current time", on ? "active" : "inactive"],
+                      ["At selected time", on ? "Active" : "Inactive"],
+                    ],
+                  })}
+                >
+                  <circle cx={cx} cy={cy} r={rr} fill={on ? `rgb(217 45 32 / ${0.08 + th.severity * 0.16})` : "rgb(217 45 32 / 0.02)"} />
+                  {on && <circle cx={cx} cy={cy} r={rr} fill="url(#hatch)" />}
+                  <circle cx={cx} cy={cy} r={rr} fill="none" stroke="var(--color-threat)" strokeOpacity={on ? 0.95 : 0.3} strokeDasharray={on ? undefined : "4 4"} strokeWidth={on ? 1.6 : 1.2} vectorEffect="non-scaling-stroke" />
+                </g>
+              );
+            })}
+
+            {shown.routes && assignments.map((a) => {
+              const b = baseById.get(a.base_from);
+              const m = missionById.get(a.mission_id);
+              if (!b || !m) return null;
+              const pts = a.route?.length ? a.route : [{ lat: b.lat, lon: b.lon }, m.aoi.center];
+              const flying = active(t, a.takeoff_min, a.land_min);
+              return (
+                <polyline
+                  key={a.id}
+                  points={pts.map((q) => `${x(q.lon)},${y(q.lat)}`).join(" ")}
+                  fill="none"
+                  stroke="var(--color-route)"
+                  strokeOpacity={flying ? 1 : 0.35}
+                  strokeWidth={flying ? 3 : 1.4}
+                  strokeLinecap="round"
+                  strokeDasharray={a.frozen || flying ? undefined : "1 0"}
+                  vectorEffect="non-scaling-stroke"
+                  {...bind({
+                    key: a.id,
+                    kind: "Planned sortie",
+                    title: `${a.mission_id} · ${a.aircraft_id}`,
+                    subtitle: a.id,
+                    rows: [
+                      ["From", a.base_from],
+                      ["Take-off", tmin(a.takeoff_min)],
+                      ["Landing", tmin(a.land_min)],
+                      ["Crew", a.crew_ids.join(", ")],
+                      ["Risk", <Badge key="r" tone={riskTone(a.risk.total)} dot>{a.risk.total.toFixed(2)}</Badge>],
+                      ["At selected time", flying ? "Airborne" : a.takeoff_min > t ? "Not yet airborne" : "Landed"],
                     ],
                   })}
                 />
@@ -300,151 +345,166 @@ export default function MapView({
             {shown.missions && snapshot.missions.map((m) => {
               const on = active(t, m.window_start_min, m.window_end_min);
               const covered = assignments.filter((a) => a.mission_id === m.id);
+              const cx = x(m.aoi.center.lon);
+              const cy = y(m.aoi.center.lat);
+              const s = fs(10 - m.priority);
               return (
-                <circle
+                <g
                   key={m.id}
-                  className="cursor-pointer"
-                  cx={x(m.aoi.center.lon)}
-                  cy={y(m.aoi.center.lat)}
-                  r={Math.max(r(m.aoi.radius_km), fs(4))}
-                  fill={covered.length ? "rgb(16 185 129 / 0.3)" : "rgb(255 255 255 / 0.6)"}
-                  stroke="rgb(5 150 105)"
-                  strokeOpacity={on ? 1 : 0.45}
-                  strokeWidth={on ? 2.2 : 1.2}
-                  vectorEffect="non-scaling-stroke"
-                  onClick={pick({
-                    title: `${m.id} · ${m.name}`,
+                  opacity={on ? 1 : 0.55}
+                  {...bind({
+                    key: m.id,
+                    kind: "Mission area",
+                    title: <span className="flex items-center gap-2"><PriorityChip p={m.priority} compact />{m.id}</span>,
+                    subtitle: m.name,
                     rows: [
-                      ["Capability", m.capability_required],
-                      ["Priority", String(m.priority)],
+                      ["Type", CAPABILITIES[m.capability_required] ?? m.capability_required],
                       ["Window", `${tmin(m.window_start_min)} to ${tmin(m.window_end_min)}`],
+                      ["Aircraft needed", String(m.aircraft_required)],
                       ["Area radius", `${m.aoi.radius_km.toFixed(0)} km`],
-                      ["In plan", covered.length ? covered.map((a) => `${a.aircraft_id} ${tmin(a.takeoff_min)}`).join(", ") : planLabel ? "not assigned" : "no plan loaded"],
+                      ["In plan", covered.length ? covered.map((a) => `${a.aircraft_id} at ${tmin(a.takeoff_min)}`).join(", ") : planLabel ? "Not covered" : "No plan yet"],
                     ],
                   })}
-                />
-              );
-            })}
-
-            {shown.routes && assignments.map((a) => {
-              const b = baseById.get(a.base_from);
-              const m = snapshot.missions.find((mm) => mm.id === a.mission_id);
-              if (!b || !m) return null;
-              const flying = active(t, a.takeoff_min, a.land_min);
-              return (
-                <line
-                  key={a.id}
-                  className="cursor-pointer"
-                  x1={x(b.lon)}
-                  y1={y(b.lat)}
-                  x2={x(m.aoi.center.lon)}
-                  y2={y(m.aoi.center.lat)}
-                  stroke={flying ? "rgb(217 119 6)" : "rgb(245 158 11)"}
-                  strokeOpacity={flying ? 1 : 0.35}
-                  strokeWidth={flying ? 3 : 1.3}
-                  vectorEffect="non-scaling-stroke"
-                  onClick={pick({
-                    title: `Sortie ${a.id}`,
-                    rows: [
-                      ["Mission", a.mission_id],
-                      ["Aircraft", a.aircraft_id],
-                      ["From", a.base_from],
-                      ["Take-off / land", `${tmin(a.takeoff_min)} / ${tmin(a.land_min)}`],
-                      ["Crew", a.crew_ids.join(", ")],
-                      ["Risk (total)", a.risk.total.toFixed(2)],
-                    ],
-                  })}
-                />
+                >
+                  <circle cx={cx} cy={cy} r={Math.max(r(m.aoi.radius_km), s)} fill={pColor(m.priority)} fillOpacity={0.07} stroke={pColor(m.priority)} strokeOpacity={0.45} strokeWidth={1} vectorEffect="non-scaling-stroke" />
+                  <path
+                    d={`M${cx} ${cy - s}L${cx + s} ${cy}L${cx} ${cy + s}L${cx - s} ${cy}Z`}
+                    fill={covered.length ? pColor(m.priority) : "white"}
+                    stroke={covered.length ? (m.priority >= 4 ? pColor(3) : "white") : pColor(Math.min(3, m.priority))}
+                    strokeWidth={fs(covered.length ? 1.5 : 2)}
+                  />
+                </g>
               );
             })}
 
             {shown.airfields && snapshot.alternate_airfields.map((a) => (
               <circle
                 key={a.id}
-                className="cursor-pointer"
                 cx={x(a.lon)}
                 cy={y(a.lat)}
                 r={fs(3.5)}
-                fill="#94a3b8"
-                onClick={pick({ title: a.name, rows: [["Kind", "alternate airfield"], ["Source", `${a.provenance.source} (open data)`]] })}
+                fill="white"
+                stroke="var(--color-ink-3)"
+                strokeWidth={fs(1.5)}
+                {...bind({ key: a.id, kind: "Alternate airfield (open data)", title: a.name, subtitle: a.id, rows: [["Source", `${a.provenance.source}, public civil airport`], ["Use", "Diversion option"]] })}
               />
             ))}
 
-            {land.filter((c) => LABELLED.has(c.iso)).map((c) => (
-              <text
-                key={`lbl${c.iso}`}
-                x={c.lx}
-                y={c.ly}
-                textAnchor="middle"
-                fontSize={fs(c.iso === "IND" ? 22 : 13)}
-                fontWeight={c.iso === "IND" ? 700 : 500}
-                letterSpacing={c.iso === "IND" ? fs(6) : 0}
-                fill={c.iso === "IND" ? "#a8a29e" : "#9ca3af"}
-                className="pointer-events-none uppercase"
-              >
-                {c.name}
-              </text>
-            ))}
             {shown.bases && snapshot.bases.map((b) => (
               <g
                 key={b.id}
-                className="cursor-pointer"
-                onClick={pick({
-                  title: `${b.name} · fictional base`,
+                {...bind({
+                  key: b.id,
+                  kind: "Air base (fictional)",
+                  title: b.name,
+                  subtitle: b.id,
                   rows: [
-                    ["Region", b.region],
+                    ["Region", REGIONS[b.region] ?? b.region],
                     ["Elevation", `${Math.round(b.elevation_m * 3.28084).toLocaleString()} ft`],
                     ["Runways", String(b.runways)],
                     ["Aircraft based", String(snapshot.aircraft.filter((a) => a.base_id === b.id).length)],
-                    ["Position", `${b.lat.toFixed(2)}°N ${b.lon.toFixed(2)}°E`],
+                    ["Sorties planned", String(assignments.filter((a) => a.base_from === b.id).length)],
                   ],
                 })}
               >
-                <rect x={x(b.lon) - fs(7)} y={y(b.lat) - fs(7)} width={fs(14)} height={fs(14)} rx={fs(2)} fill="#0369a1" stroke="white" strokeWidth={fs(2)} />
-                <text x={x(b.lon) + fs(11)} y={y(b.lat) + fs(4)} fontSize={fs(13)} fontWeight={600} fill="#0c4a6e" stroke="white" strokeWidth={fs(3)} paintOrder="stroke">
+                <rect x={x(b.lon) - fs(7)} y={y(b.lat) - fs(7)} width={fs(14)} height={fs(14)} rx={fs(3)} fill="var(--color-base)" stroke="white" strokeWidth={fs(2)} />
+                <text x={x(b.lon) + fs(12)} y={y(b.lat) + fs(4.5)} fontSize={fs(13)} fontWeight={600} fill="var(--color-ink)" stroke="white" strokeWidth={fs(3.5)} paintOrder="stroke" strokeLinejoin="round">
                   {b.name}
                 </text>
               </g>
             ))}
           </svg>
 
-          <div className="absolute right-2 top-2 flex flex-col gap-1">
-            <Button aria-label="Zoom in" className="h-8 w-8 !px-0" onClick={() => zoomAt(0.7, view.x + view.w / 2, view.y + view.h / 2)}>+</Button>
-            <Button aria-label="Zoom out" className="h-8 w-8 !px-0" onClick={() => zoomAt(1 / 0.7, view.x + view.w / 2, view.y + view.h / 2)}>−</Button>
-            <Button className="h-8 !px-2 text-xs" onClick={() => setView(india)} title="Zoom to India">India</Button>
-            <Button className="h-8 !px-2 text-xs" onClick={() => setView(full)} title="Show every plotted object">All</Button>
+          {/* Controls */}
+          <div className="absolute right-4 top-4 flex flex-col gap-2">
+            <IconButton icon="plus" label="Zoom in" onClick={() => zoomAt(0.7, c.cx, c.cy)} />
+            <IconButton icon="minus" label="Zoom out" onClick={() => zoomAt(1 / 0.7, c.cx, c.cy)} />
+            <IconButton icon="crosshair" label="Fit India" onClick={() => setCam(null)} />
+            <IconButton icon="maximize" label="Show every plotted object" onClick={() => setCam(all)} />
           </div>
-          <p className="absolute bottom-2 left-2 max-w-[90%] rounded bg-white/90 px-2 py-1 text-xs text-slate-600 shadow-sm">
-            {geoError
-              ? "Map outline could not be loaded; positions are shown on the grid only. "
-              : "Outline: Natural Earth (public domain), India point of view, simplified. "}
-            Boundaries are not authoritative. Scroll to zoom, drag to pan.
-          </p>
-        </div>
+          <div className="pointer-events-none absolute bottom-4 left-4 flex max-w-[70%] items-center gap-2 rounded-lg border border-line bg-surface/95 px-3 py-2 text-xs text-ink-3 shadow-card backdrop-blur">
+            <Icon name="info" size={14} className="shrink-0" />
+            <span>
+              {geoError ? "Map outline could not be loaded; objects are drawn on the grid only. " : "Outline: Natural Earth (public domain), India point of view, simplified. "}
+              <b className="font-semibold text-ink-2">Boundaries are not authoritative.</b>
+            </span>
+          </div>
+          <div className="pointer-events-none absolute bottom-4 right-4 rounded-lg bg-surface/90 px-2.5 py-1.5 text-[11px] text-ink-3 shadow-card">Scroll to zoom · drag to pan · click for details</div>
 
-        {selected && (
-          <aside className="absolute left-2 top-2 w-72 max-w-[calc(100%-6rem)] rounded-lg border border-slate-200 bg-white/95 p-3 text-sm shadow-md">
-            <div className="flex items-start justify-between gap-2">
-              <h3 className="font-semibold text-slate-900">{selected.title}</h3>
-              <button className="text-xs text-slate-500 hover:text-slate-900" onClick={() => setSelected(null)}>Close</button>
+          {hover && (
+            <div
+              className="pointer-events-none absolute z-10 w-64 animate-fade-in rounded-xl border border-line bg-surface/97 p-3.5 shadow-overlay backdrop-blur"
+              style={{
+                left: size && hover.x > size.w - 290 ? hover.x - 276 : hover.x + 16,
+                top: size && hover.y > size.h - 220 ? Math.max(8, hover.y - 200) : hover.y + 16,
+              }}
+            >
+              <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-4">{hover.info.kind}</div>
+              <div className="mt-0.5 text-sm font-semibold text-ink">{hover.info.title}</div>
+              {hover.info.subtitle && <div className="truncate text-xs text-ink-3">{hover.info.subtitle}</div>}
+              <div className="mt-2 border-t border-line pt-1 [&_dl>div]:py-1.5 [&_dl>div]:text-xs">
+                <DetailRows rows={hover.info.rows.slice(0, 4)} />
+              </div>
             </div>
-            <dl className="mt-2 divide-y divide-slate-100">
-              {selected.rows.map(([k2, v]) => (
-                <div key={k2} className="flex justify-between gap-3 py-1.5">
-                  <dt className="text-slate-500">{k2}</dt>
-                  <dd className="text-right font-medium text-slate-800">{v}</dd>
-                </div>
+          )}
+        </div>
+      </Card>
+
+      {/* Side panel: layers + legend, selection */}
+      <div className="flex flex-col gap-6">
+        <Card className="!p-5">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-ink">Layers and legend</h2>
+            <Tooltip content="Toggle a layer on or off. Bold or filled shapes are active at the selected time.">
+              <span tabIndex={0} className="text-ink-4"><Icon name="info" size={15} /></span>
+            </Tooltip>
+          </div>
+          <div className="mt-3 flex flex-col gap-0.5">
+            {LAYERS.map((l) => (
+              <label key={l.key} className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-subtle">
+                <input type="checkbox" className="h-4 w-4 accent-brand-600" checked={shown[l.key]} onChange={() => setShown({ ...shown, [l.key]: !shown[l.key] })} />
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>{l.symbol}</svg>
+                <span className={`flex-1 text-[13px] ${shown[l.key] ? "text-ink-2" : "text-ink-4"}`}>{l.label}</span>
+                <span className="text-xs text-ink-4 tnum">{l.count}</span>
+              </label>
+            ))}
+          </div>
+          <div className="mt-4 border-t border-line pt-4">
+            <div className="text-xs font-medium text-ink-3">Mission priority (marker colour and size)</div>
+            <div className="mt-2 flex items-center gap-2">
+              {[1, 2, 3, 4, 5].map((p) => (
+                <span key={p} className="flex flex-1 flex-col items-center gap-1">
+                  <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden>
+                    <path d={`M9 ${9 - (9 - p) * 0.95}L${9 + (9 - p) * 0.95} 9L9 ${9 + (9 - p) * 0.95}L${9 - (9 - p) * 0.95} 9Z`} fill={pColor(p)} />
+                  </svg>
+                  <span className="text-[11px] text-ink-3">P{p}</span>
+                </span>
               ))}
-            </dl>
-          </aside>
-        )}
+            </div>
+            <div className="mt-3 flex items-center gap-4 text-xs text-ink-3">
+              <span className="flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1 11 6 6 11 1 6Z" fill="var(--color-p2)" /></svg>Covered by plan</span>
+              <span className="flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1.5 10.5 6 6 10.5 1.5 6Z" fill="white" stroke="var(--color-p2)" strokeWidth="1.5" /></svg>Not covered</span>
+            </div>
+            <p className="mt-3 text-xs leading-5 text-ink-3">Circles show each zone&apos;s true radius in km. Dashed outlines are inactive at the selected time.</p>
+          </div>
+        </Card>
+
+        <Card className="!p-5">
+          <h2 className="text-sm font-semibold text-ink">Selected</h2>
+          {selected ? (
+            <div className="mt-3">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-4">{selected.kind}</div>
+              <div className="mt-0.5 text-[15px] font-semibold text-ink">{selected.title}</div>
+              {selected.subtitle && <div className="text-[13px] text-ink-3">{selected.subtitle}</div>}
+              <div className="mt-2"><DetailRows rows={selected.rows} /></div>
+              <Button size="sm" variant="ghost" icon="x" className="mt-2 -ml-2" onClick={() => setSelected(null)}>Clear</Button>
+            </div>
+          ) : (
+            <p className="mt-2 text-[13px] leading-5 text-ink-3">Hover over any shape for a quick look; click it to keep its details here.</p>
+          )}
+          <div className="mt-4 border-t border-line pt-3 text-xs text-ink-3">Routes shown: {planLabel ?? "no plan yet"}.</div>
+        </Card>
       </div>
-      <p className="text-xs text-slate-600">
-        <b>How to read it:</b> click any shape for details. Blue squares are (fictional) bases. Green circles are mission areas,
-        filled when the plan covers them. Red circles are threat zones and purple dashed shapes are airspace restrictions; both are
-        bold while active at the selected time. Orange lines are planned sorties, bold while airborne. Circle sizes match each
-        zone&apos;s radius in km.
-      </p>
     </div>
   );
 }

@@ -3,7 +3,9 @@
 import MapView from "@/components/MapView";
 import { useApi, useScenarioId } from "@/lib/api";
 import type { Plan, Snapshot } from "@/lib/types";
-import { Card, ErrorBox, Loading, NeedScenario, PageHeader, pickPlan } from "@/components/ui";
+import { pickPlan } from "@/lib/format";
+import { PageHeader, Skeleton } from "@/components/ui";
+import { Gate } from "@/components/shell/states";
 
 export default function MapPage() {
   const scenarioId = useScenarioId();
@@ -15,24 +17,28 @@ export default function MapPage() {
     <>
       <PageHeader
         title="Operating picture"
-        subtitle="Fused positions of bases, mission areas, threat zones, airspace restrictions and planned sorties. Move the time slider to see what is active when. All objects except the alternate airfields are synthetic."
+        purpose="Everything the planner needs on one map: bases, mission areas, threat zones, airspace restrictions and planned sorties. Move the time slider to see what is active when."
       />
-      {!scenarioId ? (
-        <NeedScenario />
-      ) : snap.error ? (
-        <ErrorBox message={snap.error} onRetry={snap.reload} />
-      ) : !snap.data ? (
-        <Loading what="map data" />
-      ) : (
-        <Card>
-          {plans.error && <ErrorBox message={`Plan routes unavailable: ${plans.error}`} onRetry={plans.reload} />}
+      <Gate
+        scenarioId={scenarioId}
+        error={snap.error ?? plans.error}
+        ready={!!snap.data && !!plans.data}
+        onRetry={() => { snap.reload(); plans.reload(); }}
+        skeleton={
+          <div className="grid grid-cols-[minmax(0,1fr)_320px] gap-6" role="status" aria-label="Loading">
+            <Skeleton className="h-[calc(100vh-260px)] min-h-[640px] !rounded-card" />
+            <div className="flex flex-col gap-6"><Skeleton className="h-80 !rounded-card" /><Skeleton className="h-48 !rounded-card" /></div>
+          </div>
+        }
+      >
+        {() => (
           <MapView
-            snapshot={snap.data}
+            snapshot={snap.data!}
             assignments={plan?.assignments ?? []}
-            planLabel={plan ? `plan v${plan.version}, ${plan.status}` : undefined}
+            planLabel={plan ? `plan v${plan.version} (${plan.status === "approved" ? "active" : plan.status})` : undefined}
           />
-        </Card>
-      )}
+        )}
+      </Gate>
     </>
   );
 }
